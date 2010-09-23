@@ -109,9 +109,9 @@ static void red_black_tree_insert_fixup(tree_root* root, tree_node* z){
 	left_rotate(root, z->parent->parent);
       }
     }
-    
-    root->root->color = BLACK;
   }
+
+  root->root->color = BLACK;
 }
 
 void red_black_tree_insert(tree_root* root, dom_node* node){
@@ -152,8 +152,6 @@ void dfs_print(const tree_node* root, int pad, char* pos){
     printf("with parent %s\n", key(root->parent));
   else
     printf("with no parent\n");
-  for(i = 0; i < pad; i++) printf(" ");
-  printf("\t+------\n");
 
   dfs_print(root->left, pad + 1, "Left");
   dfs_print(root->right, pad + 1, "Right");
@@ -167,10 +165,12 @@ int main(){
   two.name = "2";
   three.name = "3";
   four.name = "4";
-
+  red_black_tree_insert(r,&four);  
   red_black_tree_insert(r,&one);
-  red_black_tree_insert(r,&two);
-  
+
+  red_black_tree_insert(r,&three);  
+  red_black_tree_insert(r,&two);  
+
   dfs_print(r->root, 0, "Root");
   return 0;
 }

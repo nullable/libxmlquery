@@ -31,9 +31,9 @@ typedef struct sroot{
 tree_node NIL = {
   .node = NULL,
   .color = BLACK,
-  .parent = NULL,
-  .left = NULL,
-  .right = NULL
+  .parent = &NIL,
+  .left = &NIL,
+  .right = &NIL
 };
 
 extern void red_black_tree_insert(tree_root* root, struct snode* node);

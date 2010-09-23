@@ -31,5 +31,6 @@ typedef struct sroot{
 }tree_root;
 
 extern void red_black_tree_insert(tree_root* root, struct snode* node);
-extern struct slist_keeper* search(tree_root root, const char* name);
+extern struct snode* search(tree_root root, const char* name);
+extern void destroy_tree(tree_root* root);
 #endif

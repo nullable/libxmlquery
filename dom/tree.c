@@ -126,6 +126,14 @@ void red_black_tree_insert(tree_root* root, dom_node* node){
 
   while(x != &NIL){
     y = x;
+
+    if(compare(key(z), key(x)) == 0){
+      free(x->node);
+      free(z);
+      x->node = node;
+      return;
+    }      
+
     if(compare(key(z), key(x)) < 0)
       x = x->left;
     else
@@ -146,22 +154,40 @@ void red_black_tree_insert(tree_root* root, dom_node* node){
   red_black_tree_insert_fixup(root, z);
 }
 
-list_keeper* search(tree_root root, const char* name){
-  list_keeper* lk = new_list();
-
+dom_node* search(tree_root root, const char* name){
   tree_node *z = root.root;
 
   while(z != &NIL){
     if(compare(key(z), name) == 0)
-      append(lk, z->node);
+      return z->node;
 
     if(compare(key(z), name) < 0)
-      z = z->left;
-    else
       z = z->right;
+    else
+      z = z->left;
   }
 
-  return lk;
+  return NULL;
+}
+
+static void __destroy_tree(tree_node* root){
+  tree_node *l, *r;
+
+  if(root == &NIL)
+    return;
+
+  l = root->left;
+  r = root->right;
+
+  free(root);
+
+  __destroy_tree(l);
+  __destroy_tree(r);
+}
+
+void destroy_tree(tree_root* root){
+  __destroy_tree(root->root);
+  free(root);
 }
 
 void dfs_print(const tree_node* root, int pad, char* pos){
@@ -181,26 +207,44 @@ void dfs_print(const tree_node* root, int pad, char* pos){
 }
 
 int main(){
-  dom_node one, two, three, four;
-  list_node *it;
+  dom_node *one, *two, *three, *four, *found;
+
   tree_root* r = new_tree();
-  list_keeper* lk;
 
-  one.name = "1";
-  two.name = "2";
-  three.name = "3";
-  four.name = "4";
-  red_black_tree_insert(r,&four);  
-  red_black_tree_insert(r,&one);
+  one = alloc(dom_node, 1);
+  two = alloc(dom_node, 1);
+  three = alloc(dom_node, 1);
+  four= alloc(dom_node, 1);
 
-  red_black_tree_insert(r,&three);  
-  red_black_tree_insert(r,&two);  
+  one->name = "1";
+  two->name = "2";
+  three->name = "3";
+  four->name = "4";
+
+  red_black_tree_insert(r,four);  
+  four= alloc(dom_node, 1);
+  four->name = "4";
+  red_black_tree_insert(r,four);  
+  four= alloc(dom_node, 1);
+  four->name = "4";
+  red_black_tree_insert(r,four);  
+  four= alloc(dom_node, 1);
+  four->name = "4";
+  red_black_tree_insert(r,four);  
+  red_black_tree_insert(r,one);
+  red_black_tree_insert(r,three);  
+  red_black_tree_insert(r,two);  
 
   dfs_print(r->root, 0, "Root");
 
-  lk = search(*r, "4");
+  found = search(*r, "4");
 
-  for(it = lk->first; it != NULL; it = it->next)
-    printf("Found: %s\n", it->node->name);
+  printf("Found: %s\n", found->name);
+
+  free(one);
+  free(two);
+  free(four);
+  free(three);
+  destroy_tree(r);
   return 0;
 }

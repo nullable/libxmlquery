@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<ola>
+  <adeus attr="dsfsdfgsdg 
+
+">
+  <![CDATA[
+function matchwo(a,b)
+{
+if (a < b && a < 0) then
+  {
+  return 1;
+  }
+else
+  {
+  return 0;
+  }
+}
+]]>
+  </adeus>
+</ola>

@@ -27,6 +27,29 @@ static void left_rotate(tree_node* root, tree_node* rotate_on){
   return;
 }
 
+/*WARNNING right_rotate assumes that rotate_on->left is NOT NULL and that root->parent IS NULL*/
+static void right_rotate(tree_node* root, tree_node* rotate_on){
+  tree_node* y = rotate_on->left;
+  rotate_on->left = y->right;
+
+  if(y->right != NULL)
+    y->right->parent = rotate_on;
+  
+  y->parent = rotate_on->parent;
+ 
+  if(rotate_on->parent == NULL)
+    root = y;
+  else
+    if(rotate_on == rotate_on->parent->right)
+      rotate_on->parent->right = y;
+    else
+      rotate_on->parent->left = y;
+ 
+  y->right = rotate_on;
+  rotate_on->parent = y;
+  return;
+}
+
 void dfs_print(const tree_node* root, int pad, char* pos){
   int i = 0;
   if(root == NULL)
@@ -76,8 +99,9 @@ int main(){
   tfour.parent = &tone;*/
 
   dfs_print(&tone, 0, "Root");
-  left_rotate(&tone, &ttwo);
-  printf("\nRotated to:\n");
-  dfs_print(&tone, 0, "Root");
+  left_rotate(&tone, &tone);
+  printf("\nRotated left to:\n");
+  dfs_print(&ttwo, 0, "Root");
+
   return 0;
 }

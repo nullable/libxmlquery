@@ -1,9 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "list.h"
-#include "tree.h"
-#include "node.h"
-#include "macros.h"
 
 list_keeper* new_list(){
   list_keeper * lk = alloc(list_keeper, 1);

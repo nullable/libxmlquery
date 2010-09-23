@@ -25,7 +25,7 @@
 #define alloc(type, how_many)				\
   (type *) __alloc(malloc(how_many * sizeof(type)));	
 
-inline void* __alloc(void* x){
+static inline void* __alloc(void* x){
   if(x)
     return x;
   log(F,"malloc failed.");				

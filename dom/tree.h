@@ -6,13 +6,15 @@
 #define key(NODE)\
   (NODE->node->name)
 
-#define compare(NODE_A, NODE_B)\
-  (strcmp(key(NODE_A), key(NODE_B)))
+#define compare(KEY_A, KEY_B)\
+  (strcmp(KEY_A, KEY_B))
 
 #define RED 1
 #define BLACK 2
 
-struct snode;
+#include "list.h"
+#include "node.h"
+#include "macros.h"
 
 typedef struct stree_node{
   struct snode* node;
@@ -28,13 +30,6 @@ typedef struct sroot{
   struct stree_node* root;
 }tree_root;
 
-tree_node NIL = {
-  .node = NULL,
-  .color = BLACK,
-  .parent = &NIL,
-  .left = &NIL,
-  .right = &NIL
-};
-
 extern void red_black_tree_insert(tree_root* root, struct snode* node);
+extern struct slist_keeper* search(tree_root root, const char* name);
 #endif

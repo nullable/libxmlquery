@@ -1,7 +1,8 @@
 #ifndef __LIST_H__
 #define __LIST_H__
 
-struct snode;
+#include "node.h"
+#include "macros.h"
 
 typedef struct slist_node{
   struct snode* node;

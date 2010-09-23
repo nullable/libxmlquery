@@ -1,9 +1,8 @@
 #ifndef __NODE_H__
 #define __NODE_H__
 
-struct stree_node;
-struct slist_keeper;
-
+#include "tree.h"
+#include "list.h"
 
 enum node_type {
   attribute,
@@ -17,11 +16,11 @@ typedef struct snode{
   char* name;
   char* value;
 
-  struct stree_node attributes;
+  struct stree_root* attributes;
   
   struct snode* parent;
   
-  struct slist_keeper children;
+  struct slist_keeper* children;
 }dom_node;
 
 #endif

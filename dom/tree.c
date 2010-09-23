@@ -1,9 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "tree.h"
-#include "list.h"
-#include "node.h"
-#include "macros.h"
+
+tree_node NIL = {
+  .node = NULL,
+  .color = BLACK,
+  .parent = &NIL,
+  .left = &NIL,
+  .right = &NIL
+};
 
 static tree_node* new_tree_node(dom_node* node){
   tree_node *z = alloc(tree_node, 1);
@@ -121,7 +126,7 @@ void red_black_tree_insert(tree_root* root, dom_node* node){
 
   while(x != &NIL){
     y = x;
-    if(compare(z, x) < 0)
+    if(compare(key(z), key(x)) < 0)
       x = x->left;
     else
       x = x->right;
@@ -132,13 +137,31 @@ void red_black_tree_insert(tree_root* root, dom_node* node){
   if(y == &NIL)
     root->root = z;
   else{
-    if(compare(z,y) < 0)
+    if(compare(key(z),key(y)) < 0)
       y->left = z;
     else
       y->right = z;
   }
 
   red_black_tree_insert_fixup(root, z);
+}
+
+list_keeper* search(tree_root root, const char* name){
+  list_keeper* lk = new_list();
+
+  tree_node *z = root.root;
+
+  while(z != &NIL){
+    if(compare(key(z), name) == 0)
+      append(lk, z->node);
+
+    if(compare(key(z), name) < 0)
+      z = z->left;
+    else
+      z = z->right;
+  }
+
+  return lk;
 }
 
 void dfs_print(const tree_node* root, int pad, char* pos){
@@ -159,7 +182,9 @@ void dfs_print(const tree_node* root, int pad, char* pos){
 
 int main(){
   dom_node one, two, three, four;
+  list_node *it;
   tree_root* r = new_tree();
+  list_keeper* lk;
 
   one.name = "1";
   two.name = "2";
@@ -172,5 +197,10 @@ int main(){
   red_black_tree_insert(r,&two);  
 
   dfs_print(r->root, 0, "Root");
+
+  lk = search(*r, "4");
+
+  for(it = lk->first; it != NULL; it = it->next)
+    printf("Found: %s\n", it->node->name);
   return 0;
 }

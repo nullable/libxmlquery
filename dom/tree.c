@@ -241,7 +241,6 @@ list_keeper* regex_search_ignore_case(tree_root root, char* pattern){
   return lk;
 }
 
-
 void dfs_print(const tree_node* root, int pad, char* pos){
   int i = 0;
   if(root == &NIL)
@@ -286,6 +285,11 @@ int main(){
 
   for(it = found->first; it != NULL; it = it->next)
     printf("Found %s\n", it->node->name);
+
+  found = regex_get_by_name_ignore_case(*found, "[A-Z]");
+
+  for(it = found->first; it != NULL; it = it->next)
+    printf("L Found %s\n", it->node->name);
 
   free(one);
   free(two);

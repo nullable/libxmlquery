@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <regex.h>
 #include "list.h"
 
 list_keeper* new_list(){
@@ -72,4 +73,110 @@ void destroy(list_keeper* keeper){
   }
 
   free(keeper);
+}
+
+void prepend(list_keeper* keeper, struct snode* node){
+  list_node* lnode;
+  
+  if(keeper == NULL){
+    log(W, "Trying to prepend node to null keeper.");
+    return;
+  }
+
+  lnode = alloc(list_node, 1);
+  lnode->node = node;
+  lnode->next = NULL;
+
+  keeper->count++;
+
+  if(keeper->first == NULL){
+    keeper->first = lnode;
+    keeper->last = lnode;
+    return;
+  }
+
+  lnode->next = keeper->first;
+  keeper->first = lnode;
+  return;  
+}
+
+static int match(const char *string, char *pattern, int ignore_case){
+  int status;
+  regex_t re;
+
+  if(ignore_case){
+    if (regcomp(&re, pattern, REG_EXTENDED | REG_ICASE | REG_NOSUB) != 0) {
+      return 0;      
+    }
+  }else
+    if (regcomp(&re, pattern, REG_EXTENDED | REG_NOSUB) != 0) {
+      return 0;      
+    }
+
+  status = regexec(&re, string, (size_t) 0, NULL, 0);
+  regfree(&re);
+  if (status != 0) {
+    return 0;
+  }
+  return 1;
+}
+
+list_keeper* get_by_namespace(list_keeper keeper, char* namespace){
+  list_keeper* list = new_list();
+  list_node* lit;
+
+  for(lit = keeper.first; lit != NULL; lit = lit->next){
+    if(strcmp(lit->node->namespace, namespace) == 0)
+      append(list, lit->node);
+  }
+
+  return list;
+}
+
+list_keeper* regex_get_by_name(list_keeper keeper, char* pattern){
+  list_keeper* list = new_list();
+  list_node* lit;
+
+  for(lit = keeper.first; lit != NULL; lit = lit->next){
+    if(match(lit->node->name, pattern, 0))
+      append(list, lit->node);
+  }
+
+  return list;
+}
+
+list_keeper* regex_get_by_namespace(list_keeper keeper, char* pattern){
+  list_keeper* list = new_list();
+  list_node* lit;
+
+  for(lit = keeper.first; lit != NULL; lit = lit->next){
+    if(match(lit->node->namespace, pattern, 0))
+      append(list, lit->node);
+  }
+
+  return list;
+}
+
+list_keeper* regex_get_by_name_ignore_case(list_keeper keeper, char* pattern){
+  list_keeper* list = new_list();
+  list_node* lit;
+
+  for(lit = keeper.first; lit != NULL; lit = lit->next){
+    if(match(lit->node->name, pattern, 1))
+      append(list, lit->node);
+  }
+
+  return list;
+}
+
+list_keeper* regex_get_by_namespace_ignore_case(list_keeper keeper, char* pattern){
+  list_keeper* list = new_list();
+  list_node* lit;
+
+  for(lit = keeper.first; lit != NULL; lit = lit->next){
+    if(match(lit->node->namespace, pattern, 1))
+      append(list, lit->node);
+  }
+
+  return list;
 }

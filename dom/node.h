@@ -13,6 +13,7 @@ enum node_type {
 typedef struct snode{
   enum node_type type;
 
+  char* namespace;
   char* name;
   char* value;
 

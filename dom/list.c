@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
-#include <regex.h>
+#include "eregex.h"
 #include "list.h"
 
 list_keeper* new_list(){
@@ -98,27 +98,6 @@ void prepend(list_keeper* keeper, struct snode* node){
   lnode->next = keeper->first;
   keeper->first = lnode;
   return;  
-}
-
-static int match(const char *string, char *pattern, int ignore_case){
-  int status;
-  regex_t re;
-
-  if(ignore_case){
-    if (regcomp(&re, pattern, REG_EXTENDED | REG_ICASE | REG_NOSUB) != 0) {
-      return 0;      
-    }
-  }else
-    if (regcomp(&re, pattern, REG_EXTENDED | REG_NOSUB) != 0) {
-      return 0;      
-    }
-
-  status = regexec(&re, string, (size_t) 0, NULL, 0);
-  regfree(&re);
-  if (status != 0) {
-    return 0;
-  }
-  return 1;
 }
 
 list_keeper* get_by_namespace(list_keeper keeper, char* namespace){

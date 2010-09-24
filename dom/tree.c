@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
-#include <regex.h>
+#include "eregex.h"
 #include "tree.h"
 
 tree_node NIL = {
@@ -23,7 +23,7 @@ static tree_node* new_tree_node(dom_node* node){
   return z;
 }
 
-static tree_root* new_tree(){
+tree_root* new_tree(){
   tree_root* r = alloc(tree_root, 1);
   r->root = &NIL;
   return r;
@@ -190,27 +190,6 @@ static void __destroy_tree(tree_node* root){
 void destroy_tree(tree_root* root){
   __destroy_tree(root->root);
   free(root);
-}
-
-static int match(const char *string, char *pattern, int ignore_case){
-  int status;
-  regex_t re;
-
-  if(ignore_case){
-    if (regcomp(&re, pattern, REG_EXTENDED | REG_ICASE | REG_NOSUB) != 0) {
-      return 0;      
-    }
-  }else
-    if (regcomp(&re, pattern, REG_EXTENDED | REG_NOSUB) != 0) {
-      return 0;      
-    }
-
-  status = regexec(&re, string, (size_t) 0, NULL, 0);
-  regfree(&re);
-  if (status != 0) {
-    return 0;
-  }
-  return 1;
 }
 
 static void __regex_search(tree_node* root, char* pattern, int ignore_case, list_keeper* result){

@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/types.h>
+#include <regex.h>
 #include "tree.h"
 
 tree_node NIL = {
@@ -190,6 +192,56 @@ void destroy_tree(tree_root* root){
   free(root);
 }
 
+static int match(const char *string, char *pattern, int ignore_case){
+  int status;
+  regex_t re;
+
+  if(ignore_case){
+    if (regcomp(&re, pattern, REG_EXTENDED | REG_ICASE | REG_NOSUB) != 0) {
+      return 0;      
+    }
+  }else
+    if (regcomp(&re, pattern, REG_EXTENDED | REG_NOSUB) != 0) {
+      return 0;      
+    }
+
+  status = regexec(&re, string, (size_t) 0, NULL, 0);
+  regfree(&re);
+  if (status != 0) {
+    return 0;
+  }
+  return 1;
+}
+
+static void __regex_search(tree_node* root, char* pattern, int ignore_case, list_keeper* result){
+
+  if(root == &NIL)
+    return;
+
+  if(match(root->node->name, pattern, ignore_case))
+    append(result, root->node);
+
+  __regex_search(root->left, pattern, ignore_case, result);
+  __regex_search(root->right, pattern, ignore_case, result);
+}
+
+list_keeper* regex_search(tree_root root, char* pattern){
+  list_keeper* lk = new_list();
+
+  __regex_search(root.root, pattern, 0, lk);
+
+  return lk;
+}
+
+list_keeper* regex_search_ignore_case(tree_root root, char* pattern){
+  list_keeper* lk = new_list();
+
+  __regex_search(root.root, pattern, 1, lk);
+
+  return lk;
+}
+
+
 void dfs_print(const tree_node* root, int pad, char* pos){
   int i = 0;
   if(root == &NIL)
@@ -207,7 +259,9 @@ void dfs_print(const tree_node* root, int pad, char* pos){
 }
 
 int main(){
-  dom_node *one, *two, *three, *four, *found;
+  dom_node *one, *two, *three, *four;
+  list_node *it;
+  list_keeper *found;
 
   tree_root* r = new_tree();
 
@@ -219,17 +273,8 @@ int main(){
   one->name = "1";
   two->name = "2";
   three->name = "3";
-  four->name = "4";
+  four->name = "four";
 
-  red_black_tree_insert(r,four);  
-  four= alloc(dom_node, 1);
-  four->name = "4";
-  red_black_tree_insert(r,four);  
-  four= alloc(dom_node, 1);
-  four->name = "4";
-  red_black_tree_insert(r,four);  
-  four= alloc(dom_node, 1);
-  four->name = "4";
   red_black_tree_insert(r,four);  
   red_black_tree_insert(r,one);
   red_black_tree_insert(r,three);  
@@ -237,9 +282,10 @@ int main(){
 
   dfs_print(r->root, 0, "Root");
 
-  found = search(*r, "4");
+  found = regex_search_ignore_case(*r, "[A-Z]+");
 
-  printf("Found: %s\n", found->name);
+  for(it = found->first; it != NULL; it = it->next)
+    printf("Found %s\n", it->node->name);
 
   free(one);
   free(two);

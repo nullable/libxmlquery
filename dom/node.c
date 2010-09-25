@@ -170,14 +170,75 @@ dom_node* get_attribute_by_name(dom_node* node, char* attr_name){
   return search(node->attributes, attr_name);
 }
 
-dom_node* get_child_at(dom_node* parent, int index);
-list_keeper* get_elements_by_name(doc* root, char* name);
-list_keeper* get_elements_by_namespace(doc* root, char* namespace);
-list_keeper* get_attributes(dom_node* node);
-list_keeper* get_children(dom_node* node);
+dom_node* get_child_at(dom_node* parent, int index){
+  if(parent->children == NULL)
+    return NULL;
+  return get(parent->children, index);
+}
 
-list_keeper* regex_get_attributes(dom_node* node, char* pattern);
-list_keeper* regex_get_elements_by_name(doc* root, char* pattern);
-list_keeper* regex_get_elements_by_namespace(doc* root, char* pattern);
-list_keeper* regex_get_attributes(dom_node* node, char* pattern);
+list_keeper* regex_get_attributes(dom_node* node, char* pattern){
+  if(node->attributes == NULL)
+    return NULL;
+  return regex_search(node->attributes, pattern);
+}
+
+list_keeper* regex_get_attributes_ignore_case(dom_node* node, char* pattern){
+  if(node->attributes == NULL)
+    return NULL;
+  return regex_search_ignore_case(node->attributes, pattern);
+}
+
+static void __regex_get_elements_by_name(dom_node* root, char* pattern, list_keeper* lk, int ignore_case){
+  list_node* it;
+
+  if(root == NULL)
+    return;
+
+  if(root->type == element && match(root->name, pattern, ignore_case))
+    append(lk, root);
+
+  for(it = root->children->first; it != NULL; it = it->next)
+    __regex_get_elements_by_name(it,pattern, lk, ignore_case);
+}
+
+list_keeper* regex_get_elements_by_name(doc* root, char* pattern){
+  list_keeper* lk = new_list();
+  __regex_get_elements_by_name(root->root, pattern, lk, 0);
+  return lk;
+}
+
+list_keeper* regex_get_elements_by_name_ignore_case(doc* root, char* pattern){
+  list_keeper* lk = new_list();
+  __regex_get_elements_by_name(root->root, pattern, lk, 1);
+  return lk;
+}
+
+static void __regex_get_elements_by_namespace(dom_node* root, char* pattern, list_keeper* lk, int ignore_case){
+  list_node* it;
+
+  if(root == NULL)
+    return;
+
+  if(root->type == element && match(root->namespace, pattern, ignore_case))
+    append(lk, root);
+
+  for(it = root->children->first; it != NULL; it = it->next)
+    __regex_get_elements_by_namespace(it,pattern, lk, ignore_case);
+}
+
+list_keeper* regex_get_elements_by_namespace(doc* root, char* pattern){
+  list_keeper* lk = new_list();
+  __regex_get_elements_by_namespace(root->root, pattern, lk, 0);
+  return lk;
+}
+
+list_keeper* regex_get_elements_by_namespace_ignore_case(doc* root, char* pattern){
+  list_keeper* lk = new_list();
+  __regex_get_elements_by_namespace(root->root, pattern, lk, 1);
+  return lk;
+}
+
+list_keeper* get_children(dom_node* node){
+  return node->children;
+}
 

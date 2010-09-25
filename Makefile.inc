@@ -1,4 +1,4 @@
 # common definitions
 
 CC = gcc
-CFLAGS = -g -Wall
+CFLAGS = -g -Wall -DDEBUG

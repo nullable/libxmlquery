@@ -3,9 +3,7 @@
 
 #include <stdlib.h>
 
-#define DEBUG 1
-
-#if DEBUG == 1
+#ifdef DEBUG
 #include <stdio.h>
 #define log(level, format, ...)					\
   do{								\

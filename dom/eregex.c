@@ -1,4 +1,5 @@
 #include <regex.h>
+#include <stdlib.h>
 #include "eregex.h"
 
 int match(const char *string, char *pattern, int ignore_case){

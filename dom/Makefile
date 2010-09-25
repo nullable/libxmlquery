@@ -1,6 +1,6 @@
 include ../Makefile.inc
 
-OBJS = list.o tree.o node.o
+OBJS = list.o tree.o node.o eregex.o
 
 all: $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS)
@@ -13,6 +13,9 @@ list.o: list.h list.c macros.h
 
 node.o: node.h node.c macros.h
 	$(CC) $(CFLAGS) -c node.c
+
+eregex.o: eregex.h eregex.c
+	$(CC) $(CFLAGS) -c eregex.c
 
 clean:
 	rm -rf *~ *.out $(OBJS)

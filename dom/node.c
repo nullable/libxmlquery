@@ -3,6 +3,7 @@
 #include <string.h>
 #include "macros.h"
 #include "node.h"
+#include "eregex.h"
 
 void set_namespace(dom_node* node, char* namespace){
   int size = strlen(namespace) + 1;
@@ -69,7 +70,7 @@ dom_node* get_doc_root(doc* document){
 }
 
 void prepend_child(dom_node* parent, dom_node* child){
-  if(child->type == attribute){
+  if(child->type == ATTRIBUTE){
     log(W, "Trying to prepend attribute %s as child of node %s.\n", child->name, parent->name);
     return;
   }
@@ -77,17 +78,17 @@ void prepend_child(dom_node* parent, dom_node* child){
 }
 
 void append_child(dom_node* parent, dom_node* child){
-  if(child->type == attribute){
+  if(child->type == ATTRIBUTE){
     log(W, "Trying to append attribute %s as child of node %s.\n", child->name, parent->name);
     return;
   }
-  if(node->children == NULL)
-    node->children = new_list();
+  if(parent->children == NULL)
+    parent->children = new_list();
   append(parent->children, child);
 }
 
 void add_attribute(dom_node* node, dom_node* attribute){
-  if(node->type == attribute){
+  if(node->type == ATTRIBUTE){
     if(node->attributes == NULL)
       node->attributes = new_tree();
     red_black_tree_insert(node->attributes, node);
@@ -99,19 +100,19 @@ void add_attribute(dom_node* node, dom_node* attribute){
 doc* new_document(char* xml_version){
   doc* document = alloc(doc, 1);
   int vers_size = strlen(xml_version) + 1;
-  doc->xml_version = alloc(char, vers_size);
-  strncpy(doc->xml_version, xml_version, vers_size);
-  doc->root = NULL;
-  return doc;
+  document->xml_version = alloc(char, vers_size);
+  strncpy(document->xml_version, xml_version, vers_size);
+  document->root = NULL;
+  return document;
 }
 
 dom_node* new_element_node(char* name){
   dom_node* node = alloc(dom_node, 1);
   int name_size = strlen(name) + 1;
 
-  node->type = element;
+  node->type = ELEMENT;
   node->name = alloc(char, name_size);
-  strncpy(node->name, name);
+  strncpy(node->name, name, name_size);
   node->value = NULL;
   node->namespace = NULL;
   node->attributes = NULL;
@@ -123,7 +124,7 @@ dom_node* new_text_node(char* text){
   dom_node* node = alloc(dom_node, 1);
   int text_size = strlen(text) + 1;
 
-  node->type = text;
+  node->type = TEXT;
   node->name = "~#TEXT#~";
   node->value = alloc(char, text_size);
   strncpy(node->value, text, text_size);
@@ -138,8 +139,8 @@ dom_node* new_attribute(char* name, char* value){
   int name_size = strlen(name) + 1;
   int value_size = strlen(value) + 1;
 
-  node->type = attribute;
-  node->name = alloc(char,text_size);
+  node->type = ATTRIBUTE;
+  node->name = alloc(char,name_size);
   strncpy(node->name, name, name_size);
   node->value = alloc(char, value_size);
   strncpy(node->value, value, value_size);
@@ -151,9 +152,9 @@ dom_node* new_attribute(char* name, char* value){
 
 dom_node* new_cdata(char* cdata_text){
   dom_node* node = alloc(dom_node, 1);
-  int cdata_size = strlen(cdata) + 1;
+  int cdata_size = strlen(cdata_text) + 1;
 
-  node->type = cdata;
+  node->type = CDATA;
   node->name = "~#CDATA#~";
   node->value = alloc(char, cdata_size);
   strncpy(node->value, cdata_text, cdata_size);
@@ -167,25 +168,25 @@ dom_node* get_attribute_by_name(dom_node* node, char* attr_name){
   if(node->attributes == NULL)
     return NULL;
 
-  return search(node->attributes, attr_name);
+  return search(*(node->attributes), attr_name);
 }
 
 dom_node* get_child_at(dom_node* parent, int index){
   if(parent->children == NULL)
     return NULL;
-  return get(parent->children, index);
+  return get(*(parent->children), index);
 }
 
 list_keeper* regex_get_attributes(dom_node* node, char* pattern){
   if(node->attributes == NULL)
     return NULL;
-  return regex_search(node->attributes, pattern);
+  return regex_search(*(node->attributes), pattern);
 }
 
 list_keeper* regex_get_attributes_ignore_case(dom_node* node, char* pattern){
   if(node->attributes == NULL)
     return NULL;
-  return regex_search_ignore_case(node->attributes, pattern);
+  return regex_search_ignore_case(*(node->attributes), pattern);
 }
 
 static void __regex_get_elements_by_name(dom_node* root, char* pattern, list_keeper* lk, int ignore_case){
@@ -194,11 +195,11 @@ static void __regex_get_elements_by_name(dom_node* root, char* pattern, list_kee
   if(root == NULL)
     return;
 
-  if(root->type == element && match(root->name, pattern, ignore_case))
+  if(root->type == ELEMENT && match(root->name, pattern, ignore_case))
     append(lk, root);
 
   for(it = root->children->first; it != NULL; it = it->next)
-    __regex_get_elements_by_name(it,pattern, lk, ignore_case);
+    __regex_get_elements_by_name(it->node, pattern, lk, ignore_case);
 }
 
 list_keeper* regex_get_elements_by_name(doc* root, char* pattern){
@@ -219,11 +220,11 @@ static void __regex_get_elements_by_namespace(dom_node* root, char* pattern, lis
   if(root == NULL)
     return;
 
-  if(root->type == element && match(root->namespace, pattern, ignore_case))
+  if(root->type == ELEMENT && match(root->namespace, pattern, ignore_case))
     append(lk, root);
 
   for(it = root->children->first; it != NULL; it = it->next)
-    __regex_get_elements_by_namespace(it,pattern, lk, ignore_case);
+    __regex_get_elements_by_namespace(it->node, pattern, lk, ignore_case);
 }
 
 list_keeper* regex_get_elements_by_namespace(doc* root, char* pattern){

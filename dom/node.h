@@ -5,10 +5,10 @@
 #include "list.h"
 
 enum node_type {
-  attribute,
-  element,
-  text,
-  cdata
+  ATTRIBUTE,
+  ELEMENT,
+  TEXT,
+  CDATA
 };
 
 typedef struct snode{
@@ -18,7 +18,7 @@ typedef struct snode{
   char* name;
   char* value;
 
-  struct stree_root* attributes;
+  struct sroot* attributes;
   
   struct snode* parent;
   
@@ -53,12 +53,12 @@ extern dom_node* new_attribute(char* name, char* value);
 extern dom_node* new_cdata(char* cdata_text);
 
 extern dom_node* get_child_at(dom_node* parent, int index);
-extern list_keeper* get_children(dom_node* node);
+extern struct slist_keeper* get_children(dom_node* node);
 
-extern list_keeper* regex_get_attributes(dom_node* node, char* pattern);
-extern list_keeper* regex_get_attributes_ignore_case(dom_node* node, char* pattern);
-extern list_keeper* regex_get_elements_by_name(doc* root, char* pattern);
-extern list_keeper* regex_get_elements_by_name_ignore_case(doc* root, char* pattern);
-extern list_keeper* regex_get_elements_by_namespace(doc* root, char* pattern);
-extern list_keeper* regex_get_elements_by_namespace_ignore_case(doc* root, char* pattern);
+extern struct slist_keeper* regex_get_attributes(dom_node* node, char* pattern);
+extern struct slist_keeper* regex_get_attributes_ignore_case(dom_node* node, char* pattern);
+extern struct slist_keeper* regex_get_elements_by_name(doc* root, char* pattern);
+extern struct slist_keeper* regex_get_elements_by_name_ignore_case(doc* root, char* pattern);
+extern struct slist_keeper* regex_get_elements_by_namespace(doc* root, char* pattern);
+extern struct slist_keeper* regex_get_elements_by_namespace_ignore_case(doc* root, char* pattern);
 #endif

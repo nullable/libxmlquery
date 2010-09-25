@@ -3,7 +3,6 @@ include ../Makefile.inc
 OBJS = list.o tree.o node.o eregex.o
 
 all: $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS)
 
 tree.o: tree.h tree.c macros.h
 	$(CC) $(CFLAGS) -c tree.c

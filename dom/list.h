@@ -16,6 +16,7 @@ typedef struct slist_keeper{
 }list_keeper;
 
 extern list_keeper* new_list();
+extern struct snode* pop(list_keeper* keeper);
 extern void append(list_keeper* keeper, struct snode* node);
 extern void prepend(list_keeper* keeper, struct snode* node);
 extern struct snode* get(list_keeper keeper, int index);

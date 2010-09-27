@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include "macros.h"
 #include "tree.h"
 #include "list.h"
 #include "node.h"
@@ -8,11 +9,12 @@ int main(){
   dom_node a, b, c, d, e, f;
   list_keeper* l = new_list(), *k;
 
+  log(F, "Log");
 
   a.name = "fred";
   b.name = "fred";  
   c.name = "fred";  
-  d.name = "alberto";  
+  d.name = "a";  
   e.name = "vasco";  
   f.name = "rita";  
 

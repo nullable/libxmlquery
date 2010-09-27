@@ -30,10 +30,25 @@ typedef struct sroot{
   struct stree_node* root;
 }tree_root;
 
+typedef struct siterator_node{
+  struct stree_node* node;
+  struct siterator_node* next;
+}iterator_node;
+
+typedef struct siterator{
+  struct siterator_node* first;
+  struct siterator_node* last;
+}tree_iterator;
+
 extern tree_root* new_tree();
 extern void red_black_tree_insert(tree_root* root, struct snode* node);
 extern struct snode* search(tree_root root, const char* name);
 extern void destroy_tree(tree_root* root);
 extern struct slist_keeper* regex_search(tree_root root, char* pattern);
 extern struct slist_keeper* regex_search_ignore_case(tree_root root, char* pattern);
+
+extern tree_iterator* new_tree_iterator(tree_root* root);
+extern int tree_iterator_has_next(tree_iterator* it);
+extern struct snode* tree_iterator_next(tree_iterator* it);
+extern void destroy_iterator(tree_iterator* it);
 #endif

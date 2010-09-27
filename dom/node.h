@@ -35,6 +35,7 @@ extern void set_name(dom_node* node, char* name);
 extern void set_value(dom_node* node, char* value);
 extern void set_doc_root(doc* document, struct snode* root);
 extern void set_xml_version(doc* document, char* vers);
+extern void set_parent(dom_node* node, dom_node* parent);
 
 extern char* get_namespace(dom_node* node);
 extern char* get_name(dom_node* node);
@@ -54,6 +55,9 @@ extern dom_node* new_cdata(char* cdata_text);
 
 extern dom_node* get_child_at(dom_node* parent, int index);
 extern struct slist_keeper* get_children(dom_node* node);
+extern struct slist_keeper* get_text_nodes(doc* root);
+extern dom_node* get_attribute_by_name(dom_node* node, char* attr_name);
+extern struct slist_keeper* get_elements_by_name(doc* root, char* name);
 
 extern struct slist_keeper* regex_get_attributes(dom_node* node, char* pattern);
 extern struct slist_keeper* regex_get_attributes_ignore_case(dom_node* node, char* pattern);
@@ -61,4 +65,8 @@ extern struct slist_keeper* regex_get_elements_by_name(doc* root, char* pattern)
 extern struct slist_keeper* regex_get_elements_by_name_ignore_case(doc* root, char* pattern);
 extern struct slist_keeper* regex_get_elements_by_namespace(doc* root, char* pattern);
 extern struct slist_keeper* regex_get_elements_by_namespace_ignore_case(doc* root, char* pattern);
+
+extern void destroy_dom_tree(doc* root);
+
+extern void output_xml(doc* root);
 #endif

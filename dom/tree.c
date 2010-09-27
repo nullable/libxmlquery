@@ -219,3 +219,70 @@ list_keeper* regex_search_ignore_case(tree_root root, char* pattern){
 
   return lk;
 }
+
+static void __append_node_to_iterator(tree_iterator* it, tree_node* node){
+  iterator_node* n;
+
+  if(node == NULL)
+    return;
+
+  n = alloc(iterator_node, 1);
+
+  n->node = node;
+  n->next = NULL;
+
+  if(it->first == NULL){
+    it->first = n;
+    it->last = n;
+    return;
+  }
+
+  it->last->next = n;
+  it->last = n;
+}
+
+tree_iterator* new_tree_iterator(tree_root* root){
+  tree_iterator* it = alloc(tree_iterator, 1);
+  it->first = NULL;
+  it->last = NULL;
+  __append_node_to_iterator(it, root->root);
+  return it;
+}
+
+int tree_iterator_has_next(tree_iterator* it){
+  if(it->first == NULL)
+    return 0;
+  return 1;
+}
+
+struct snode* tree_iterator_next(tree_iterator* it){
+  iterator_node *aux;
+  dom_node* res;
+
+  if(it->first == NULL){
+    log(E,"Trying to retrieve the next element of an empty iterator.\n");
+    return NULL;
+  }
+
+  aux = it->first;
+  it->first = it->first->next;
+  res = aux->node->node;
+
+  __append_node_to_iterator(it, aux->node->left);
+  __append_node_to_iterator(it, aux->node->right);
+
+  free(aux);
+  return res;
+}
+
+void destroy_iterator(tree_iterator* it){
+  iterator_node* aux;
+
+  aux = it->first;
+  while(aux != NULL){
+    it->first = it->first->next;
+    free(aux);
+    aux = it->first;
+  }
+  free(it);
+}

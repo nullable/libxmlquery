@@ -11,6 +11,19 @@ list_keeper* new_list(){
   return lk;
 }
 
+struct snode* pop(list_keeper* keeper){
+  list_node* aux = keeper->first;
+  struct snode* res;
+
+  if(aux == NULL)
+    return NULL;
+
+  keeper->first = keeper->first->next;
+  res = aux->node;
+  free(aux);
+  return res;
+}
+
 void append(list_keeper* keeper, struct snode* node){
   list_node* lnode;
   

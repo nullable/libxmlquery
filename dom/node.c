@@ -53,6 +53,10 @@ void set_xml_version(doc* document, char* vers){
   strncpy(document->xml_version, vers, size);
 }
 
+void set_parent(dom_node* node, dom_node* parent){
+  node->parent = parent;
+}
+
 char* get_namespace(dom_node* node){
   return node->namespace;
 }
@@ -179,6 +183,46 @@ dom_node* get_child_at(dom_node* parent, int index){
   return get(*(parent->children), index);
 }
 
+static void __get_elements_by_name(dom_node* root, char* name, list_keeper* lk){
+  list_node* it;
+
+  if(root == NULL)
+    return;
+
+  if(root->type == ELEMENT && strcmp(root->name, name) == 0)
+    append(lk, root);
+
+  if(root->children != NULL)
+    for(it = root->children->first; it != NULL; it = it->next)
+      __get_elements_by_name(it->node, name, lk);
+}
+
+struct slist_keeper* get_elements_by_name(doc* root, char* name){
+  list_keeper* lk = new_list();
+  __get_elements_by_name(root->root, name, lk);
+  return lk;
+}
+
+static void __get_text_nodes(dom_node* root, list_keeper* lk){
+  list_node* it;
+
+  if(root == NULL)
+    return;
+
+  if(root->type == TEXT)
+    append(lk, root);
+
+  if(root->children != NULL)
+    for(it = root->children->first; it != NULL; it = it->next)
+      __get_text_nodes(it->node, lk);
+}
+
+struct slist_keeper* get_text_nodes(doc* root){
+  list_keeper* lk = new_list();
+  __get_text_nodes(root->root, lk);
+  return lk;
+}
+
 list_keeper* regex_get_attributes(dom_node* node, char* pattern){
   if(node->attributes == NULL)
     return NULL;
@@ -200,8 +244,9 @@ static void __regex_get_elements_by_name(dom_node* root, char* pattern, list_kee
   if(root->type == ELEMENT && match(root->name, pattern, ignore_case))
     append(lk, root);
 
-  for(it = root->children->first; it != NULL; it = it->next)
-    __regex_get_elements_by_name(it->node, pattern, lk, ignore_case);
+  if(root->children != NULL)
+    for(it = root->children->first; it != NULL; it = it->next)
+      __regex_get_elements_by_name(it->node, pattern, lk, ignore_case);
 }
 
 list_keeper* regex_get_elements_by_name(doc* root, char* pattern){
@@ -224,9 +269,10 @@ static void __regex_get_elements_by_namespace(dom_node* root, char* pattern, lis
 
   if(root->type == ELEMENT && match(root->namespace, pattern, ignore_case))
     append(lk, root);
-
-  for(it = root->children->first; it != NULL; it = it->next)
-    __regex_get_elements_by_namespace(it->node, pattern, lk, ignore_case);
+  
+  if(root->children != NULL)
+    for(it = root->children->first; it != NULL; it = it->next)
+      __regex_get_elements_by_namespace(it->node, pattern, lk, ignore_case);
 }
 
 list_keeper* regex_get_elements_by_namespace(doc* root, char* pattern){
@@ -245,3 +291,105 @@ list_keeper* get_children(dom_node* node){
   return node->children;
 }
 
+static void __destroy_dom_tree(dom_node* root){
+  list_node* it;
+
+  if(root == NULL)
+    return;
+
+  if(root->children != NULL)
+    for(it = root->children->first; it != NULL; it = it->next)
+      __destroy_dom_tree(it->node);
+
+  free(root->namespace);
+  free(root->name);
+  free(root->value);
+
+  if(root->attributes != NULL)
+    destroy_tree(root->attributes);
+  if(root->children != NULL)
+    destroy(root->children);
+}
+
+void destroy_dom_tree(doc* root){
+  __destroy_dom_tree(root->root);
+  free(root);
+}
+
+static void __output_xml(dom_node* root, int pad){
+  int i;
+  list_node* it;
+  
+  if(root == NULL)
+    return;
+
+  switch(root->type){
+  case ELEMENT:
+    {
+      for(i = 0; i < pad; i++, printf(" "));
+  
+      printf("<");
+      if(root->namespace != NULL)
+	printf("%s:", root->namespace);
+      printf("%s ", root->name);
+
+      if(root->attributes != NULL){
+	struct siterator *it = new_tree_iterator(root->attributes);
+	while(tree_iterator_has_next(it)){
+	  dom_node* attr = tree_iterator_next(it);
+	  printf("%s=\"", attr->name);
+	  if(attr->namespace != NULL)
+	    printf("%s:", attr->namespace);
+	  printf("%s\" ", attr->value);
+	}
+      }
+  
+      printf(">\n");     
+      break;
+    }
+  case CDATA:
+    {
+      for(i = 0; i < pad; i++, printf(" "));
+      printf("<![CDATA[\n");
+      /*no break; Will fall to case TEXT:*/
+    }
+  case TEXT:
+    {
+      printf("%s\n", root->value);
+      break;
+    }
+  case ATTRIBUTE: break;
+  default:
+    log(W, "xml_output found an inconsistency in the DOM tree.\n");
+  }
+
+  if(root->children != NULL)
+    for(it = root->children->first; it != NULL; it = it->next)
+      __output_xml(it->node, pad + 1);
+
+  switch(root->type){
+  case ELEMENT:
+    {
+      for(i = 0; i < pad; i++, printf(" "));
+      printf("</");
+      if(root->namespace != NULL)
+	printf("%s:", root->namespace);
+      printf("%s>\n", root->name);
+      break;
+    }
+  case CDATA:
+    {
+      for(i = 0; i < pad; i++, printf(" "));
+      printf("]]>\n");
+      break;
+    }
+  case ATTRIBUTE: break;
+  case TEXT: break;
+  }
+}
+
+void output_xml(doc* root){
+  if(root->xml_version != NULL)
+    printf("<?xml version=\"%s\"?>\n", root->xml_version);
+  __output_xml(root->root, 0);
+}

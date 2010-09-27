@@ -236,7 +236,7 @@ tree_iterator* new_tree_iterator(tree_root* root){
 }
 
 int tree_iterator_has_next(tree_iterator* it){
-  if(it->current->parent != &NIL)
+  if(it->current != &NIL)
     return 1;
   return 0;
 }

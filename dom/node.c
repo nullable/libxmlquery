@@ -42,15 +42,8 @@ void set_doc_root(doc* document, struct snode* root){
   document->root = root;
 }
 
-void set_xml_version(doc* document, char* vers){
-  int size = strlen(vers) + 1;
-
-  if(document->xml_version != NULL){
-    free(document->xml_version);
-  }
-
-  document->xml_version = alloc(char, size);
-  strncpy(document->xml_version, vers, size);
+void set_xml_declaration(doc* document, dom_node* vers){
+  document->xml_declaration = vers;
 }
 
 void set_parent(dom_node* node, dom_node* parent){
@@ -94,21 +87,27 @@ void append_child(dom_node* parent, dom_node* child){
 }
 
 void add_attribute(dom_node* node, dom_node* attribute){
-  if(node->type == ATTRIBUTE){
+  if(attribute->type == ATTRIBUTE){
     if(node->attributes == NULL)
       node->attributes = new_tree();
-    red_black_tree_insert(node->attributes, node);
+    red_black_tree_insert(node->attributes, attribute);
+    return;
   }
   log(W, "Trying to add node %s as attribute of node %s\n", attribute->name, node->name);
   return;
 }
 
-doc* new_document(char* xml_version){
+void append_children(dom_node* parent, struct slist_keeper* children){
+  if(parent->children == NULL)
+    parent->children = new_list();
+  add_all(parent->children, children);
+  destroy(children);
+  return;
+}
+
+doc* new_document(dom_node* xml_declaration){
   doc* document = alloc(doc, 1);
-  int vers_size = strlen(xml_version) + 1;
-  document->xml_version = alloc(char, vers_size);
-  strncpy(document->xml_version, xml_version, vers_size);
-  document->root = NULL;
+  set_xml_declaration(document, xml_declaration);
   return document;
 }
 
@@ -130,8 +129,8 @@ dom_node* new_text_node(char* text){
   dom_node* node = alloc(dom_node, 1);
   int text_size = strlen(text) + 1;
 
-  node->type = TEXT;
-  node->name = "~#TEXT#~";
+  node->type = TEXT_NODE;
+  node->name = "~#TEXT_NODE#~";
   node->value = alloc(char, text_size);
   strncpy(node->value, text, text_size);
   node->namespace = NULL;
@@ -209,7 +208,7 @@ static void __get_text_nodes(dom_node* root, list_keeper* lk){
   if(root == NULL)
     return;
 
-  if(root->type == TEXT)
+  if(root->type == TEXT_NODE)
     append(lk, root);
 
   if(root->children != NULL)
@@ -350,12 +349,12 @@ static void __output_xml(dom_node* root, int pad){
   case CDATA:
     {
       for(i = 0; i < pad; i++, printf(" "));
-      printf("<![CDATA[\n");
-      /*no break; Will fall to case TEXT:*/
+      printf("<![CDATA[");
+      /*no break; Will fall to case TEXT_NODE:*/
     }
-  case TEXT:
+  case TEXT_NODE:
     {
-      printf("%s\n", root->value);
+      printf("%s", root->value);
       break;
     }
   case ATTRIBUTE: break;
@@ -384,12 +383,23 @@ static void __output_xml(dom_node* root, int pad){
       break;
     }
   case ATTRIBUTE: break;
-  case TEXT: break;
+  case TEXT_NODE: break;
   }
 }
 
 void output_xml(doc* root){
-  if(root->xml_version != NULL)
-    printf("<?xml version=\"%s\"?>\n", root->xml_version);
+  if(root->xml_declaration != NULL){
+    printf("<?%s ", root->xml_declaration->name);
+    struct siterator *it = new_tree_iterator(root->xml_declaration->attributes);
+    while(tree_iterator_has_next(it)){
+      dom_node* attr = tree_iterator_next(it);
+      printf("%s=\"", attr->name);
+      if(attr->namespace != NULL)
+	printf("%s:", attr->namespace);
+      printf("%s\" ", attr->value);
+    }
+    printf("?>\n");
+  }
   __output_xml(root->root, 0);
+  fflush(stdout);
 }

@@ -1,4 +1,4 @@
-#include "parser.h"
+#include "dom_parser.h"
 
 extern int yyparse();
 

@@ -4,7 +4,7 @@ OUT = dom_parser
 
 all:
 	make -C $(DOM_SRC) all
-	make -C $(PARSER_SRC) parser
+	make -C $(PARSER_SRC) all
 	$(CC) $(CFLAGS) -o $(OUT) $(PARSER_SRC)/*.o $(DOM_SRC)/*.o main.c
 
 clean:

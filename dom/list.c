@@ -49,6 +49,13 @@ void append(list_keeper* keeper, struct snode* node){
   return;
 }
 
+void add_all(list_keeper* l1, list_keeper* l2){
+  list_node* it = l2->first;
+
+  for(; it != NULL; it = it->next)
+    append(l1, it->node);
+}
+
 struct snode* get(list_keeper keeper, int index){
   unsigned int it;
   list_node* lit;

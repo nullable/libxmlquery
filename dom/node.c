@@ -74,6 +74,8 @@ void prepend_child(dom_node* parent, dom_node* child){
     log(W, "Trying to prepend attribute %s as child of node %s.\n", child->name, parent->name);
     return;
   }
+  if(parent->children == NULL)
+    parent->children = new_list();
   prepend(parent->children, child);
 }
 

@@ -1,7 +1,6 @@
 %{
 #include <stdio.h>
 #include "y.tab.h"
-
 %}
 
 %x IN_STATE TEXT_BLOCK CDATA

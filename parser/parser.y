@@ -1,6 +1,9 @@
 %{
 #include <stdio.h>
 #include <string.h>
+
+int yylex(void);
+void yyparse(void);
  
 void yyerror(const char *str)
 {

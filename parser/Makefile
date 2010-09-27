@@ -1,11 +1,10 @@
 include ../Makefile.inc
 
-OUT = parser
-
-parser: parser.y parser.l
+parser: parser.y parser.l parser.h parser.c
 	yacc -d parser.y
 	lex parser.l
-	gcc -o $(OUT) $(CFLAGS) lex.yy.c y.tab.c
+	$(CC) $(CFLAGS) -c parser.c
+	$(CC) $(CFLAGS) -ll -c lex.yy.c y.tab.c
 
 clean:
 	rm -rf *~ *.o lex.yy.c y.tab.[hc] *.out $(OUT)

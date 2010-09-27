@@ -15,11 +15,11 @@ int yywrap()
         return 1;
 } 
   
-int main()
+/*int main()
 {
         yyparse();
 	return 0;
-} 
+	} */
 
 %}
 

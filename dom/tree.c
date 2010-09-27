@@ -220,69 +220,49 @@ list_keeper* regex_search_ignore_case(tree_root root, char* pattern){
   return lk;
 }
 
-static void __append_node_to_iterator(tree_iterator* it, tree_node* node){
-  iterator_node* n;
-
-  if(node == NULL)
-    return;
-
-  n = alloc(iterator_node, 1);
-
-  n->node = node;
-  n->next = NULL;
-
-  if(it->first == NULL){
-    it->first = n;
-    it->last = n;
-    return;
-  }
-
-  it->last->next = n;
-  it->last = n;
-}
-
 tree_iterator* new_tree_iterator(tree_root* root){
+  tree_node* aux = root->root;
   tree_iterator* it = alloc(tree_iterator, 1);
-  it->first = NULL;
-  it->last = NULL;
-  __append_node_to_iterator(it, root->root);
+
+  while(aux->left != &NIL || aux->right != &NIL){ 
+    while(aux->left != &NIL)
+      aux = aux->left;
+    
+    if(aux->right != &NIL)
+      aux = aux->right;
+  }
+  it->current = aux;
   return it;
 }
 
 int tree_iterator_has_next(tree_iterator* it){
-  if(it->first == NULL)
-    return 0;
-  return 1;
+  if(it->current->parent != &NIL)
+    return 1;
+  return 0;
 }
 
 struct snode* tree_iterator_next(tree_iterator* it){
-  iterator_node *aux;
-  dom_node* res;
+  tree_node* aux;
+  tree_node* tn = it->current;
 
-  if(it->first == NULL){
-    log(E,"Trying to retrieve the next element of an empty iterator.\n");
-    return NULL;
+  if(tn->parent != &NIL && 
+     tn->parent->right != &NIL && 
+     tn->parent->right != tn){
+    aux = tn->parent->right;
+    while(aux->left != &NIL || aux->right != &NIL){ 
+      while(aux->left != &NIL)
+	aux = aux->left;
+    
+      if(aux->right != &NIL)
+	aux = aux->right;
+    }   
+    it->current = aux;
   }
-
-  aux = it->first;
-  it->first = it->first->next;
-  res = aux->node->node;
-
-  __append_node_to_iterator(it, aux->node->left);
-  __append_node_to_iterator(it, aux->node->right);
-
-  free(aux);
-  return res;
+  else
+    it->current = it->current->parent;
+  return tn->node;
 }
 
 void destroy_iterator(tree_iterator* it){
-  iterator_node* aux;
-
-  aux = it->first;
-  while(aux != NULL){
-    it->first = it->first->next;
-    free(aux);
-    aux = it->first;
-  }
   free(it);
 }

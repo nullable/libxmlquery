@@ -7,3 +7,4 @@ all:
 
 clean:
 	make -C $(DOM_SRC) clean
+	make -C $(PARSER_SRC) clean

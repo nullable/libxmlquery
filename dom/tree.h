@@ -30,14 +30,8 @@ typedef struct sroot{
   struct stree_node* root;
 }tree_root;
 
-typedef struct siterator_node{
-  struct stree_node* node;
-  struct siterator_node* next;
-}iterator_node;
-
 typedef struct siterator{
-  struct siterator_node* first;
-  struct siterator_node* last;
+  struct stree_node* current;
 }tree_iterator;
 
 extern tree_root* new_tree();

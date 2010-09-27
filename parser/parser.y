@@ -3,7 +3,7 @@
 #include <string.h>
 
 int yylex(void);
-void yyparse(void);
+int yyparse(void);
  
 void yyerror(const char *str)
 {
@@ -15,9 +15,10 @@ int yywrap()
         return 1;
 } 
   
-main()
+int main()
 {
         yyparse();
+	return 0;
 } 
 
 %}

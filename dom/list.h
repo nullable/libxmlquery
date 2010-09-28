@@ -15,6 +15,10 @@ typedef struct slist_keeper{
   unsigned int count;
 }list_keeper;
 
+typedef struct slist_iterator{
+  struct slist_node* current;
+}list_iterator;
+
 extern list_keeper* new_list();
 extern struct snode* pop(list_keeper* keeper);
 extern void append(list_keeper* keeper, struct snode* node);
@@ -27,6 +31,11 @@ extern list_keeper* regex_get_by_name(list_keeper keeper, char* pattern);
 extern list_keeper* regex_get_by_namespace(list_keeper keeper, char* pattern);
 extern list_keeper* regex_get_by_name_ignore_case(list_keeper keeper, char* pattern);
 extern list_keeper* regex_get_by_namespace_ignore_case(list_keeper keeper, char* pattern);
+
+extern list_iterator* new_list_iterator(list_keeper* k);
+extern struct snode* list_iterator_next(list_iterator* it);
+extern int list_iterator_has_next(list_iterator* it);
+extern void destroy_list_iterator(list_iterator* it);
 
 extern void destroy(list_keeper* keeper);
 #endif

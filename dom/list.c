@@ -179,3 +179,30 @@ list_keeper* regex_get_by_namespace_ignore_case(list_keeper keeper, char* patter
 
   return list;
 }
+
+list_iterator* new_list_iterator(list_keeper* k){
+  list_iterator* it = alloc(list_iterator, 1);
+  it->current = k->first;
+  return it;
+}
+
+struct snode* list_iterator_next(list_iterator* it){
+  struct snode* res;
+
+  if(it->current == NULL){
+    log(W, "Trying to obtain an element from an iterator that has reach the end of the collection. NULL will be returned\n");
+    return NULL;
+  }
+
+  res = it->current->node;
+  it->current = it->current->next;
+  return res;
+}
+
+int list_iterator_has_next(list_iterator* it){
+  return it->current != NULL;
+}
+
+void destroy_list_iterator(list_iterator* it){
+  free(it);
+}

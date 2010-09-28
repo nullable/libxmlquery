@@ -290,28 +290,31 @@ list_keeper* get_children(dom_node* node){
   return node->children;
 }
 
-static void __destroy_dom_tree(dom_node* root){
-  list_node* it;
-
-  if(root == NULL)
-    return;
-
-  if(root->children != NULL)
-    for(it = root->children->first; it != NULL; it = it->next)
-      __destroy_dom_tree(it->node);
-
-  free(root->namespace);
-  free(root->name);
-  free(root->value);
-
-  if(root->attributes != NULL)
-    destroy_tree(root->attributes);
-  if(root->children != NULL)
-    destroy(root->children);
+void destroy_dom_node(dom_node* n){
+  struct siterator* ti;
+  struct slist_iterator* it;
+  if(n->namespace != NULL) free(n->namespace);
+  if(n->name != NULL) free(n->name);
+  if(n->value != NULL) free(n->value);
+  if(n->attributes != NULL){
+    ti = new_tree_iterator(n->attributes);
+    while(tree_iterator_has_next(ti))
+      destroy_dom_node(tree_iterator_next(ti));
+    destroy_iterator(ti);
+    destroy_tree(n->attributes);
+  }
+  if(n->children != NULL){
+    it = new_list_iterator(n->children);
+    while(list_iterator_has_next(it))
+      destroy_dom_node(list_iterator_next(it));
+    destroy_list_iterator(it);
+    destroy(n->children);
+  }
+  free(n);
 }
 
 void destroy_dom_tree(doc* root){
-  __destroy_dom_tree(root->root);
+  destroy_dom_node(root->root);
   free(root);
 }
 

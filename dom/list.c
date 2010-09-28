@@ -11,19 +11,6 @@ list_keeper* new_list(){
   return lk;
 }
 
-struct snode* pop(list_keeper* keeper){
-  list_node* aux = keeper->first;
-  struct snode* res;
-
-  if(aux == NULL)
-    return NULL;
-
-  keeper->first = keeper->first->next;
-  res = aux->node;
-  free(aux);
-  return res;
-}
-
 void append(list_keeper* keeper, struct snode* node){
   list_node* lnode;
   
@@ -35,6 +22,7 @@ void append(list_keeper* keeper, struct snode* node){
   lnode = alloc(list_node, 1);
   lnode->node = node;
   lnode->next = NULL;
+  lnode->back = NULL;
 
   keeper->count++;
 
@@ -44,6 +32,7 @@ void append(list_keeper* keeper, struct snode* node){
     return;
   }
 
+  lnode->back = keeper->last;
   keeper->last->next = lnode;
   keeper->last = lnode;
   return;
@@ -54,6 +43,101 @@ void add_all(list_keeper* l1, list_keeper* l2){
 
   for(; it != NULL; it = it->next)
     append(l1, it->node);
+}
+
+static void __remove_this(list_keeper* keeper, list_node* n){
+  keeper->count--;
+
+  if(keeper->first == keeper->last && n == keeper->first){
+    destroy_dom_node(keeper->first->node);
+    free(keeper->first);
+    keeper->first = NULL;
+    keeper->last = NULL;
+    return;
+  }
+
+  if(n == keeper->first){
+    keeper->first = keeper->first->next;
+    keeper->first->back = NULL;
+    destroy_dom_node(n->node);
+    free(n);
+    return;
+  }
+
+  if(n == keeper->last){
+    keeper->last = keeper->last->back;
+    keeper->last->next = NULL;
+    destroy_dom_node(n->node);
+    free(n);
+    return;
+  }
+
+  n->back->next = n->next;
+  n->next->back = n->back;
+  destroy_dom_node(n->node);
+  free(n);
+}
+
+void remove_at(list_keeper* keeper, int index){
+  unsigned int it;
+  list_node* lit;
+
+  if(index < 0 || keeper->count <= index){
+    log(W, "Index out of bounds when removing node.");
+    return;
+  }
+
+  for(it = 0, lit = keeper->first; it < index; it++, lit = lit->next);
+
+  __remove_this(keeper, lit);
+}
+
+void remove_by_name(list_keeper* keeper, char* name){
+  list_node* lit;
+
+  for(lit = keeper->first; lit != NULL; lit = lit->next)
+    if(strcmp(lit->node->name, name) == 0)
+      __remove_this(keeper, lit);  
+}
+
+void remove_by_namespace(list_keeper* keeper, char* namespace){
+  list_node* lit;
+
+  for(lit = keeper->first; lit != NULL; lit = lit->next)
+    if(strcmp(lit->node->namespace, namespace) == 0)
+      __remove_this(keeper, lit);  
+}
+
+void regex_remove_by_name(list_keeper* keeper, char* pattern){
+  list_node* lit;
+
+  for(lit = keeper->first; lit != NULL; lit = lit->next)
+    if(match(lit->node->name, pattern, 0))
+      __remove_this(keeper, lit);    
+}
+
+void regex_remove_by_namespace(list_keeper* keeper, char* pattern){
+  list_node* lit;
+
+  for(lit = keeper->first; lit != NULL; lit = lit->next)
+    if(match(lit->node->namespace, pattern, 0))
+      __remove_this(keeper, lit);
+}
+
+void regex_remove_by_name_ignore_case(list_keeper* keeper, char* pattern){
+  list_node* lit;
+
+  for(lit = keeper->first; lit != NULL; lit = lit->next)
+    if(match(lit->node->name, pattern, 1))
+      __remove_this(keeper, lit);    
+}
+
+void regex_remove_by_namespace_ignore_case(list_keeper* keeper, char* pattern){
+  list_node* lit;
+
+  for(lit = keeper->first; lit != NULL; lit = lit->next)
+    if(match(lit->node->namespace, pattern, 1))
+      __remove_this(keeper, lit);
 }
 
 struct snode* get(list_keeper keeper, int index){
@@ -106,6 +190,7 @@ void prepend(list_keeper* keeper, struct snode* node){
   lnode = alloc(list_node, 1);
   lnode->node = node;
   lnode->next = NULL;
+  lnode->back = NULL;
 
   keeper->count++;
 

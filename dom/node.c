@@ -98,6 +98,8 @@ void add_attribute(dom_node* node, dom_node* attribute){
 }
 
 void append_children(dom_node* parent, struct slist_keeper* children){
+  if(children == NULL)
+    return;
   if(parent->children == NULL)
     parent->children = new_list();
   add_all(parent->children, children);
@@ -406,3 +408,12 @@ void output_xml(doc* root){
   __output_xml(root->root, 0);
   fflush(stdout);
 }
+
+void remove_attribute(dom_node* node, char* name){
+  red_black_tree_delete(node->attributes, name);
+}
+
+void remove_nodes(doc* root, char* name){}
+
+void remove_children(dom_node* node){}
+void remove_attributes(dom_node* node){}

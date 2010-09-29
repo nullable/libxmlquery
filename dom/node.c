@@ -74,6 +74,7 @@ void prepend_child(dom_node* parent, dom_node* child){
   if(parent->children == NULL)
     parent->children = new_list();
   prepend(parent->children, child);
+  child->parent = parent;
 }
 
 void append_child(dom_node* parent, dom_node* child){
@@ -84,6 +85,7 @@ void append_child(dom_node* parent, dom_node* child){
   if(parent->children == NULL)
     parent->children = new_list();
   append(parent->children, child);
+  child->parent = parent;
 }
 
 void add_attribute(dom_node* node, dom_node* attribute){
@@ -98,11 +100,16 @@ void add_attribute(dom_node* node, dom_node* attribute){
 }
 
 void append_children(dom_node* parent, struct slist_keeper* children){
+  struct slist_iterator* it;
+  dom_node* aux;
   if(children == NULL)
     return;
   if(parent->children == NULL)
     parent->children = new_list();
-  add_all(parent->children, children);
+  for(it = new_list_iterator(children); list_iterator_has_next(it); ){
+    aux = list_iterator_next(it);
+    append_child(parent, aux);
+  }
   destroy(children);
   return;
 }
@@ -409,11 +416,29 @@ void output_xml(doc* root){
   fflush(stdout);
 }
 
-void remove_attribute(dom_node* node, char* name){
+void delete_attribute(dom_node* node, char* name){
   red_black_tree_delete(node->attributes, name);
 }
 
-void remove_nodes(doc* root, char* name){}
+void remove_node(doc* root, dom_node* node){
+  dom_node* parent;
 
-void remove_children(dom_node* node){}
-void remove_attributes(dom_node* node){}
+  if(node == root->root){
+    root->root = NULL;
+    return;
+  }
+
+  parent = node->parent;
+  remove_from_list(node->parent->children, node);
+  return;
+}
+
+struct slist_keeper* remove_children(dom_node* node){
+  struct slist_keeper* children = node->children;
+
+  if(children == NULL) return NULL;
+
+  node->children->first = NULL;
+  node->children->last = NULL;
+  return children;
+}

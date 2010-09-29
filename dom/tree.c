@@ -156,12 +156,12 @@ void red_black_tree_insert(tree_root* root, dom_node* node){
   red_black_tree_insert_fixup(root, z);
 }
 
-dom_node* search(tree_root root, const char* name){
+static tree_node* __search_tree_node(tree_root root, const char* name){
   tree_node *z = root.root;
 
   while(z != &NIL){
     if(compare(key(z), name) == 0)
-      return z->node;
+      return z;
 
     if(compare(key(z), name) < 0)
       z = z->right;
@@ -169,6 +169,13 @@ dom_node* search(tree_root root, const char* name){
       z = z->left;
   }
 
+  return NULL;
+}
+
+dom_node* search(tree_root root, const char* name){
+  tree_node *z = __search_tree_node(root, name);
+  if(z)
+    return z->node;
   return NULL;
 }
 
@@ -265,4 +272,139 @@ struct snode* tree_iterator_next(tree_iterator* it){
 
 void destroy_iterator(tree_iterator* it){
   free(it);
+}
+
+static void __red_black_transplant(tree_root* root, tree_node* u, tree_node* v){
+  if(u->parent == &NIL)
+    root->root = v;
+  else
+    if(u == u->parent->left)
+      u->parent->left = v;
+    else
+      u->parent->right = v;
+  v->parent = u->parent;
+}
+
+static tree_node* __red_black_tree_minimum(tree_node* z){
+  for(; z->left != &NIL; z = z->left);
+  return z;
+}
+
+static void __red_black_tree_delete_fixup(tree_root* root, tree_node* x){
+  tree_node* w;
+  while( x != root->root && x->color == BLACK){
+    if(x == x->parent->left){
+      w = x->parent->right;
+      if(w->color == RED){
+	w->color = BLACK;
+	x->parent->color = RED;
+	left_rotate(root, x->parent);
+	w = x->parent->right;
+      }
+      if(w->left->color == BLACK && w->right->color == BLACK){
+	w->color = RED;
+	x = x->parent;
+      }
+      else{
+	if(w->right->color == BLACK){
+	  w->left->color = BLACK;
+	  w->color = RED;
+	  right_rotate(root, w);
+	  w = w->parent->right;
+	}
+	w->color = x->parent->color;
+	x->parent->color = BLACK;
+	w->right->color = BLACK;
+	left_rotate(root, x->parent);
+	x = root->root;
+      }
+    }
+    else{
+      w = x->parent->left;
+      if(w->color == RED){
+	w->color = BLACK;
+	x->parent->color = RED;
+	right_rotate(root, x->parent);
+	w = x->parent->left;
+      }
+      if(w->right->color == BLACK && w->left->color == BLACK){
+	w->color = RED;
+	x = x->parent;
+      }
+      else{
+	if(w->left->color == BLACK){
+	  w->right->color = BLACK;
+	  w->color = RED;
+	  left_rotate(root, w);
+	  w = w->parent->left;
+	}
+	w->color = x->parent->color;
+	x->parent->color = BLACK;
+	w->left->color = BLACK;
+	right_rotate(root, x->parent);
+	x = root->root;
+      }
+    }
+  }
+  x->color = BLACK;
+  return;
+}
+
+void red_black_tree_delete(tree_root* root, char* name){
+  tree_node *y, *z, *x;
+  int y_original_color;
+
+  y = z = __search_tree_node(*root, name);
+
+  if(y == NULL){
+    log(W, "Trying to remove a node from tree that does not exist.");
+    return;
+  }
+
+  y_original_color = y->color;
+  if(z->left == &NIL){
+    x = z->right;
+    __red_black_transplant(root, z, z->right);
+  }
+  else
+    if(z->right == &NIL){
+      x = z->left;
+      __red_black_transplant(root, z, z->left);
+    }
+    else{
+      y = __red_black_tree_minimum(z->right);
+      y_original_color = y->color;
+      x = y->right;
+      if(y->parent == z)
+	x->parent = y;
+      else{
+	__red_black_transplant(root, y, y->right);
+	y->right = z->right;
+	y->right->parent = y;
+      }
+      __red_black_transplant(root, z, y);
+      y->left = z->left;
+      y->left->parent = y;
+      y->color = z->color;
+    }
+  if(y_original_color == BLACK)
+    __red_black_tree_delete_fixup(root, x);
+}
+
+void print(tree_node* root, int pad){
+  int i;
+
+  if(root == &NIL)
+    return;
+
+  printf("|");
+  for(i = 0; i < pad; i++, printf("--"));
+  if(root->parent != &NIL)
+    printf("+ node %s with parent %s\n", root->node->name, root->parent->node->name);
+  else
+    printf("+ node %s with no parent\n", root->node->name);
+  printf("|\n");
+
+  print(root->left, pad + 1);
+  print(root->right, pad + 1);
 }

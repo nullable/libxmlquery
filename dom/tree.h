@@ -36,6 +36,7 @@ typedef struct siterator{
 
 extern tree_root* new_tree();
 extern void red_black_tree_insert(tree_root* root, struct snode* node);
+extern void red_black_tree_delete(tree_root* root, char* name);
 extern struct snode* search(tree_root root, const char* name);
 extern void destroy_tree(tree_root* root);
 extern struct slist_keeper* regex_search(tree_root root, char* pattern);
@@ -45,4 +46,6 @@ extern tree_iterator* new_tree_iterator(tree_root* root);
 extern int tree_iterator_has_next(tree_iterator* it);
 extern struct snode* tree_iterator_next(tree_iterator* it);
 extern void destroy_iterator(tree_iterator* it);
+
+extern void print(tree_node* root, int pad);
 #endif

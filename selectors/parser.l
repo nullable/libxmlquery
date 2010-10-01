@@ -17,21 +17,21 @@
 \[						{ return '['; }
 \]						{ return ']'; }
 [ ]*						{ return SPACE; }
-\,						{ return ','; }
-\"						{ BEGIN TEXT_BLOCK; return '"'; }
+[ ]*\,[ ]*						{ return ','; }
+[\"\']						{ BEGIN TEXT_BLOCK; return '"'; }
 \:						{ BEGIN FUNC; return ':'; }
 [ ]*\>[ ]*					{ return '>'; }
 [ ]*\+[ ]*						{ return '+'; }
 [ ]*\~[ ]*						{ return '~'; }
 \(						{ BEGIN PARAMS; return '('; }
 \)						{ return ')'; }
-[ ]*\=[ ]*						{ return EQUAL_OP; }
-[ ]*"~\="[ ]*						{ return WSSV_OP; }
-[ ]*"^\="[ ]*						{ return STARTSW_OP; }
-[ ]*"$\="[ ]*						{ return ENDSW_OP; }
-[ ]*"*\="[ ]*						{ return CONTAINS_OP; }
-[ ]*"|\="[ ]*						{ return DSV_OP; }
-[ ]*"!\="[ ]*						{ return NOTEQUAL_OP; }
+[ ]*=[ ]*						{ return EQUAL_OP; }
+[ ]*"~="[ ]*						{ return WSSV_OP; }
+[ ]*"^="[ ]*						{ return STARTSW_OP; }
+[ ]*"$="[ ]*						{ return ENDSW_OP; }
+[ ]*"*="[ ]*						{ return CONTAINS_OP; }
+[ ]*"|="[ ]*						{ return DSV_OP; }
+[ ]*"!="[ ]*						{ return NOTEQUAL_OP; }
 
 
 <FUNC>"nth-child"				{ BEGIN INITIAL; return NTH_CHILD_FILTER; }
@@ -55,8 +55,8 @@
 <PARAMS>\)					{ BEGIN INITIAL; return ')'; }
 
 
-<TEXT_BLOCK>[^"]*				{ yylval.string = strdup(yytext); return TEXT; }
-<TEXT_BLOCK>\"					{ BEGIN INITIAL; return '"'; }
+<TEXT_BLOCK>[^"']*				{ yylval.string = strdup(yytext); return TEXT; }
+<TEXT_BLOCK>["']					{ BEGIN INITIAL; return '"'; }
 
 %%
 

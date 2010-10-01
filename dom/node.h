@@ -67,6 +67,10 @@ extern struct slist_keeper* regex_get_elements_by_name_ignore_case(doc* root, ch
 extern struct slist_keeper* regex_get_elements_by_namespace(doc* root, char* pattern);
 extern struct slist_keeper* regex_get_elements_by_namespace_ignore_case(doc* root, char* pattern);
 
+extern void delete_attribute(dom_node* node, char* name); 
+extern void remove_node(doc* root, dom_node* node);
+extern struct slist_keeper* remove_children(dom_node* node);
+
 extern void destroy_dom_node(dom_node* n);
 extern void destroy_dom_tree(doc* root);
 

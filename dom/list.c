@@ -49,7 +49,6 @@ static void __remove_this(list_keeper* keeper, list_node* n){
   keeper->count--;
 
   if(keeper->first == keeper->last && n == keeper->first){
-    destroy_dom_node(keeper->first->node);
     free(keeper->first);
     keeper->first = NULL;
     keeper->last = NULL;
@@ -59,7 +58,6 @@ static void __remove_this(list_keeper* keeper, list_node* n){
   if(n == keeper->first){
     keeper->first = keeper->first->next;
     keeper->first->back = NULL;
-    destroy_dom_node(n->node);
     free(n);
     return;
   }
@@ -67,14 +65,12 @@ static void __remove_this(list_keeper* keeper, list_node* n){
   if(n == keeper->last){
     keeper->last = keeper->last->back;
     keeper->last->next = NULL;
-    destroy_dom_node(n->node);
     free(n);
     return;
   }
 
   n->back->next = n->next;
   n->next->back = n->back;
-  destroy_dom_node(n->node);
   free(n);
 }
 
@@ -90,6 +86,14 @@ void remove_at(list_keeper* keeper, int index){
   for(it = 0, lit = keeper->first; it < index; it++, lit = lit->next);
 
   __remove_this(keeper, lit);
+}
+
+void remove_from_list(list_keeper* keeper, struct snode* node){
+  list_node* lit;
+
+  for(lit = keeper->first; lit != NULL; lit = lit->next)
+    if(lit->node == node)
+      __remove_this(keeper, lit);
 }
 
 void remove_by_name(list_keeper* keeper, char* name){

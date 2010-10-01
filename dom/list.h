@@ -25,6 +25,7 @@ extern void append(list_keeper* keeper, struct snode* node);
 extern void add_all(list_keeper* l1, list_keeper* l2);
 extern void prepend(list_keeper* keeper, struct snode* node);
 extern void remove_at(list_keeper* keeper, int index);
+extern void remove_from_list(list_keeper* keeper, struct snode* node);
 extern void remove_by_name(list_keeper* keeper, char* name);
 extern void remove_by_namespace(list_keeper* keeper, char* namespace);
 extern struct snode* get(list_keeper keeper, int index);

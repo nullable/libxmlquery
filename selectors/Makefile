@@ -1,9 +1,9 @@
 include ../Makefile.inc
 
-all: parser.y parser.l dom_parser.h dom_parser.c
+all: parser.y parser.l query_parser.h query_parser.c
 	yacc -d parser.y
 	lex parser.l
-	$(CC) $(CFLAGS) -c dom_parser.c
+	$(CC) $(CFLAGS) -c query_parser.c
 	$(CC) -ll -c lex.yy.c y.tab.c
 
 clean:

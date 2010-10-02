@@ -22,12 +22,12 @@ typedef struct sroot{
   int (*compare)(void* keyA, void* keyB);
 }tree_root;
 
-extern tree_root* new_tree(void* (*key_function_pointer)(struct stree_node* node),
+extern tree_root* new_rbtree(void* (*key_function_pointer)(struct stree_node* node),
 			   int (*compare_function_pointer)(void* keyA, void* keyB));
-extern void red_black_tree_insert(tree_root* root, void* node);
-extern void red_black_tree_delete(tree_root* root, void* key);
-extern void* search(tree_root root, void* key);
-extern void destroy_tree(tree_root* root);
+extern void rb_tree_insert(tree_root* root, void* node);
+extern void rb_tree_delete(tree_root* root, void* key);
+extern void* search_rbtree(tree_root root, void* key);
+extern void destroy_rbtree(tree_root* root);
 
-extern void print(tree_node* root, int pad);
+extern void rb_print(tree_node* root, int pad);
 #endif

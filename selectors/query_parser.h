@@ -5,13 +5,6 @@
 
 struct selector_s;
 
-typedef struct stack_s{
-  void** stack;
-  int* type;
-  int count;
-  int capacity;
-} stack;
-
 typedef struct attr_selector_s{
   char* name;
   int op;
@@ -39,26 +32,6 @@ typedef struct selector_s{
   stack* attrs;
   stack* filters;
 } selector;
-
-stack* new_stack(){
-  stack* r = alloc(stack, 1);
-  r->stack = alloc(void*, 1);
-  r->type = alloc(int, 1);
-  r->count = 0;
-  r->capacity = 1;
-  
-  return 1;
-}
-
-void push_stack_type(stack* s, void* obj, int type);
-
-void push_stack(stack* s, void* obj);
-
-void* pop_stack(stack* s);
-
-void reverse_stack(stack* s);
-
-int peek_stack_type(stack* s);
 
 selector* new_selector(char* id);
 

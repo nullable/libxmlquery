@@ -112,6 +112,7 @@ void append_children(dom_node* parent, struct slist_keeper* children){
   }
   destroy_list_iterator(it);
   destroy(children);
+  children = NULL;
   return;
 }
 

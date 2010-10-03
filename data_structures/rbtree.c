@@ -3,81 +3,81 @@
 #include <sys/types.h>
 #include "rbtree.h"
 
-tree_node NIL = {
+tree_node RBNIL = {
   .node = NULL,
   .color = BLACK,
-  .parent = &NIL,
-  .left = &NIL,
-  .right = &NIL
+  .parent = &RBNIL,
+  .left = &RBNIL,
+  .right = &RBNIL
 };
 
-static tree_node* new_tree_node(void* node){
+static tree_node* new_rbtree_node(void* node){
   tree_node *z = alloc(tree_node, 1);
   
   z->node = node;
-  z->parent = &NIL;
-  z->left = &NIL;
-  z->right = &NIL;
+  z->parent = &RBNIL;
+  z->left = &RBNIL;
+  z->right = &RBNIL;
   z->color = RED;
   return z;
 }
 
-tree_root* new_tree(void* (*key_function_pointer)(struct stree_node* node),
+tree_root* new_rbtree(void* (*key_function_pointer)(struct stree_node* node),
 		    int (*compare_function_pointer)(void* keyA, void* keyB)){
   tree_root* r = alloc(tree_root, 1);
-  r->root = &NIL;
+  r->root = &RBNIL;
   r->key = key_function_pointer;
   r->compare = compare_function_pointer;
   return r;
 }
 
-/*WARNNING left_rotate assumes that rotate_on->right is NOT &NIL and that root->parent IS &NIL*/
-static void left_rotate(tree_root* root, tree_node* rotate_on){
-  tree_node* y = rotate_on->right;
-  rotate_on->right = y->left;
+/*WARNNING left_rbrotate assumes that rbrotate_on->right is NOT &RBNIL and that root->parent IS &RBNIL*/
+static void left_rbrotate(tree_root* root, tree_node* rbrotate_on){
+  tree_node* y = rbrotate_on->right;
+  rbrotate_on->right = y->left;
 
-  if(y->left != &NIL)
-    y->left->parent = rotate_on;
+  if(y->left != &RBNIL)
+    y->left->parent = rbrotate_on;
   
-  y->parent = rotate_on->parent;
+  y->parent = rbrotate_on->parent;
  
-  if(rotate_on->parent == &NIL)
+  if(rbrotate_on->parent == &RBNIL)
     root->root = y;
   else
-    if(rotate_on == rotate_on->parent->left)
-      rotate_on->parent->left = y;
+    if(rbrotate_on == rbrotate_on->parent->left)
+      rbrotate_on->parent->left = y;
     else
-      rotate_on->parent->right = y;
+      rbrotate_on->parent->right = y;
  
-  y->left = rotate_on;
-  rotate_on->parent = y;
+  y->left = rbrotate_on;
+  rbrotate_on->parent = y;
   return;
 }
 
-/*WARNNING right_rotate assumes that rotate_on->left is NOT &NIL and that root->parent IS &NIL*/
-static void right_rotate(tree_root* root, tree_node* rotate_on){
-  tree_node* y = rotate_on->left;
-  rotate_on->left = y->right;
+/*WARNNING right_rbrotate assumes that rbrotate_on->left is NOT &RBNIL and that root->parent IS &RBNIL*/
+static void right_rbrotate(tree_root* root, tree_node* rbrotate_on){
+  tree_node* y = rbrotate_on->left;
+  rbrotate_on->left = y->right;
 
-  if(y->right != &NIL)
-    y->right->parent = rotate_on;
+  if(y->right != &RBNIL)
+    y->right->parent = rbrotate_on;
   
-  y->parent = rotate_on->parent;
+  y->parent = rbrotate_on->parent;
  
-  if(rotate_on->parent == &NIL)
+  if(rbrotate_on->parent == &RBNIL)
     root->root = y;
   else
-    if(rotate_on == rotate_on->parent->right)
-      rotate_on->parent->right = y;
+    if(rbrotate_on == rbrotate_on->parent->right)
+      rbrotate_on->parent->right = y;
     else
-      rotate_on->parent->left = y;
+      rbrotate_on->parent->left = y;
  
-  y->right = rotate_on;
-  rotate_on->parent = y;
+  y->right = rbrotate_on;
+  rbrotate_on->parent = y;
   return;
 }
 
-static void red_black_tree_insert_fixup(tree_root* root, tree_node* z){
+static void rb_tree_insert_fixup(tree_root* root, tree_node* z){
   tree_node* y;
 
   while(z->parent->color == RED){
@@ -93,11 +93,11 @@ static void red_black_tree_insert_fixup(tree_root* root, tree_node* z){
       }else{
 	if(z == z->parent->right){
 	  z = z->parent;
-	  left_rotate(root, z);
+	  left_rbrotate(root, z);
 	}
 	z->parent->color = BLACK;
 	z->parent->parent->color = RED;
-	right_rotate(root, z->parent->parent);
+	right_rbrotate(root, z->parent->parent);
       }
       
     }else{
@@ -111,11 +111,11 @@ static void red_black_tree_insert_fixup(tree_root* root, tree_node* z){
       }else{
 	if(z == z->parent->left){
 	  z = z->parent;
-	  right_rotate(root, z);
+	  right_rbrotate(root, z);
 	}
 	z->parent->color = BLACK;
 	z->parent->parent->color = RED;
-	left_rotate(root, z->parent->parent);
+	left_rbrotate(root, z->parent->parent);
       }
     }
   }
@@ -123,12 +123,12 @@ static void red_black_tree_insert_fixup(tree_root* root, tree_node* z){
   root->root->color = BLACK;
 }
 
-void red_black_tree_insert(tree_root* root, void* node){
-  tree_node *y = &NIL, *x = root->root;
+void rb_tree_insert(tree_root* root, void* node){
+  tree_node *y = &RBNIL, *x = root->root;
 
-  tree_node *z = new_tree_node(node);
+  tree_node *z = new_rbtree_node(node);
 
-  while(x != &NIL){
+  while(x != &RBNIL){
     y = x;
 
     if(root->compare(root->key(z), root->key(x)) == 0){
@@ -145,7 +145,7 @@ void red_black_tree_insert(tree_root* root, void* node){
   
   z->parent = y;
 
-  if(y == &NIL)
+  if(y == &RBNIL)
     root->root = z;
   else{
     if(root->compare(root->key(z),root->key(y)) < 0)
@@ -154,13 +154,13 @@ void red_black_tree_insert(tree_root* root, void* node){
       y->right = z;
   }
 
-  red_black_tree_insert_fixup(root, z);
+  rb_tree_insert_fixup(root, z);
 }
 
-static tree_node* __search_tree_node(tree_root root, void* key){
+static tree_node* __search_rbtree_node(tree_root root, void* key){
   tree_node *z = root.root;
 
-  while(z != &NIL){
+  while(z != &RBNIL){
     if(root.compare(root.key(z), key) == 0)
       return z;
 
@@ -173,17 +173,17 @@ static tree_node* __search_tree_node(tree_root root, void* key){
   return NULL;
 }
 
-void* search(tree_root root, void* key){
-  tree_node *z = __search_tree_node(root, key);
+void* search_rbtree(tree_root root, void* key){
+  tree_node *z = __search_rbtree_node(root, key);
   if(z)
     return z->node;
   return NULL;
 }
 
-static void __destroy_tree(tree_node* root){
+static void __destroy_rbtree(tree_node* root){
   tree_node *l, *r;
 
-  if(root == &NIL)
+  if(root == &RBNIL)
     return;
 
   l = root->left;
@@ -191,17 +191,17 @@ static void __destroy_tree(tree_node* root){
 
   free(root);
 
-  __destroy_tree(l);
-  __destroy_tree(r);
+  __destroy_rbtree(l);
+  __destroy_rbtree(r);
 }
 
-void destroy_tree(tree_root* root){
-  __destroy_tree(root->root);
+void destroy_rbtree(tree_root* root){
+  __destroy_rbtree(root->root);
   free(root);
 }
 
-static void __red_black_transplant(tree_root* root, tree_node* u, tree_node* v){
-  if(u->parent == &NIL)
+static void __rb_transplant(tree_root* root, tree_node* u, tree_node* v){
+  if(u->parent == &RBNIL)
     root->root = v;
   else
     if(u == u->parent->left)
@@ -211,12 +211,12 @@ static void __red_black_transplant(tree_root* root, tree_node* u, tree_node* v){
   v->parent = u->parent;
 }
 
-static tree_node* __red_black_tree_minimum(tree_node* z){
-  for(; z->left != &NIL; z = z->left);
+static tree_node* __rb_tree_minimum(tree_node* z){
+  for(; z->left != &RBNIL; z = z->left);
   return z;
 }
 
-static void __red_black_tree_delete_fixup(tree_root* root, tree_node* x){
+static void __rb_tree_delete_fixup(tree_root* root, tree_node* x){
   tree_node* w;
   while( x != root->root && x->color == BLACK){
     if(x == x->parent->left){
@@ -224,7 +224,7 @@ static void __red_black_tree_delete_fixup(tree_root* root, tree_node* x){
       if(w->color == RED){
 	w->color = BLACK;
 	x->parent->color = RED;
-	left_rotate(root, x->parent);
+	left_rbrotate(root, x->parent);
 	w = x->parent->right;
       }
       if(w->left->color == BLACK && w->right->color == BLACK){
@@ -235,13 +235,13 @@ static void __red_black_tree_delete_fixup(tree_root* root, tree_node* x){
 	if(w->right->color == BLACK){
 	  w->left->color = BLACK;
 	  w->color = RED;
-	  right_rotate(root, w);
+	  right_rbrotate(root, w);
 	  w = w->parent->right;
 	}
 	w->color = x->parent->color;
 	x->parent->color = BLACK;
 	w->right->color = BLACK;
-	left_rotate(root, x->parent);
+	left_rbrotate(root, x->parent);
 	x = root->root;
       }
     }
@@ -250,7 +250,7 @@ static void __red_black_tree_delete_fixup(tree_root* root, tree_node* x){
       if(w->color == RED){
 	w->color = BLACK;
 	x->parent->color = RED;
-	right_rotate(root, x->parent);
+	right_rbrotate(root, x->parent);
 	w = x->parent->left;
       }
       if(w->right->color == BLACK && w->left->color == BLACK){
@@ -261,13 +261,13 @@ static void __red_black_tree_delete_fixup(tree_root* root, tree_node* x){
 	if(w->left->color == BLACK){
 	  w->right->color = BLACK;
 	  w->color = RED;
-	  left_rotate(root, w);
+	  left_rbrotate(root, w);
 	  w = w->parent->left;
 	}
 	w->color = x->parent->color;
 	x->parent->color = BLACK;
 	w->left->color = BLACK;
-	right_rotate(root, x->parent);
+	right_rbrotate(root, x->parent);
 	x = root->root;
       }
     }
@@ -276,11 +276,11 @@ static void __red_black_tree_delete_fixup(tree_root* root, tree_node* x){
   return;
 }
 
-void red_black_tree_delete(tree_root* root, void* key){
+void rb_tree_delete(tree_root* root, void* key){
   tree_node *y, *z, *x;
   int y_original_color;
 
-  y = z = __search_tree_node(*root, key);
+  y = z = __search_rbtree_node(*root, key);
 
   if(y == NULL){
     log(W, "Trying to remove a node from tree that does not exist.");
@@ -288,49 +288,49 @@ void red_black_tree_delete(tree_root* root, void* key){
   }
 
   y_original_color = y->color;
-  if(z->left == &NIL){
+  if(z->left == &RBNIL){
     x = z->right;
-    __red_black_transplant(root, z, z->right);
+    __rb_transplant(root, z, z->right);
   }
   else
-    if(z->right == &NIL){
+    if(z->right == &RBNIL){
       x = z->left;
-      __red_black_transplant(root, z, z->left);
+      __rb_transplant(root, z, z->left);
     }
     else{
-      y = __red_black_tree_minimum(z->right);
+      y = __rb_tree_minimum(z->right);
       y_original_color = y->color;
       x = y->right;
       if(y->parent == z)
 	x->parent = y;
       else{
-	__red_black_transplant(root, y, y->right);
+	__rb_transplant(root, y, y->right);
 	y->right = z->right;
 	y->right->parent = y;
       }
-      __red_black_transplant(root, z, y);
+      __rb_transplant(root, z, y);
       y->left = z->left;
       y->left->parent = y;
       y->color = z->color;
     }
   if(y_original_color == BLACK)
-    __red_black_tree_delete_fixup(root, x);
+    __rb_tree_delete_fixup(root, x);
 }
 
-void print(tree_node* root, int pad){
+void rb_print(tree_node* root, int pad){
   int i;
 
-  if(root == &NIL)
+  if(root == &RBNIL)
     return;
 
   printf("|");
   for(i = 0; i < pad; i++, printf("--"));
-  if(root->parent != &NIL)
+  if(root->parent != &RBNIL)
     printf("+ node %p with parent %p\n", root->node, root->parent->node);
   else
     printf("+ node %p with no parent\n", root->node);
   printf("|\n");
 
-  print(root->left, pad + 1);
-  print(root->right, pad + 1);
+  rb_print(root->left, pad + 1);
+  rb_print(root->right, pad + 1);
 }

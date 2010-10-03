@@ -47,15 +47,17 @@ declaration: START_EL '?' WORD attrs '?' END_EL {
 	;
 
 
-node:	start_tag inner end_tag	 				{
-								  if(strcmp(get_name($1),$3) != 0){
-								    yyerror("Start tag does not match end tag.\n");
-								    exit(1);
-								  }
-								  append_children($1, $2->children);
-								  free($2);
-								  $$ = $1;
-								}
+
+node:	start_tag inner end_tag	 {				 
+				  if(strcmp(get_name($1),$3) != 0){
+				    yyerror("Start tag does not match end tag.\n");
+				    exit(-1);
+                                  }
+				  append_children($1, $2->children);
+				  destroy_dom_node($2);
+				  $$ = $1;
+				  }
+        | START_EL WORD attrs SLASH END_EL { $$ = $3; set_name($$, $2);}
 	;
 
 inner:								{$$ = new_element_node("~dummy~");}
@@ -69,11 +71,12 @@ prop: CDATA_TOK 						{$$ = new_cdata($1);}
     | node 							{$$ = $1;}
     ;
 
-start_tag: START_EL WORD attrs END_EL 				{
-								  $$ = $3;
-								  set_name($$, $2);
-								}
-	 ;
+
+start_tag: START_EL WORD attrs END_EL {
+					$$ = $3;
+				        set_name($$, $2);
+				      }
+	;
 
 end_tag: START_EL SLASH WORD END_EL 				{$$ = $3;}
        ;
@@ -88,5 +91,8 @@ attrs: 								{$$ = new_element_node("~dummy~");}
 attr:	WORD '=' value 						{$$ = new_attribute($1, $3);}
 								;
 
-value:	'"' TEXT '"' 						{$$ = $2;}
-     ;
+value:	'"' TEXT '"' {$$ = $2;}
+        | '"' '"' {$$ = "";}
+	;
+	
+	

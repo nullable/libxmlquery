@@ -110,7 +110,9 @@ void append_children(dom_node* parent, struct slist_keeper* children){
     aux = list_iterator_next(it);
     append_child(parent, aux);
   }
+  destroy_list_iterator(it);
   destroy(children);
+  children = NULL;
   return;
 }
 
@@ -302,9 +304,9 @@ list_keeper* get_children(dom_node* node){
 void destroy_dom_node(dom_node* n){
   struct siterator* ti;
   struct slist_iterator* it;
-  if(n->namespace != NULL) free(n->namespace);
-  if(n->name != NULL) free(n->name);
-  if(n->value != NULL) free(n->value);
+  if((n->type == ELEMENT || n->type == ATTRIBUTE) && n->namespace != NULL) free(n->namespace);
+  if((n->type == ELEMENT || n->type == ATTRIBUTE) && n->name != NULL) free(n->name);
+  if((n->type == TEXT_NODE || n->type == CDATA || n->type == ATTRIBUTE) && n->value != NULL) free(n->value);
   if(n->attributes != NULL){
     ti = new_tree_iterator(n->attributes);
     while(tree_iterator_has_next(ti))

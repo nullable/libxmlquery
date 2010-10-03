@@ -47,46 +47,46 @@ declaration: START_EL '?' WORD attrs '?' END_EL {
 	;
 
 
-node:	start_tag inner end_tag	 {				 
-				  if(strcmp(get_name($1),$3) != 0){
-				    yyerror("Start tag does not match end tag.\n");
-				    exit(-1);
-                                  }
-				  append_children($1, $2->children);
-				  free($2);
-				  $$ = $1;
-				  }
+node:	start_tag inner end_tag	 				{
+								  if(strcmp(get_name($1),$3) != 0){
+								    yyerror("Start tag does not match end tag.\n");
+								    exit(1);
+								  }
+								  append_children($1, $2->children);
+								  free($2);
+								  $$ = $1;
+								}
 	;
 
-inner:			{$$ = new_element_node("~dummy~");}
-        | inner prop	{ $$ = $1;
-			  append_child($$, $2);
-			}
-	;
+inner:								{$$ = new_element_node("~dummy~");}
+     | inner prop						{ $$ = $1;
+								  append_child($$, $2);
+								}
+     ;
 
-prop:	CDATA_TOK  {$$ = new_cdata($1);}
-	| TEXT {$$ = new_text_node($1);}
-	| node {$$ = $1;}
-	;
+prop: CDATA_TOK 						{$$ = new_cdata($1);}
+    | TEXT 							{$$ = new_text_node($1);}
+    | node 							{$$ = $1;}
+    ;
 
-start_tag: START_EL WORD attrs END_EL {
-					$$ = $3;
-				       set_name($$, $2);
-				      }
-	;
+start_tag: START_EL WORD attrs END_EL 				{
+								  $$ = $3;
+								  set_name($$, $2);
+								}
+	 ;
 
-end_tag: START_EL SLASH WORD END_EL {$$ = $3;}
-	;
+end_tag: START_EL SLASH WORD END_EL 				{$$ = $3;}
+       ;
 
-attrs: 		     {$$ = new_element_node("~dummy~");}
-	| attrs attr {
-		      $$ = $1;
-		      add_attribute($$, $2);
-		     }
-	;
+attrs: 								{$$ = new_element_node("~dummy~");}
+	| attrs attr 						{
+								  $$ = $1;
+								  add_attribute($$, $2);
+								}
+     ;
 
-attr:	WORD '=' value {$$ = new_attribute($1, $3);}
-	;
+attr:	WORD '=' value 						{$$ = new_attribute($1, $3);}
+								;
 
-value:	'"' TEXT '"' {$$ = $2;}
-	;
+value:	'"' TEXT '"' 						{$$ = $2;}
+     ;

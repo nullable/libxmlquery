@@ -130,7 +130,7 @@ void red_black_tree_insert(tree_root* root, dom_node* node){
     y = x;
 
     if(compare(key(z), key(x)) == 0){
-      free(x->node);
+      destroy_dom_node(x->node);
       free(z);
       x->node = node;
       return;

@@ -86,7 +86,7 @@ attrs: 		     {$$ = new_element_node("~dummy~");}
 		     }
 	;
 
-attr:	WORD '=' value {$$ = new_attribute($1, $3);}
+attr:	WORD '=' value {$$ = new_attribute($1, $3); }
 	;
 
 value:	'"' TEXT '"' {$$ = $2;}

@@ -1,3 +1,5 @@
+include Makefile.inc
+
 DOM_SRC = ./dom
 PARSER_SRC = ./parser
 STRUCTS = ./data_structures

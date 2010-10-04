@@ -195,6 +195,8 @@ static void __destroy_tree(tree_node* root){
 }
 
 void destroy_tree(tree_root* root){
+  if(root == NULL || root->root == NULL)
+    return;
   __destroy_tree(root->root);
   free(root);
 }

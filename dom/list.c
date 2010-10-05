@@ -11,6 +11,14 @@ list_keeper* new_list(){
   return lk;
 }
 
+static list_node* new_list_node(struct snode* node){
+  list_node* lnode = alloc(list_node, 1);
+  lnode->node = node;
+  lnode->next = NULL;
+  lnode->back = NULL;
+  return lnode;
+}
+
 void append(list_keeper* keeper, struct snode* node){
   list_node* lnode;
   
@@ -19,10 +27,7 @@ void append(list_keeper* keeper, struct snode* node){
     return;
   }
 
-  lnode = alloc(list_node, 1);
-  lnode->node = node;
-  lnode->next = NULL;
-  lnode->back = NULL;
+  lnode = new_list_node(node);
 
   keeper->count++;
 
@@ -191,10 +196,7 @@ void prepend(list_keeper* keeper, struct snode* node){
     return;
   }
 
-  lnode = alloc(list_node, 1);
-  lnode->node = node;
-  lnode->next = NULL;
-  lnode->back = NULL;
+  lnode = new_list_node(node);
 
   keeper->count++;
 

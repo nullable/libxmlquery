@@ -54,7 +54,9 @@ node:	start_tag inner end_tag	 {
 				    exit(-1);
                                   }
 				  append_children($1, $2->children);
-				  destroy_dom_node($2);
+				  free($2->name);
+				  destroy($2->children);
+				  free($2);
 				  $$ = $1;
 				  }
         | START_EL WORD attrs SLASH END_EL { $$ = $3; set_name($$, $2);}
@@ -71,6 +73,11 @@ prop: CDATA_TOK 						{$$ = new_cdata($1);}
     | node 							{$$ = $1;}
     ;
 
+
+prop:	CDATA_TOK  {$$ = new_cdata($1);}
+        | TEXT {$$ = new_text_node($1);}
+	| node {$$ = $1;}
+	;
 
 start_tag: START_EL WORD attrs END_EL {
 					$$ = $3;
@@ -90,6 +97,7 @@ attrs: 								{$$ = new_element_node("~dummy~");}
 
 attr:	WORD '=' value 						{$$ = new_attribute($1, $3);}
 								;
+
 
 value:	'"' TEXT '"' {$$ = $2;}
         | '"' '"' {$$ = "";}

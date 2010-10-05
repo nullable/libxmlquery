@@ -2,7 +2,10 @@
 #include "stack.h"
 
 stack* new_stack(int initial){
-  if(initial <= 0) exit(1);
+  if(initial <= 0){
+   log(F, "New stack initial capacity must be greater than 0, %d given", initial);
+   exit(1);
+  }
   stack* s = alloc(stack, 1);
   s->count = 0;
   s->capacity = initial;

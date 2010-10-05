@@ -67,6 +67,10 @@ dom_node* get_doc_root(doc* document){
 }
 
 void prepend_child(dom_node* parent, dom_node* child){
+  if(child == NULL) {
+    log(W, "Trying to prepend a NULL child.\n");
+    return;
+  }
   if(child->type == ATTRIBUTE){
     log(W, "Trying to prepend attribute %s as child of node %s.\n", child->name, parent->name);
     return;
@@ -74,10 +78,14 @@ void prepend_child(dom_node* parent, dom_node* child){
   if(parent->children == NULL)
     parent->children = new_list();
   prepend(parent->children, child);
-  child->parent = parent;
+  parent->children->last->node->parent = parent;
 }
 
 void append_child(dom_node* parent, dom_node* child){
+  if(child == NULL) {
+    log(W, "Trying to append a NULL child.\n");
+    return;
+  }
   if(child->type == ATTRIBUTE){
     log(W, "Trying to append attribute %s as child of node %s.\n", child->name, parent->name);
     return;
@@ -85,10 +93,14 @@ void append_child(dom_node* parent, dom_node* child){
   if(parent->children == NULL)
     parent->children = new_list();
   append(parent->children, child);
-  child->parent = parent;
+  parent->children->last->node->parent = parent;
 }
 
 void add_attribute(dom_node* node, dom_node* attribute){
+  if(attribute == NULL) {
+    log(W, "Trying to add a NULL attrubute.\n");
+    return;
+  }
   if(attribute->type == ATTRIBUTE){
     if(node->attributes == NULL)
       node->attributes = new_tree();
@@ -102,8 +114,10 @@ void add_attribute(dom_node* node, dom_node* attribute){
 void append_children(dom_node* parent, struct slist_keeper* children){
   struct slist_iterator* it;
   dom_node* aux;
-  if(children == NULL)
+  if(children == NULL){
+    log(W, "Trying to append NULL children.\n");
     return;
+  }
   if(parent->children == NULL)
     parent->children = new_list();
   for(it = new_list_iterator(children); list_iterator_has_next(it); ){
@@ -111,8 +125,6 @@ void append_children(dom_node* parent, struct slist_keeper* children){
     append_child(parent, aux);
   }
   destroy_list_iterator(it);
-  destroy(children);
-  children = NULL;
   return;
 }
 
@@ -304,9 +316,13 @@ list_keeper* get_children(dom_node* node){
 void destroy_dom_node(dom_node* n){
   struct siterator* ti;
   struct slist_iterator* it;
-  if((n->type == ELEMENT || n->type == ATTRIBUTE) && n->namespace != NULL) free(n->namespace);
-  if((n->type == ELEMENT || n->type == ATTRIBUTE) && n->name != NULL) free(n->name);
-  if((n->type == TEXT_NODE || n->type == CDATA || n->type == ATTRIBUTE) && n->value != NULL) free(n->value);
+  if( n == NULL) return;
+  if((n->type == ELEMENT || n->type == ATTRIBUTE) && n->namespace != NULL) 
+    free(n->namespace);
+  if((n->type == ELEMENT || n->type == ATTRIBUTE) && n->name != NULL) 
+    free(n->name);
+  if((n->type == TEXT_NODE || n->type == CDATA || n->type == ATTRIBUTE) && n->value != NULL) 
+    free(n->value);
   if(n->attributes != NULL){
     ti = new_tree_iterator(n->attributes);
     while(tree_iterator_has_next(ti))
@@ -355,6 +371,7 @@ static void __output_xml(dom_node* root, int pad){
 	    printf("%s:", attr->namespace);
 	  printf("%s\" ", attr->value);
 	}
+	destroy_iterator(it);
       }
   
       printf(">\n");     
@@ -412,6 +429,7 @@ void output_xml(doc* root){
 	printf("%s:", attr->namespace);
       printf("%s\" ", attr->value);
     }
+    destroy_iterator(it);
     printf("?>\n");
   }
   __output_xml(root->root, 0);

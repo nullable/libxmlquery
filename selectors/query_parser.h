@@ -41,8 +41,6 @@ attr_selector* new_attr_value_selector(char* name, int op, char* value);
 
 filter_selector* new_filter(int filter);
 
-filter_array new_filter_array();
-
 void add_attr_selector(selector* s, attr_selector* a);
 
 void add_filter_selector(filter_array* s, filter_selector* f);

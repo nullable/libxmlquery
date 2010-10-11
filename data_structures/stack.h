@@ -5,7 +5,7 @@ struct list_bucket
 {
     short type;
     void* element;
-}
+};
 
 typedef struct generic_list_s{
   struct list_bucket** array;
@@ -22,10 +22,10 @@ extern list* new_list(int initial);
 extern stack* new_stack(int initial);
 extern queue* new_queue(int initial);
 
-extern void add_element_with_type_at(list *l, void* obj, short type, int pos);
+extern void* add_element_with_type_at(list *l, void* obj, short type, int pos);
 extern void add_element_with_type(list *l, void* obj, short type);
-extern void add_element_at(list *l, void* obj, int pos);
-extern void add_element(list *l, void* obj);
+extern void* add_element_at(list *l, void* obj, int pos);
+extern void* add_element(list *l, void* obj);
 
 extern int remove_element(list *l, void* obj);
 extern int remove_all(list *l, void* obj);

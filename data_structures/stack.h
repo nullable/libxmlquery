@@ -18,7 +18,7 @@ typedef struct generic_list_s stack;
 typedef struct generic_list_s queue;
 
 extern struct generic_list_s *new_generic_list(int initial);
-extern list* new_list(int initial);
+extern list* new_generic_list(int initial);
 extern stack* new_stack(int initial);
 extern queue* new_queue(int initial);
 
@@ -44,5 +44,5 @@ extern void reverse(struct generic_list_s *s);
 extern int peek_stack_type(stack *s);
 extern int peek_queue_type(queue *s);
 
-extern void destroy(struct generic_list_s *s);
+extern void destroy_generic_list(struct generic_list_s *s);
 #endif

@@ -12,7 +12,7 @@ struct generic_list_s *new_generic_list(int initial)
   struct generic_list_s* l = alloc(struct generic_list_s, 1); 
   l->start = 0;
   l->count = 0;
-  l->capacity = 1;
+  l->capacity = initial;
   
   l->array = alloc(struct list_bucket*, initial);
   return l;
@@ -33,12 +33,10 @@ static void refactor_generic_list(list* l){
     memcpy(l->array + l->capacity, l->array, cpy);
     memset(l->array, 0, cpy);
   }
+
+  l->capacity *= 2;
 }
 
-list* new_list(int initial)
-{
-  return new_generic_list(initial);
-}
 stack* new_stack(int initial)
 {
   return new_generic_list(initial);
@@ -59,11 +57,12 @@ void* add_element_with_type_at(list *l, void* obj, short type, int pos)
   
   if(l->count > pos || pos < 0) log(W, "Tried to add element to list at invalid position, list-size: %d, position requested: %d\n", l->count, pos);
     
-  struct list_bucket *b = l->array[l->start + pos];
+  struct list_bucket *b = l->array[(l->start + pos) % l->capacity];
   if(b != NULL) { r = b->element; }
   else {
     b = alloc(struct list_bucket, 1);
     l->count++;
+    l->array[(l->start + pos) % l->capacity] = b;
   }
   
   b->type = type;
@@ -93,8 +92,10 @@ int _remove_element(list* l, void* obj)
   for(i = 0;i < l->count; i++)
     {
       d = (i + l->start) % l->capacity;
-      //if(l->array[d] == NULL){ continue; }
-      if(l->array[d] != obj){ continue; }
+      
+      if(l->array[d] != obj){ 
+	continue; 
+      }
       else
         {
 	  free(l->array[d]);
@@ -147,15 +148,20 @@ int remove_all(list* l, void* obj)
 void* remove_element_at(list* l, int pos)
 {
   if(pos >= l->count){ log(W, "Trying to remove object on position (%d) greater than element count (%d)", pos, l->count); return NULL; }
-  int d = l->start + pos % l->capacity;
+  int d = (l->start + pos) % l->capacity;
   
   void* r = l->array[d]->element;
   
   free(l->array[d]);
   l->array[d] = NULL;
   
-  if(pos == 0) { l->start = ++l->start % l->capacity; l->count--; }
-  else if(pos == l->count-1){ l->count--; }
+  if(pos == 0) { 
+    l->start = ++l->start % l->capacity; 
+    l->count--; 
+  }
+  else 
+    if(pos == l->count-1)
+      { l->count--; }
   else{ collapse_generic_list(l); }
   
   return r;
@@ -228,7 +234,7 @@ void destroy_generic_list(struct generic_list_s *s)
   int i, d;
   for(i = 0; i < s->count; i++)
     {
-      d = s->start + i % s->capacity;
+      d = (s->start + i) % s->capacity;
       free(s->array[d]);
     } 
   

@@ -11,7 +11,8 @@ int main(){
   //printf("\n\n\n==========================================================\n\n\n");
   /*  output_xml(document);*/
 
-  destroy_dom_tree(document);
+  if(document != NULL)
+    destroy_dom_tree(document);
 
   /*  printf("\n\n\nAGORA DE UMA STRING\n");
   yy_scan_string("<this is=\"a test\">texto</this>");

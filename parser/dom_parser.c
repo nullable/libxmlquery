@@ -15,5 +15,5 @@ void parse_dom(){
   while(trash_bin->count > 0){
     free(pop_stack(trash_bin));
   }
-  destroy_stack(trash_bin);
+  destroy_generic_list(trash_bin);
 }

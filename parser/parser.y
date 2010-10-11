@@ -32,52 +32,48 @@ int yywrap()
 %start document
 
 %%
-document: node             {document = new_document(NULL); set_doc_root(document, $1);}
-	| declaration node {document = new_document($1); set_doc_root(document, $2);}
+document: node                                              {document = new_document(NULL); set_doc_root(document, $1);}
+	| declaration node                                      {document = new_document($1); set_doc_root(document, $2);}
 	;
 
-declaration: START_EL '?' WORD attrs '?' END_EL {
-						  if(strcmp($3, "xml") != 0){
-						    yyerror("Declaration does not begin with xml.\n");
-						    exit(-1);
-						  }
-						  $$ = $4;
-						  set_name($$, $3);
-						}
+declaration: START_EL '?' WORD attrs '?' END_EL             {
+						                                        if(strcmp($3, "xml") != 0){
+						                                            yyerror("Declaration does not begin with xml.\n");
+						                                            exit(-1);
+						                                        }
+						                                        $$ = $4;
+						                                        set_name($$, $3);
+						                                    }
 	;
 
 
 
-node:	start_tag inner end_tag	 {				 
-				  if(strcmp(get_name($1),$3) != 0){
-				    yyerror("Start tag does not match end tag.\n");
-				    exit(-1);
-                                  }
-				  append_children($1, $2->children);
-				  free($2->name);
-				  destroy($2->children);
-				  free($2);
-				  $$ = $1;
-				  }
-        | START_EL WORD attrs SLASH END_EL { $$ = $3; set_name($$, $2);}
+node: start_tag inner end_tag	                            { 
+				                                                if(strcmp(get_name($1),$3) != 0)
+				                                                {
+				                                                    yyerror("Start tag does not match end tag.\n");
+				                                                    exit(-1);
+                                                                }
+				                                                append_children($1, $2->children);
+				                                                free($2->name);
+				                                                destroy($2->children);
+				                                                free($2);
+				                                                $$ = $1;
+				                                            }
+    | START_EL WORD attrs SLASH END_EL                      { $$ = $3; set_name($$, $2);}
 	;
 
-inner:								{$$ = new_element_node("~dummy~");}
-     | inner prop						{ $$ = $1;
-								  append_child($$, $2);
-								}
+inner:								                        {$$ = new_element_node("~dummy~");}
+     | inner prop						                    {   $$ = $1;
+								                                append_child($$, $2);
+								                            }
      ;
 
-prop: CDATA_TOK 						{$$ = new_cdata($1);}
-    | TEXT 							{$$ = new_text_node($1);}
-    | node 							{$$ = $1;}
+prop: CDATA_TOK 						                    {$$ = new_cdata($1);}
+    | TEXT 							                        {$$ = new_text_node($1);}
+    | node 							                        {$$ = $1;}
     ;
 
-
-prop:	CDATA_TOK  {$$ = new_cdata($1);}
-        | TEXT {$$ = new_text_node($1);}
-	| node {$$ = $1;}
-	;
 
 start_tag: START_EL WORD attrs END_EL {
 					$$ = $3;

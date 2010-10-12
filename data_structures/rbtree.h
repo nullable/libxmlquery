@@ -22,6 +22,10 @@ typedef struct sroot{
   int (*compare)(void* keyA, void* keyB);
 }tree_root;
 
+typedef struct siterator{
+  struct stree_node* current;
+}tree_iterator;
+
 extern tree_root* new_rbtree(void* (*key_function_pointer)(struct stree_node* node),
 			   int (*compare_function_pointer)(void* keyA, void* keyB));
 extern void rb_tree_insert(tree_root* root, void* node);
@@ -29,5 +33,8 @@ extern void rb_tree_delete(tree_root* root, void* key);
 extern void* search_rbtree(tree_root root, void* key);
 extern void destroy_rbtree(tree_root* root);
 
-extern void rb_print(tree_node* root, int pad);
+extern tree_iterator* new_tree_iterator(tree_root* root);
+extern int tree_iterator_has_next(tree_iterator* it);
+extern void* tree_iterator_next(tree_iterator* it);
+extern void destroy_iterator(tree_iterator* it);
 #endif

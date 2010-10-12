@@ -22,12 +22,25 @@ static tree_node* new_rbtree_node(void* node){
   return z;
 }
 
+static void* __pointer(tree_node* node){
+  return node->node;
+}
+
+static int __compare_by_pointer(void* keyA, void* keyB){
+  return keyA - keyB;
+}
+
 tree_root* new_rbtree(void* (*key_function_pointer)(struct stree_node* node),
 		    int (*compare_function_pointer)(void* keyA, void* keyB)){
   tree_root* r = alloc(tree_root, 1);
   r->root = &RBNIL;
-  r->key = key_function_pointer;
-  r->compare = compare_function_pointer;
+  if(key_function_pointer == NULL && compare_function_pointer == NULL){
+    r->key = &__pointer;
+    r->compare = &__compare_by_pointer;
+  }else{
+    r->key = key_function_pointer;
+    r->compare = compare_function_pointer;
+  }
   return r;
 }
 
@@ -317,20 +330,49 @@ void rb_tree_delete(tree_root* root, void* key){
     __rb_tree_delete_fixup(root, x);
 }
 
-void rb_print(tree_node* root, int pad){
-  int i;
+tree_iterator* new_tree_iterator(tree_root* root){
+  tree_node* aux = root->root;
+  tree_iterator* it = alloc(tree_iterator, 1);
 
-  if(root == &RBNIL)
-    return;
+  while(aux->left != &RBNIL || aux->right != &RBNIL){ 
+    while(aux->left != &RBNIL)
+      aux = aux->left;
+    
+    if(aux->right != &RBNIL)
+      aux = aux->right;
+  }
+  it->current = aux;
+  return it;
+}
 
-  printf("|");
-  for(i = 0; i < pad; i++, printf("--"));
-  if(root->parent != &RBNIL)
-    printf("+ node %p with parent %p\n", root->node, root->parent->node);
+int tree_iterator_has_next(tree_iterator* it){
+  if(it->current != &RBNIL)
+    return 1;
+  return 0;
+}
+
+void* tree_iterator_next(tree_iterator* it){
+  tree_node* aux;
+  tree_node* tn = it->current;
+
+  if(tn->parent != &RBNIL && 
+     tn->parent->right != &RBNIL && 
+     tn->parent->right != tn){
+    aux = tn->parent->right;
+    while(aux->left != &RBNIL || aux->right != &RBNIL){ 
+      while(aux->left != &RBNIL)
+	aux = aux->left;
+    
+      if(aux->right != &RBNIL)
+	aux = aux->right;
+    }   
+    it->current = aux;
+  }
   else
-    printf("+ node %p with no parent\n", root->node);
-  printf("|\n");
+    it->current = it->current->parent;
+  return tn->node;
+}
 
-  rb_print(root->left, pad + 1);
-  rb_print(root->right, pad + 1);
+void destroy_iterator(tree_iterator* it){
+  free(it);
 }

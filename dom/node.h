@@ -1,8 +1,8 @@
 #ifndef __NODE_H__
 #define __NODE_H__
 
-#include "tree.h"
-#include "list.h"
+#include "../data_structures/rbtree.h"
+#include "../data_structures/stack.h"
 
 enum node_type {
   ATTRIBUTE,
@@ -22,7 +22,7 @@ typedef struct snode{
   
   struct snode* parent;
   
-  struct slist_keeper* children;
+  struct generic_list_s* children;
 }dom_node;
 
 typedef struct sdoc{
@@ -45,7 +45,7 @@ extern dom_node* get_doc_root(doc* document);
 
 extern void prepend_child(dom_node* parent, dom_node* child);
 extern void append_child(dom_node* parent, dom_node* child);
-extern void append_children(dom_node* parent, struct slist_keeper* children);
+extern void append_children(dom_node* parent, struct sgeneric_list_s* children);
 extern void add_attribute(dom_node* node, dom_node* attribute);
 
 extern doc* new_document(struct snode* xml_declaration);
@@ -55,21 +55,14 @@ extern dom_node* new_attribute(char* name, char* value);
 extern dom_node* new_cdata(char* cdata_text);
 
 extern dom_node* get_child_at(dom_node* parent, int index);
-extern struct slist_keeper* get_children(dom_node* node);
-extern struct slist_keeper* get_text_nodes(doc* root);
+extern struct generic_list_s* get_children(dom_node* node);
+extern struct generic_list_s* get_text_nodes(doc* root);
 extern dom_node* get_attribute_by_name(dom_node* node, char* attr_name);
-extern struct slist_keeper* get_elements_by_name(doc* root, char* name);
-
-extern struct slist_keeper* regex_get_attributes(dom_node* node, char* pattern);
-extern struct slist_keeper* regex_get_attributes_ignore_case(dom_node* node, char* pattern);
-extern struct slist_keeper* regex_get_elements_by_name(doc* root, char* pattern);
-extern struct slist_keeper* regex_get_elements_by_name_ignore_case(doc* root, char* pattern);
-extern struct slist_keeper* regex_get_elements_by_namespace(doc* root, char* pattern);
-extern struct slist_keeper* regex_get_elements_by_namespace_ignore_case(doc* root, char* pattern);
+extern struct generic_list_s* get_elements_by_name(doc* root, char* name);
 
 extern void delete_attribute(dom_node* node, char* name); 
 extern void remove_node(doc* root, dom_node* node);
-extern struct slist_keeper* remove_children(dom_node* node);
+extern struct generic_list_s* remove_children(dom_node* node);
 
 extern void destroy_dom_node(dom_node* n);
 extern void destroy_dom_tree(doc* root);

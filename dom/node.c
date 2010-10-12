@@ -1,9 +1,7 @@
 #include <stdio.h>
-#include <regex.h>
 #include <string.h>
 #include "macros.h"
 #include "node.h"
-#include "eregex.h"
 
 void set_namespace(dom_node* node, char* namespace){
   int size = strlen(namespace) + 1;
@@ -76,9 +74,11 @@ void prepend_child(dom_node* parent, dom_node* child){
     return;
   }
   if(parent->children == NULL)
-    parent->children = new_list();
-  prepend(parent->children, child);
-  parent->children->last->node->parent = parent;
+    parent->children = new_generic_list(16);
+
+  log(W, "prepend_child needs to be implemented.\n");
+  /*  prepend(parent->children, child);
+      parent->children->last->node->parent = parent;*/
 }
 
 void append_child(dom_node* parent, dom_node* child){
@@ -91,9 +91,9 @@ void append_child(dom_node* parent, dom_node* child){
     return;
   }
   if(parent->children == NULL)
-    parent->children = new_list();
-  append(parent->children, child);
-  parent->children->last->node->parent = parent;
+    parent->children = new_generic_list(16);
+  enqueue(parent->children, child);
+  child->parent = parent;
 }
 
 void add_attribute(dom_node* node, dom_node* attribute){
@@ -111,20 +111,19 @@ void add_attribute(dom_node* node, dom_node* attribute){
   return;
 }
 
-void append_children(dom_node* parent, struct slist_keeper* children){
+void append_children(dom_node* parent, struct generic_list_s* children){
   struct slist_iterator* it;
-  dom_node* aux;
+  int i;
   if(children == NULL){
     log(W, "Trying to append NULL children.\n");
     return;
   }
   if(parent->children == NULL)
     parent->children = new_list();
-  for(it = new_list_iterator(children); list_iterator_has_next(it); ){
-    aux = list_iterator_next(it);
-    append_child(parent, aux);
+  for(i = 0; i < children->count; i++){
+    append_child(parent, (node*) dequeue(children));
   }
-  destroy_list_iterator(it);
+  destroy_generic_list(children);
   return;
 }
 
@@ -202,41 +201,41 @@ dom_node* get_attribute_by_name(dom_node* node, char* attr_name){
 dom_node* get_child_at(dom_node* parent, int index){
   if(parent->children == NULL)
     return NULL;
-  return get(*(parent->children), index);
+  return (dom_node*) get_element_at(parent->children, index);
 }
 
-static void __get_elements_by_name(dom_node* root, char* name, list_keeper* lk){
-  list_node* it;
+static void __get_elements_by_name(dom_node* root, char* name, generic_list* lk){
+  int it;
 
   if(root == NULL)
     return;
 
   if(root->type == ELEMENT && strcmp(root->name, name) == 0)
-    append(lk, root);
+    enqueue(lk, root);
 
   if(root->children != NULL)
-    for(it = root->children->first; it != NULL; it = it->next)
-      __get_elements_by_name(it->node, name, lk);
+    for(it = 0; it < root->children->count; it++)
+      __get_elements_by_name(get_element_at(root->children->count), name, lk);
 }
 
-struct slist_keeper* get_elements_by_name(doc* root, char* name){
-  list_keeper* lk = new_list();
+struct generic_list_s* get_elements_by_name(doc* root, char* name){
+  generic_list* lk = new_generic_list();
   __get_elements_by_name(root->root, name, lk);
   return lk;
 }
 
 static void __get_text_nodes(dom_node* root, list_keeper* lk){
-  list_node* it;
+  int it;
 
   if(root == NULL)
     return;
 
   if(root->type == TEXT_NODE)
-    append(lk, root);
+    enqueue(lk, root);
 
   if(root->children != NULL)
-    for(it = root->children->first; it != NULL; it = it->next)
-      __get_text_nodes(it->node, lk);
+    for(it = 0; it < root->children->count; it++)
+      __get_text_nodes(get_element_at(root->children->count), lk);
 }
 
 struct slist_keeper* get_text_nodes(doc* root){

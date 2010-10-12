@@ -46,7 +46,7 @@ queue* new_queue(int initial)
   return new_generic_list(initial);
 }
 
-void* add_element_with_type_at(list *l, void* obj, short type, int pos)
+void* set_element_with_type_at(list *l, void* obj, short type, int pos)
 {
   void* r = NULL;
   
@@ -55,7 +55,7 @@ void* add_element_with_type_at(list *l, void* obj, short type, int pos)
       refactor_generic_list(l); 
     }
   
-  if(l->count > pos || pos < 0) log(W, "Tried to add element to list at invalid position, list-size: %d, position requested: %d\n", l->count, pos);
+  if(pos >= l->count || pos < 0) log(W, "Tried to add element to list at invalid position, list-size: %d, position requested: %d\n", l->count, pos);
     
   struct list_bucket *b = l->array[(l->start + pos) % l->capacity];
   if(b != NULL) { r = b->element; }
@@ -71,19 +71,52 @@ void* add_element_with_type_at(list *l, void* obj, short type, int pos)
   return r;
 }
 
+void* set_element_at(list* l, void* obj, int pos)
+{
+  return set_element_with_type_at(l, obj, -1, pos);
+}
+
+void append_element(list* l, void* obj, short type)
+{
+  if(l->count >= l->capacity)
+  {
+    refactor_generic_list(l); 
+  }
+  
+  struct list_bucket *b = alloc(struct list_bucket, 1);
+  l->array[(l->start + l->count) % l->capacity] = b;
+  l->count++;
+
+  b->type = type;
+  b->element = obj;    
+}
+
+void prepend_element(list* l, void* obj, short type)
+{
+  if(l->count >= l->capacity)
+  {
+    refactor_generic_list(l); 
+  }
+
+  struct list_bucket *b = alloc(struct list_bucket, 1);
+  if(--l->start < 0){ l->start = l->capacity - l->start; };
+  
+  l->array[l->start] = b;
+  l->count++;
+
+  b->type = type;
+  b->element = obj; 
+}
+
+
 void add_element_with_type(list* l, void* obj, short type)
 {
-  add_element_with_type_at(l, obj, type, l->count);
+  append_element(l, obj, type);
 }
 
-void* add_element_at(list* l, void* obj, int pos)
+void add_element(list* l, void* obj)
 {
-  return add_element_with_type_at(l, obj, -1, pos);
-}
-
-void* add_element(list* l, void* obj)
-{
-  return add_element_with_type_at(l, obj, -1, l->count);
+  append_element(l, obj, -1);
 }
 
 int _remove_element(list* l, void* obj)
@@ -167,14 +200,28 @@ void* remove_element_at(list* l, int pos)
   return r;
 }
 
-void enqueue_with_type(queue* q, void* obj, int type)
+void* get_element_and_type_at(list* l, int pos, short* type)
 {
-  add_element_with_type_at(q, obj, type, q->count);
+  if(pos < 0 || pos >= l->count){ log(W, "Trying to access object on position (%d) outside range (0 to %d)", pos, l->count-1); return NULL; }
+  int d = (l->start + pos) % l->capacity;
+  void* r = l->array[d]->element;
+  *type = l->array[d]->type;
+  return r;
+}
+
+void* get_element_at(list* l, int pos){
+  short type;
+  return get_element_and_type_at(l, pos, &type);
+}
+
+void enqueue_with_type(queue* q, void* obj, short type)
+{
+  add_element_with_type(q, obj, type);
 }
 
 void enqueue(queue* q, void* obj)
 {
-  add_element_at(q, obj, q->count);
+  add_element(q, obj);
 }
 
 void* dequeue(queue* q)
@@ -182,14 +229,14 @@ void* dequeue(queue* q)
   return remove_element_at(q, 0);
 }
 
-void push_stack_type(stack* s, void* obj, int type)
+void push_stack_type(stack* s, void* obj, short type)
 {
-  add_element_with_type_at(s, obj, type, s->count);
+  add_element_with_type(s, obj, type);
 }
 
 void push_stack(stack* s, void* obj)
 {
-  add_element_at(s, obj, s->count);
+  add_element(s, obj);
 }
 
 void* pop_stack(stack* s)
@@ -197,7 +244,13 @@ void* pop_stack(stack* s)
   return remove_element_at(s, s->count-1);
 }
 
-int peek_stack_type(stack *s)
+short peek_element_type_at(list* l, int pos)
+{
+  if(pos < 0 || pos >= l->count){ log(W, "Trying to access object on position (%d) outside range (0 to %d)", pos, l->count-1); exit(1); }
+  return l->array[(l->start + pos) % l->capacity]->type;
+}
+
+short peek_stack_type(stack *s)
 {
   if(s == NULL)
     {
@@ -213,7 +266,7 @@ int peek_stack_type(stack *s)
   return s->array[s->count-1]->type;
 }
 
-int peek_queue_type(queue *s)
+short peek_queue_type(queue *s)
 {
   if(s == NULL)
     {

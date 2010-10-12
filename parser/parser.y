@@ -85,7 +85,7 @@ node: start_tag inner end_tag	                            {
                                                                 }
 				                                                append_children($1, $2->children);
 				                                                free($2->name);
-				                                                destroy($2->children);
+				                                                destroy_generic_list($2->children);
 				                                                free($2);
 				                                                $$ = $1;
 				                                            }
@@ -195,7 +195,7 @@ offset: '+' DIGITS									            { $$ = $2; }
       | DIGITS										            { $$ = $1; }
       ;
 
-relation_operator: '>'			       						{ $$ = '>'; }
+relation_operator: '>'			       						{ $$ = '>'; printf("'>'");}
 		 | '~'					                		{ $$ = '~'; }
 		 | '+'    								{ $$ = '+'; }
 		 | ','		                					{ $$ = ','; }

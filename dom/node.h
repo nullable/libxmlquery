@@ -45,7 +45,7 @@ extern dom_node* get_doc_root(doc* document);
 
 extern void prepend_child(dom_node* parent, dom_node* child);
 extern void append_child(dom_node* parent, dom_node* child);
-extern void append_children(dom_node* parent, struct sgeneric_list_s* children);
+extern void append_children(dom_node* parent, struct generic_list_s* children);
 extern void add_attribute(dom_node* node, dom_node* attribute);
 
 extern doc* new_document(struct snode* xml_declaration);
@@ -62,7 +62,6 @@ extern struct generic_list_s* get_elements_by_name(doc* root, char* name);
 
 extern void delete_attribute(dom_node* node, char* name); 
 extern void remove_node(doc* root, dom_node* node);
-extern struct generic_list_s* remove_children(dom_node* node);
 
 extern void destroy_dom_node(dom_node* n);
 extern void destroy_dom_tree(doc* root);

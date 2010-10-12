@@ -56,7 +56,7 @@ stack* trash_bin;
 <QUERY_INITIAL>[ ]*"*="[ ]*						{ return CONTAINS_OP; }
 <QUERY_INITIAL>[ ]*"|="[ ]*						{ return DSV_OP; }
 <QUERY_INITIAL>[ ]*"!="[ ]*						{ return NOTEQUAL_OP; }
-
+<QUERY_INITIAL>.                                                        { return yytext[0];}
 
 <FUNC>"nth-child"				{ BEGIN QUERY_INITIAL; return NTH_CHILD_FILTER; }
 <FUNC>"nth-last-child"				{ BEGIN QUERY_INITIAL; return NTH_LAST_CHILD_FILTER; }
@@ -81,6 +81,7 @@ stack* trash_bin;
 
 <TEXT_BLOCK_QUERY>[^"']*				{ yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return TEXT; }
 <TEXT_BLOCK_QUERY>["']					{ BEGIN QUERY_INITIAL; return '"'; }
+
 %%
 
 

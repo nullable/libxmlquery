@@ -1,8 +1,6 @@
 include ../Makefile.inc
 
-OBJS = list.o tree.o node.o eregex.o
-
-all: $(OBJS)
+all: node.o
 
 node.o: node.h node.c macros.h
 	$(CC) $(CFLAGS) -c node.c

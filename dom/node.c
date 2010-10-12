@@ -77,8 +77,9 @@ void prepend_child(dom_node* parent, dom_node* child){
     parent->children = new_generic_list(16);
 
   log(W, "prepend_child needs to be implemented.\n");
-  /*  prepend(parent->children, child);
-      parent->children->last->node->parent = parent;*/
+
+  prepend_element(parent->children, child, 0);
+  child->parent = parent;
 }
 
 void append_child(dom_node* parent, dom_node* child){
@@ -92,8 +93,16 @@ void append_child(dom_node* parent, dom_node* child){
   }
   if(parent->children == NULL)
     parent->children = new_generic_list(16);
-  enqueue(parent->children, child);
+  append_element(parent->children, child, 0);
   child->parent = parent;
+}
+
+void* key(struct stree_node* node){
+  return ((dom_node*) node->node)->name;
+}
+
+int compare(void* keyA, void* keyB){
+  return strcmp((char*) keyA, (char*) keyB);
 }
 
 void add_attribute(dom_node* node, dom_node* attribute){
@@ -103,8 +112,8 @@ void add_attribute(dom_node* node, dom_node* attribute){
   }
   if(attribute->type == ATTRIBUTE){
     if(node->attributes == NULL)
-      node->attributes = new_tree();
-    red_black_tree_insert(node->attributes, attribute);
+      node->attributes = new_rbtree(&key, &compare);
+    rb_tree_insert(node->attributes, attribute);
     return;
   }
   log(W, "Trying to add node %s as attribute of node %s\n", attribute->name, node->name);
@@ -112,16 +121,15 @@ void add_attribute(dom_node* node, dom_node* attribute){
 }
 
 void append_children(dom_node* parent, struct generic_list_s* children){
-  struct slist_iterator* it;
   int i;
   if(children == NULL){
     log(W, "Trying to append NULL children.\n");
     return;
   }
   if(parent->children == NULL)
-    parent->children = new_list();
+    parent->children = new_generic_list(16);
   for(i = 0; i < children->count; i++){
-    append_child(parent, (node*) dequeue(children));
+    append_child(parent, (dom_node*) dequeue(children));
   }
   destroy_generic_list(children);
   return;
@@ -195,7 +203,7 @@ dom_node* get_attribute_by_name(dom_node* node, char* attr_name){
   if(node->attributes == NULL)
     return NULL;
 
-  return search(*(node->attributes), attr_name);
+  return (dom_node*) search_rbtree(*(node->attributes), attr_name);
 }
 
 dom_node* get_child_at(dom_node* parent, int index){
@@ -204,117 +212,54 @@ dom_node* get_child_at(dom_node* parent, int index){
   return (dom_node*) get_element_at(parent->children, index);
 }
 
-static void __get_elements_by_name(dom_node* root, char* name, generic_list* lk){
+static void __get_elements_by_name(dom_node* root, char* name, list* lk){
   int it;
 
   if(root == NULL)
     return;
 
   if(root->type == ELEMENT && strcmp(root->name, name) == 0)
-    enqueue(lk, root);
+    append_element(lk, root, 0);
 
   if(root->children != NULL)
     for(it = 0; it < root->children->count; it++)
-      __get_elements_by_name(get_element_at(root->children->count), name, lk);
+      __get_elements_by_name((dom_node*) get_element_at(root->children, it), name, lk);
 }
 
 struct generic_list_s* get_elements_by_name(doc* root, char* name){
-  generic_list* lk = new_generic_list();
+  list* lk = new_generic_list(16);
   __get_elements_by_name(root->root, name, lk);
   return lk;
 }
 
-static void __get_text_nodes(dom_node* root, list_keeper* lk){
+static void __get_text_nodes(dom_node* root, list* lk){
   int it;
 
   if(root == NULL)
     return;
 
   if(root->type == TEXT_NODE)
-    enqueue(lk, root);
+    append_element(lk, root, 0);
 
   if(root->children != NULL)
     for(it = 0; it < root->children->count; it++)
-      __get_text_nodes(get_element_at(root->children->count), lk);
+      __get_text_nodes((dom_node*) get_element_at(root->children, it), lk);
 }
 
-struct slist_keeper* get_text_nodes(doc* root){
-  list_keeper* lk = new_list();
+struct generic_list_s* get_text_nodes(doc* root){
+  list* lk = new_generic_list(16);
   __get_text_nodes(root->root, lk);
   return lk;
 }
 
-list_keeper* regex_get_attributes(dom_node* node, char* pattern){
-  if(node->attributes == NULL)
-    return NULL;
-  return regex_search(*(node->attributes), pattern);
-}
-
-list_keeper* regex_get_attributes_ignore_case(dom_node* node, char* pattern){
-  if(node->attributes == NULL)
-    return NULL;
-  return regex_search_ignore_case(*(node->attributes), pattern);
-}
-
-static void __regex_get_elements_by_name(dom_node* root, char* pattern, list_keeper* lk, int ignore_case){
-  list_node* it;
-
-  if(root == NULL)
-    return;
-
-  if(root->type == ELEMENT && match(root->name, pattern, ignore_case))
-    append(lk, root);
-
-  if(root->children != NULL)
-    for(it = root->children->first; it != NULL; it = it->next)
-      __regex_get_elements_by_name(it->node, pattern, lk, ignore_case);
-}
-
-list_keeper* regex_get_elements_by_name(doc* root, char* pattern){
-  list_keeper* lk = new_list();
-  __regex_get_elements_by_name(root->root, pattern, lk, 0);
-  return lk;
-}
-
-list_keeper* regex_get_elements_by_name_ignore_case(doc* root, char* pattern){
-  list_keeper* lk = new_list();
-  __regex_get_elements_by_name(root->root, pattern, lk, 1);
-  return lk;
-}
-
-static void __regex_get_elements_by_namespace(dom_node* root, char* pattern, list_keeper* lk, int ignore_case){
-  list_node* it;
-
-  if(root == NULL)
-    return;
-
-  if(root->type == ELEMENT && match(root->namespace, pattern, ignore_case))
-    append(lk, root);
-  
-  if(root->children != NULL)
-    for(it = root->children->first; it != NULL; it = it->next)
-      __regex_get_elements_by_namespace(it->node, pattern, lk, ignore_case);
-}
-
-list_keeper* regex_get_elements_by_namespace(doc* root, char* pattern){
-  list_keeper* lk = new_list();
-  __regex_get_elements_by_namespace(root->root, pattern, lk, 0);
-  return lk;
-}
-
-list_keeper* regex_get_elements_by_namespace_ignore_case(doc* root, char* pattern){
-  list_keeper* lk = new_list();
-  __regex_get_elements_by_namespace(root->root, pattern, lk, 1);
-  return lk;
-}
-
-list_keeper* get_children(dom_node* node){
+list* get_children(dom_node* node){
   return node->children;
 }
 
 void destroy_dom_node(dom_node* n){
   struct siterator* ti;
-  struct slist_iterator* it;
+  int it;
+
   if( n == NULL) return;
   if((n->type == ELEMENT || n->type == ATTRIBUTE) && n->namespace != NULL) 
     free(n->namespace);
@@ -327,14 +272,12 @@ void destroy_dom_node(dom_node* n){
     while(tree_iterator_has_next(ti))
       destroy_dom_node(tree_iterator_next(ti));
     destroy_iterator(ti);
-    destroy_tree(n->attributes);
+    destroy_rbtree(n->attributes);
   }
   if(n->children != NULL){
-    it = new_list_iterator(n->children);
-    while(list_iterator_has_next(it))
-      destroy_dom_node(list_iterator_next(it));
-    destroy_list_iterator(it);
-    destroy(n->children);
+    for(it = 0; it < n->children->count; it++)
+      destroy_dom_node((dom_node*) get_element_at(n->children, it));
+    destroy_generic_list(n->children);
   }
   free(n);
 }
@@ -345,8 +288,7 @@ void destroy_dom_tree(doc* root){
 }
 
 static void __output_xml(dom_node* root, int pad){
-  int i;
-  list_node* it;
+  int i, it;
   
   if(root == NULL)
     return;
@@ -364,7 +306,7 @@ static void __output_xml(dom_node* root, int pad){
       if(root->attributes != NULL){
 	struct siterator *it = new_tree_iterator(root->attributes);
 	while(tree_iterator_has_next(it)){
-	  dom_node* attr = tree_iterator_next(it);
+	  dom_node* attr = (dom_node*) tree_iterator_next(it);
 	  printf("%s=\"", attr->name);
 	  if(attr->namespace != NULL)
 	    printf("%s:", attr->namespace);
@@ -393,8 +335,8 @@ static void __output_xml(dom_node* root, int pad){
   }
 
   if(root->children != NULL)
-    for(it = root->children->first; it != NULL; it = it->next)
-      __output_xml(it->node, pad + 1);
+    for(it = 0; it < root->children->count; it++)
+      __output_xml((dom_node*) get_element_at(root->children, i), pad + 1);
 
   switch(root->type){
   case ELEMENT:
@@ -422,7 +364,7 @@ void output_xml(doc* root){
     printf("<?%s ", root->xml_declaration->name);
     struct siterator *it = new_tree_iterator(root->xml_declaration->attributes);
     while(tree_iterator_has_next(it)){
-      dom_node* attr = tree_iterator_next(it);
+      dom_node* attr = (dom_node*) tree_iterator_next(it);
       printf("%s=\"", attr->name);
       if(attr->namespace != NULL)
 	printf("%s:", attr->namespace);
@@ -436,28 +378,15 @@ void output_xml(doc* root){
 }
 
 void delete_attribute(dom_node* node, char* name){
-  red_black_tree_delete(node->attributes, name);
+  rb_tree_delete(node->attributes, name);
 }
 
 void remove_node(doc* root, dom_node* node){
-  dom_node* parent;
-
   if(node == root->root){
     root->root = NULL;
     return;
   }
 
-  parent = node->parent;
-  remove_from_list(node->parent->children, node);
+  remove_element(node->parent->children, node);
   return;
-}
-
-struct slist_keeper* remove_children(dom_node* node){
-  struct slist_keeper* children = node->children;
-
-  if(children == NULL) return NULL;
-
-  node->children->first = NULL;
-  node->children->last = NULL;
-  return children;
 }

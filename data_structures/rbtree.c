@@ -26,7 +26,7 @@ static void* __pointer(tree_node* node){
   return node->node;
 }
 
-static int __compare_by_pointer(void* keyA, void* keyB){
+static int64_t __compare_by_pointer(void* keyA, void* keyB){
   return keyA - keyB;
 }
 
@@ -35,7 +35,7 @@ tree_root* new_simple_rbtree(){
 }
 
 tree_root* new_rbtree(void* (*key_function_pointer)(struct stree_node* node),
-		    int (*compare_function_pointer)(void* keyA, void* keyB)){
+		    int64_t (*compare_function_pointer)(void* keyA, void* keyB)){
   tree_root* r = alloc(tree_root, 1);
   r->root = &RBNIL;
   if(key_function_pointer == NULL && compare_function_pointer == NULL){
@@ -295,7 +295,7 @@ static void __rb_tree_delete_fixup(tree_root* root, tree_node* x){
 
 void rb_tree_delete(tree_root* root, void* key){
   tree_node *y, *z, *x;
-  int y_original_color;
+  uint8_t y_original_color;
 
   y = z = __search_rbtree_node(*root, key);
 
@@ -349,7 +349,7 @@ tree_iterator* new_tree_iterator(tree_root* root){
   return it;
 }
 
-int tree_iterator_has_next(tree_iterator* it){
+uint8_t tree_iterator_has_next(tree_iterator* it){
   if(it->current != &RBNIL)
     return 1;
   return 0;

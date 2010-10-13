@@ -56,6 +56,7 @@ extern dom_node* new_cdata(char* cdata_text);
 
 extern dom_node* get_child_at(dom_node* parent, int index);
 extern struct generic_list_s* get_children(dom_node* node);
+extern struct generic_list_s* get_descendants(dom_node* node);
 extern struct generic_list_s* get_text_nodes(doc* root);
 extern dom_node* get_attribute_by_name(dom_node* node, char* attr_name);
 extern struct generic_list_s* get_elements_by_name(doc* root, char* name);

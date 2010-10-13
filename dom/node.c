@@ -256,6 +256,29 @@ list* get_children(dom_node* node){
   return node->children;
 }
 
+list* get_descendants(dom_node* node)
+{
+  if(node == NULL) return NULL;
+  
+  list* children = get_children(node);
+  if(children == NULL){ return NULL; }
+  
+  list* descendants = new_generic_list(1);
+  while(children->count > 0)
+  {
+    node* n = pop_stack(children);
+    if(n->type != node_type.ELEMENT) continue;
+    
+    list* nd = get_descendants(n);
+    if(nd != NULL){
+      descendants = merge_lists(descendants, nd);
+    }
+    add_element(descendants, n);
+  }
+  
+  return descendants;
+}
+
 void destroy_dom_node(dom_node* n){
   struct siterator* ti;
   int it;

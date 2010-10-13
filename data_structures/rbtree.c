@@ -30,6 +30,10 @@ static int __compare_by_pointer(void* keyA, void* keyB){
   return keyA - keyB;
 }
 
+tree_root* new_simple_rbtree(){
+  return new_rbtree(NULL, NULL);  
+}
+
 tree_root* new_rbtree(void* (*key_function_pointer)(struct stree_node* node),
 		    int (*compare_function_pointer)(void* keyA, void* keyB)){
   tree_root* r = alloc(tree_root, 1);

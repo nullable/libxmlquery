@@ -26,6 +26,7 @@ typedef struct siterator{
   struct stree_node* current;
 }tree_iterator;
 
+extern tree_root* new_simple_rbtree();
 extern tree_root* new_rbtree(void* (*key_function_pointer)(struct stree_node* node),
 			   int (*compare_function_pointer)(void* keyA, void* keyB));
 extern void rb_tree_insert(tree_root* root, void* node);

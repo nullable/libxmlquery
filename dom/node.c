@@ -259,23 +259,23 @@ list* get_children(dom_node* node){
 list* get_descendants(dom_node* node)
 {
   if(node == NULL) return NULL;
-  
+
   list* children = get_children(node);
-  if(children == NULL){ return NULL; }
-  
+  if(children == NULL) return NULL;
+
   list* descendants = new_generic_list(1);
   while(children->count > 0)
   {
-    node* n = pop_stack(children);
-    if(n->type != node_type.ELEMENT) continue;
-    
+    dom_node* n = pop_stack(children);
+    if(n->type != ELEMENT) continue;
+
     list* nd = get_descendants(n);
     if(nd != NULL){
       descendants = merge_lists(descendants, nd);
     }
     add_element(descendants, n);
   }
-  
+
   return descendants;
 }
 
@@ -284,11 +284,11 @@ void destroy_dom_node(dom_node* n){
   int it;
 
   if( n == NULL) return;
-  if((n->type == ELEMENT || n->type == ATTRIBUTE) && n->namespace != NULL) 
+  if((n->type == ELEMENT || n->type == ATTRIBUTE) && n->namespace != NULL)
     free(n->namespace);
-  if((n->type == ELEMENT || n->type == ATTRIBUTE) && n->name != NULL) 
+  if((n->type == ELEMENT || n->type == ATTRIBUTE) && n->name != NULL)
     free(n->name);
-  if((n->type == TEXT_NODE || n->type == CDATA || n->type == ATTRIBUTE) && n->value != NULL) 
+  if((n->type == TEXT_NODE || n->type == CDATA || n->type == ATTRIBUTE) && n->value != NULL)
     free(n->value);
   if(n->attributes != NULL){
     ti = new_tree_iterator(n->attributes);
@@ -312,7 +312,7 @@ void destroy_dom_tree(doc* root){
 
 static void __output_xml(dom_node* root, int pad){
   int i, it;
-  
+
   if(root == NULL)
     return;
 
@@ -320,7 +320,7 @@ static void __output_xml(dom_node* root, int pad){
   case ELEMENT:
     {
       for(i = 0; i < pad; i++, printf(" "));
-  
+
       printf("<");
       if(root->namespace != NULL)
 	printf("%s:", root->namespace);
@@ -337,8 +337,8 @@ static void __output_xml(dom_node* root, int pad){
 	}
 	destroy_iterator(it);
       }
-  
-      printf(">\n");     
+
+      printf(">\n");
       break;
     }
   case CDATA:
@@ -413,3 +413,4 @@ void remove_node(doc* root, dom_node* node){
   remove_element(node->parent->children, node);
   return;
 }
+

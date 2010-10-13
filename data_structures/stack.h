@@ -52,5 +52,7 @@ extern short peek_element_type_at(list* l, int pos);
 extern short peek_stack_type(stack *s);
 extern short peek_queue_type(queue *s);
 
+extern struct generic_list_s *merge_lists(struct generic_list_s *l1, struct generic_list_s *l2);
+
 extern void destroy_generic_list(struct generic_list_s *s);
 #endif

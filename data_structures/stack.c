@@ -282,6 +282,30 @@ short peek_queue_type(queue *s)
   return s->array[0]->type;
 }
 
+struct generic_list_s *merge_lists(struct generic_list_s *l1, struct generic_list_s *l2)
+{
+  int new_count = l1->count + l2->count, i;
+  struct generic_list_s *r = new_generic_list(new_count);
+  
+  int n_d = 0, d;
+  for(i = 0; i < l1->count; i++)
+  {
+    d = (l1->start + i) % l1->capacity;
+    r->array[n_d++] = l1->array[d]
+  }
+  
+  for(i = 0; i < l2->count; i++)
+  {
+    d = (l2->start + i) % l2->capacity;
+    r->array[n_d++] = l2->array[d]
+  }
+  
+  r->count = l1->count + l2->count;
+  destroy_generic_list(l1);
+  destroy_generic_list(l2);
+  return r;
+}
+
 void destroy_generic_list(struct generic_list_s *s)
 {
   int i, d;

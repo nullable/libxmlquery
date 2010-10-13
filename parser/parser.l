@@ -42,7 +42,8 @@ stack* trash_bin;
 <QUERY_INITIAL>\]						{ return ']'; }
 <QUERY_INITIAL>[ ]*						{ return SPACE; }
 <QUERY_INITIAL>[ ]*\,[ ]*						{ return ','; }
-<QUERY_INITIAL>[\"\']						{ BEGIN TEXT_BLOCK_QUERY; return '"'; }
+<QUERY_INITIAL>\"						{ BEGIN TEXT_BLOCK_DQ_QUERY; return '"'; }
+<QUERY_INITIAL>\'						{ BEGIN TEXT_BLOCK_SQ_QUERY; return '\''; }
 <QUERY_INITIAL>\:						{ BEGIN FUNC; return ':'; }
 <QUERY_INITIAL>[ ]*\>[ ]*					{ return '>'; }
 <QUERY_INITIAL>[ ]*\+[ ]*						{ return '+'; }
@@ -79,8 +80,12 @@ stack* trash_bin;
 <PARAMS>\)					{ BEGIN QUERY_INITIAL; return ')'; }
 
 
-<TEXT_BLOCK_QUERY>[^"']*				{ yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return TEXT; }
-<TEXT_BLOCK_QUERY>["']					{ BEGIN QUERY_INITIAL; return '"'; }
+<TEXT_BLOCK_SQ_QUERY>[^']*				{ yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return TEXT; }
+<TEXT_BLOCK_SQ_QUERY>\'					{ BEGIN QUERY_INITIAL; return '\''; }
+
+<TEXT_BLOCK_DQ_QUERY>[^"]*				{ yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return TEXT; }
+<TEXT_BLOCK_DQ_QUERY>\"					{ BEGIN QUERY_INITIAL; return '"'; }
+
 
 %%
 

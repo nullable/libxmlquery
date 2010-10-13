@@ -291,13 +291,13 @@ struct generic_list_s *merge_lists(struct generic_list_s *l1, struct generic_lis
   for(i = 0; i < l1->count; i++)
   {
     d = (l1->start + i) % l1->capacity;
-    r->array[n_d++] = l1->array[d]
+    r->array[n_d++] = l1->array[d];
   }
   
   for(i = 0; i < l2->count; i++)
   {
     d = (l2->start + i) % l2->capacity;
-    r->array[n_d++] = l2->array[d]
+    r->array[n_d++] = l2->array[d];
   }
   
   r->count = l1->count + l2->count;

@@ -94,7 +94,7 @@ node: start_tag inner end_tag                               {
 
 inner:                                                      { $$ = new_element_node("~dummy~");}
      | inner prop                                           { $$ = $1;
-                                                               append_child($$, $2);
+                                                              append_child($$, $2);
                                                             }
      ;
 
@@ -155,16 +155,16 @@ attrsel: WORD attr_filter                                   { if($2 == NULL) {
 
 id:                                                         { $$ = NULL; }
   | ALL                                                     { $$ = NULL; }
-  | WORD                                                    { $$ = $1; printf("[id %s]\n", $1); } 
+  | WORD                                                    { $$ = $1; } 
   ;
 
 pseudo_filters:                                             { $$ = new_stack(4); }
               | pseudo_filters ':' pseudo_filter            { push_stack($$, $3); }
               ;
 
-pseudo_filter: pseudo_op                                    { $$ = new_filter($1); printf("[pseudo-filter SIMPLE_FILTER]\n"); }
-           | nth_pseudo_op '(' parameters ')'               { $$ = new_filter($1); $$->value.s = $3; printf("[pseudo-filter NTH_FILTER]\n"); }
-           | NOT_FILTER '(' selector_group ')'              { $$ = new_filter(NOT_FILTER); $$->value.selector = $3; printf("[pseudo-filter NOT_FILTER]\n"); }
+pseudo_filter: pseudo_op                                    { $$ = new_filter($1); }
+           | nth_pseudo_op '(' parameters ')'               { $$ = new_filter($1); $$->value.s = $3; }
+           | NOT_FILTER '(' selector_group ')'              { $$ = new_filter(NOT_FILTER); $$->value.selector = $3; }
            ;
 
 nth_pseudo_op: NTH_CHILD_FILTER                             { $$ = NTH_CHILD_FILTER; }
@@ -194,7 +194,7 @@ offset: '+' DIGITS                                          { $$ = $2; }
       | DIGITS                                              { $$ = $1; }
       ; 
 
-relation_operator: '>'                                      { $$ = '>'; printf("'>'");}
+relation_operator: '>'                                      { $$ = '>'; }
      | '~'                                                  { $$ = '~'; }
      | '+'                                                  { $$ = '+'; }
      | ','                                                  { $$ = ','; }

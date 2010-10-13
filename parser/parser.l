@@ -6,7 +6,7 @@
 stack* trash_bin;
 %}
 
-%x IN_STATE TEXT_BLOCK CDATA COMMENT FUNC PARAMS NOT_STATE XML_INITIAL QUERY_INITIAL TEXT_BLOCK_QUERY
+%x IN_STATE TEXT_BLOCK CDATA COMMENT FUNC PARAMS NOT_STATE XML_INITIAL QUERY_INITIAL TEXT_BLOCK_DQ_QUERY  TEXT_BLOCK_SQ_QUERY
 
 %%
 \@                                                           {BEGIN QUERY_INITIAL; return '@';}                                    

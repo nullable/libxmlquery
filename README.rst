@@ -1,5 +1,6 @@
 DOM
 ===
+
 After the parsing of the xml is done, a DOM structure is created and can be accessed through a global variable denominated "document". Bear in mind that this variable is dependent of the current parser. In other words, if the parser module changes, then the variable name may also change.
 
 The DOM structure is a tree, where each node is an xml element. Since the input xml has already been validated we know it has only one root, so the document variable will point to a single node in the dom tree, the root node (This can be accessed through document->root).
@@ -8,6 +9,7 @@ The dom structure provides flexible and extendable xml document handling. It has
 
 DOM functions
 -------------
+
 To create a dom structure, the function new_document should be called. If the input xml has the form:
 
 <?xml version="1.0"?>

@@ -25,6 +25,9 @@ extern queue* new_queue(int initial);
 extern void* set_element_with_type_at(list *l, void* obj, short type, int pos);
 extern void* set_element_at(list *l, void* obj, int pos);
 
+extern void insert_element_with_type_at(list* l, void* obj, short type, int pos);
+extern void insert_element_at(list* l, void* obj, int pos);
+
 extern void append_element(list* l, void* obj, short type);
 extern void prepend_element(list* l, void* obj, short type);
 
@@ -56,3 +59,4 @@ extern struct generic_list_s *merge_lists(struct generic_list_s *l1, struct gene
 
 extern void destroy_generic_list(struct generic_list_s *s);
 #endif
+

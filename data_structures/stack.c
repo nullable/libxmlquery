@@ -8,12 +8,12 @@ struct generic_list_s *new_generic_list(int initial)
     log(F, "New generic list initial capacity must be greater than 0, %d given\n", initial);
     exit(1);
   }
-  
-  struct generic_list_s* l = alloc(struct generic_list_s, 1); 
+
+  struct generic_list_s* l = alloc(struct generic_list_s, 1);
   l->start = 0;
   l->count = 0;
   l->capacity = initial;
-  
+
   l->array = alloc(struct list_bucket*, initial);
   return l;
 }
@@ -49,14 +49,14 @@ queue* new_queue(int initial)
 void* set_element_with_type_at(list *l, void* obj, short type, int pos)
 {
   void* r = NULL;
-  
+
   if(l->count >= l->capacity)
     {
-      refactor_generic_list(l); 
+      refactor_generic_list(l);
     }
-  
+
   if(pos >= l->count || pos < 0) log(W, "Tried to add element to list at invalid position, list-size: %d, position requested: %d\n", l->count, pos);
-    
+
   struct list_bucket *b = l->array[(l->start + pos) % l->capacity];
   if(b != NULL) { r = b->element; }
   else {
@@ -64,10 +64,10 @@ void* set_element_with_type_at(list *l, void* obj, short type, int pos)
     l->count++;
     l->array[(l->start + pos) % l->capacity] = b;
   }
-  
+
   b->type = type;
   b->element = obj;
-  
+
   return r;
 }
 
@@ -76,36 +76,60 @@ void* set_element_at(list* l, void* obj, int pos)
   return set_element_with_type_at(l, obj, -1, pos);
 }
 
+void insert_element_with_type_at(list* l, void* obj, short type, int pos){
+  int i;
+  if(l->count >= l->capacity){
+    refactor_generic_list(l);
+  }
+
+  for(i = l->count; i >= pos; i--){
+    int d = (l->start + i) % l->capacity;
+    int dn = d++ % l->capacity;
+    l->array[dn] = l->array[d];
+  }
+
+  struct list_bucket* b = alloc(struct list_bucket, 1);
+  b->type = type;
+  b->element = obj;
+
+  l->count++;
+  l->array[(l->start + pos) % l->capacity] = b;
+}
+
+void insert_element_at(list* l, void* obj, int pos){
+  insert_element_with_type_at(l, obj, -1, pos);
+}
+
 void append_element(list* l, void* obj, short type)
 {
   if(l->count >= l->capacity)
   {
-    refactor_generic_list(l); 
+    refactor_generic_list(l);
   }
-  
+
   struct list_bucket *b = alloc(struct list_bucket, 1);
   l->array[(l->start + l->count) % l->capacity] = b;
   l->count++;
 
   b->type = type;
-  b->element = obj;    
+  b->element = obj;
 }
 
 void prepend_element(list* l, void* obj, short type)
 {
   if(l->count >= l->capacity)
   {
-    refactor_generic_list(l); 
+    refactor_generic_list(l);
   }
 
   struct list_bucket *b = alloc(struct list_bucket, 1);
   if(--l->start < 0){ l->start = l->capacity - l->start; };
-  
+
   l->array[l->start] = b;
   l->count++;
 
   b->type = type;
-  b->element = obj; 
+  b->element = obj;
 }
 
 
@@ -125,22 +149,22 @@ int _remove_element(list* l, void* obj)
   for(i = 0;i < l->count; i++)
     {
       d = (i + l->start) % l->capacity;
-      
-      if(l->array[d] != obj){ 
-	continue; 
+
+      if(l->array[d] != obj){
+	continue;
       }
       else
         {
 	  free(l->array[d]);
 	  l->array[d] = NULL;
-          
+
 	  if(d == l->start) { l->start = ++l->start % l->capacity; l->count--; }
-	  else if(i == l->count-1){ l->count--; } 
-	  
+	  else if(i == l->count-1){ l->count--; }
+
 	  return i;
         }
     }
-  
+
   return -1;
 }
 
@@ -164,7 +188,7 @@ int remove_element(list* l, void* obj)
 {
   int p = _remove_element(l, obj);
   if(p > 0 && p != l->count){
-    collapse_generic_list(l); 
+    collapse_generic_list(l);
   }
   return p;
 }
@@ -174,7 +198,7 @@ int remove_all(list* l, void* obj)
   int c = 0;
   while(_remove_element(l, obj) == -1){ c++; }
   if(c > 0){ collapse_generic_list(l); }
-  
+
   return c;
 }
 
@@ -182,21 +206,21 @@ void* remove_element_at(list* l, int pos)
 {
   if(pos >= l->count){ log(W, "Trying to remove object on position (%d) greater than element count (%d)", pos, l->count); return NULL; }
   int d = (l->start + pos) % l->capacity;
-  
+
   void* r = l->array[d]->element;
-  
+
   free(l->array[d]);
   l->array[d] = NULL;
-  
-  if(pos == 0) { 
-    l->start = ++l->start % l->capacity; 
-    l->count--; 
+
+  if(pos == 0) {
+    l->start = ++l->start % l->capacity;
+    l->count--;
   }
-  else 
+  else
     if(pos == l->count-1)
       { l->count--; }
   else{ collapse_generic_list(l); }
-  
+
   return r;
 }
 
@@ -257,7 +281,7 @@ short peek_stack_type(stack *s)
       log(F, "Stack is not initialized");
       exit(1);
     }
-  
+
   if(s->count == 0)
     {
       log(F, "Stack is empty");
@@ -273,7 +297,7 @@ short peek_queue_type(queue *s)
       log(F, "Queue is not initialized");
       exit(1);
     }
-  
+
   if(s->count == 0)
     {
       log(F, "Queue is empty");
@@ -286,20 +310,20 @@ struct generic_list_s *merge_lists(struct generic_list_s *l1, struct generic_lis
 {
   int new_count = l1->count + l2->count, i;
   struct generic_list_s *r = new_generic_list(new_count);
-  
+
   int n_d = 0, d;
   for(i = 0; i < l1->count; i++)
   {
     d = (l1->start + i) % l1->capacity;
     r->array[n_d++] = l1->array[d];
   }
-  
+
   for(i = 0; i < l2->count; i++)
   {
     d = (l2->start + i) % l2->capacity;
     r->array[n_d++] = l2->array[d];
   }
-  
+
   r->count = l1->count + l2->count;
   destroy_generic_list(l1);
   destroy_generic_list(l2);
@@ -313,10 +337,9 @@ void destroy_generic_list(struct generic_list_s *s)
     {
       d = (s->start + i) % s->capacity;
       free(s->array[d]);
-    } 
-  
+    }
+
   free(s->array);
   free(s);
 }
-
 

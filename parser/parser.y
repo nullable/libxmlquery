@@ -40,7 +40,7 @@ int yywrap()
 %token ALL SPACE EQUAL_OP WSSV_OP STARTSW_OP ENDSW_OP CONTAINS_OP REGEX_OP REGEXI_OP DSV_OP NOTEQUAL_OP EVEN ODD
 %token NTH_CHILD_FILTER NTH_LAST_CHILD_FILTER FIRST_CHILD_FILTER LAST_CHILD_FILTER ONLY_CHILD_FILTER EMPTY_FILTER NOT_FILTER
 %type <string> value end_tag
-%type <dn> attr node prop inner attrs declaration start_tag
+%type <dn> attr node prop inner attrs declaration start_tag namespace
 %token <digits> DIGITS
 
 %type <attrselector> attr_filter attrsel;
@@ -57,24 +57,28 @@ int yywrap()
 %%
 
 choose: '@' selector_group
-       | document
-       ;
+      | document
+      ;
 
 document: node                                              {document = new_document(NULL); set_doc_root(document, $1);}
-  | declaration node                                        {document = new_document($1); set_doc_root(document, $2);}
-  ;
+        | declaration node                                  {document = new_document($1); set_doc_root(document, $2);}
+        ;
 
-declaration: START_EL '?' WORD attrs '?' END_EL             {
-                                                              if(strcmp($3, "xml") != 0){
+namespace: WORD                                             { $$ = new_element_node($1);}
+         | WORD ':' WORD                                    { $$ = new_element_node($3); set_namespace($$, $1); }
+         ;
+
+declaration: START_EL '?' namespace attrs '?' END_EL        {
+                                                              if(strcmp(get_name($3), "xml") != 0){
                                                               yyerror("Declaration does not begin with xml.\n");
                                                               exit(-1);
                                                               }
                                                               $$ = $4;
-                                                              set_name($$, $3);
+                                                              set_name($$, get_name($3));
+                                                              set_namespace($$, get_namespace($3));
+                                                              destroy_dom_node($3);
                                                             }
            ;
-
-
 
 node: start_tag inner end_tag                               {
                                                               if(strcmp(get_name($1),$3) != 0)
@@ -88,7 +92,11 @@ node: start_tag inner end_tag                               {
                                                               free($2);
                                                               $$ = $1;
                                                             }
-    | START_EL WORD attrs SLASH END_EL                      { $$ = $3; set_name($$, $2);}
+    | START_EL namespace attrs SLASH END_EL                 { $$ = $3;
+                                                              set_name($$, get_name($2));
+                                                              set_namespace($$, get_namespace($2));
+                                                              destroy_dom_node($2);
+                                                            }
     ;
 
 inner:                                                      { $$ = new_element_node("~dummy~");}
@@ -118,7 +126,7 @@ attrs:                                                      { $$ = new_element_n
                                                             }
      ;
 
-attr:  WORD '=' value                                       {$$ = new_attribute($1, $3);}
+attr:  namespace '=' value                                  {$$ = new_attribute(get_name($1), $3); set_namespace($$, get_namespace($1)); destroy_dom_node($1); }
     ;
 
 
@@ -220,8 +228,8 @@ regex: REGEX                                                { $$ = new_stack(4);
      ;
 
 rmodifier:                                                  { $$ = REGEX_OP; }
-          | 'i'                                             { $$ = REGEXI_OP; }
-          ;
+         | 'i'                                              { $$ = REGEXI_OP; }
+         ;
 
 operator: EQUAL_OP                                          { $$ = EQUAL_OP; }
         | WSSV_OP                                           { $$ = WSSV_OP; }

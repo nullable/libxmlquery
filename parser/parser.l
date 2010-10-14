@@ -4,6 +4,7 @@
 #include "../data_structures/stack.h"
 
 stack* trash_bin;
+int lxq_parser_last_state;
 %}
 
 %x IN_STATE TEXT_BLOCK CDATA COMMENT FUNC PARAMS NOT_STATE XML_INITIAL QUERY_INITIAL TEXT_BLOCK_DQ_QUERY TEXT_BLOCK_SQ_QUERY REGEX_BLOCK ESCAPE
@@ -12,18 +13,20 @@ stack* trash_bin;
 \@                                                          {BEGIN QUERY_INITIAL; return '@';}
 [^@]                                                        {unput(*yytext); BEGIN XML_INITIAL;}
 
-<XML_INITIAL>"<!--"                                         { BEGIN COMMENT;}
+<XML_INITIAL>"<!--"                                         { BEGIN COMMENT; lxq_parser_last_state = XML_INITIAL;}
 <XML_INITIAL>"<![CDATA["                                    { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); BEGIN CDATA; }
 <XML_INITIAL>\n                                             ;
 <XML_INITIAL>[^<\n]*                                        { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return TEXT; }
 <XML_INITIAL>\<                                             { BEGIN IN_STATE; return START_EL; }
 
 
+<IN_STATE>"<!--"                                            { BEGIN COMMENT; lxq_parser_last_state = IN_STATE;}
 <IN_STATE>\>                                                { BEGIN XML_INITIAL; return END_EL; }
 <IN_STATE>\?                                                { return '?'; }
 <IN_STATE>\/                                                { return SLASH; }
 <IN_STATE>\=                                                { return '='; }
 <IN_STATE>[-_a-zA-Z][-_a-zA-Z0-9]*                          { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return WORD; }
+<IN_STATE>\:                                                { return ':'; }
 <IN_STATE>\"                                                { BEGIN TEXT_BLOCK; return '"'; }
 <IN_STATE>[\r\n\s]+                                         ;
 
@@ -33,7 +36,7 @@ stack* trash_bin;
 <CDATA>("\n"|.)+/"]]>"                                      { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return CDATA_TOK; }
 <CDATA>"]]>"                                                { BEGIN XML_INITIAL; }
 
-<COMMENT>[\n.]*"-->"                                        { BEGIN XML_INITIAL;}
+<COMMENT>[\n.]*"-->"                                        { BEGIN lxq_parser_last_state; return; }
 
 <QUERY_INITIAL>\*                                           { return ALL; }
 <QUERY_INITIAL>[\n\r]+                                      ;

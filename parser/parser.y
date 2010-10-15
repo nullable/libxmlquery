@@ -39,8 +39,8 @@ int yywrap()
 %token <string> WORD TEXT CDATA_TOK REGEX
 %token ALL SPACE EQUAL_OP WSSV_OP STARTSW_OP ENDSW_OP CONTAINS_OP REGEX_OP REGEXI_OP DSV_OP NOTEQUAL_OP EVEN ODD
 %token NTH_CHILD_FILTER NTH_LAST_CHILD_FILTER FIRST_CHILD_FILTER LAST_CHILD_FILTER ONLY_CHILD_FILTER EMPTY_FILTER NOT_FILTER
-%type <string> value end_tag
-%type <dn> attr node prop inner attrs declaration start_tag namespace
+%type <string> value
+%type <dn> attr node prop inner attrs declaration start_tag end_tag namespace
 %token <digits> DIGITS
 
 %type <attrselector> attr_filter attrsel;
@@ -81,10 +81,10 @@ declaration: START_EL '?' namespace attrs '?' END_EL        {
            ;
 
 node: start_tag inner end_tag                               {
-                                                              if(strcmp(get_name($1),$3) != 0)
+                                                              if(strcmp(get_name($1),get_name($3)) != 0)
                                                               {
                                                                 yyerror("Start tag does not match end tag.\n");
-                                                                exit(-1);
+                                                                exit(1);
                                                               }
                                                               append_children($1, $2->children);
                                                               free($2->name);
@@ -111,12 +111,14 @@ prop: CDATA_TOK                                             {$$ = new_cdata($1);
     ;
 
 
-start_tag: START_EL WORD attrs END_EL                       { $$ = $3;
-                                                              set_name($$, $2);
+start_tag: START_EL namespace attrs END_EL                  { $$ = $3;
+                                                              set_name($$, get_name($2));
+                                                              set_namespace($$, get_namespace($2));
+                                                              destroy_dom_node($2);
                                                             }
          ;
 
-end_tag: START_EL SLASH WORD END_EL                         { $$ = $3; }
+end_tag: START_EL SLASH namespace END_EL                    { $$ = $3; }
        ;
 
 attrs:                                                      { $$ = new_element_node("~dummy~"); }

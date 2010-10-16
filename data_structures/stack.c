@@ -2,7 +2,7 @@
 #include "../dom/macros.h"
 #include "stack.h"
 
-struct generic_list_s *new_generic_list(int initial)
+struct generic_list_s *new_generic_list(int32_t initial)
 {
   if(initial <= 0){
     log(F, "New generic list initial capacity must be greater than 0, %d given\n", initial);
@@ -19,7 +19,7 @@ struct generic_list_s *new_generic_list(int initial)
 }
 
 static void refactor_generic_list(list* l){
-  int cpy;
+  int32_t cpy;
 
   l->array = realloc(l->array, l->capacity * 2);
   if(l->array == NULL){
@@ -37,16 +37,16 @@ static void refactor_generic_list(list* l){
   l->capacity *= 2;
 }
 
-stack* new_stack(int initial)
+stack* new_stack(int32_t initial)
 {
   return new_generic_list(initial);
 }
-queue* new_queue(int initial)
+queue* new_queue(int32_t initial)
 {
   return new_generic_list(initial);
 }
 
-void* set_element_with_type_at(list *l, void* obj, short type, int pos)
+void* set_element_with_type_at(list *l, void* obj, int16_t type, int32_t pos)
 {
   void* r = NULL;
 
@@ -71,20 +71,20 @@ void* set_element_with_type_at(list *l, void* obj, short type, int pos)
   return r;
 }
 
-void* set_element_at(list* l, void* obj, int pos)
+void* set_element_at(list* l, void* obj, int32_t pos)
 {
   return set_element_with_type_at(l, obj, -1, pos);
 }
 
-void insert_element_with_type_at(list* l, void* obj, short type, int pos){
-  int i;
+void insert_element_with_type_at(list* l, void* obj, int16_t type, int32_t pos){
+  int32_t i;
   if(l->count >= l->capacity){
     refactor_generic_list(l);
   }
 
   for(i = l->count; i >= pos; i--){
-    int d = (l->start + i) % l->capacity;
-    int dn = d++ % l->capacity;
+    int32_t d = (l->start + i) % l->capacity;
+    int32_t dn = d++ % l->capacity;
     l->array[dn] = l->array[d];
   }
 
@@ -96,11 +96,11 @@ void insert_element_with_type_at(list* l, void* obj, short type, int pos){
   l->array[(l->start + pos) % l->capacity] = b;
 }
 
-void insert_element_at(list* l, void* obj, int pos){
+void insert_element_at(list* l, void* obj, int32_t pos){
   insert_element_with_type_at(l, obj, -1, pos);
 }
 
-void append_element(list* l, void* obj, short type)
+void append_element(list* l, void* obj, int16_t type)
 {
   if(l->count >= l->capacity)
   {
@@ -115,7 +115,7 @@ void append_element(list* l, void* obj, short type)
   b->element = obj;
 }
 
-void prepend_element(list* l, void* obj, short type)
+void prepend_element(list* l, void* obj, int16_t type)
 {
   if(l->count >= l->capacity)
   {
@@ -133,7 +133,7 @@ void prepend_element(list* l, void* obj, short type)
 }
 
 
-void add_element_with_type(list* l, void* obj, short type)
+void add_element_with_type(list* l, void* obj, int16_t type)
 {
   append_element(l, obj, type);
 }
@@ -143,9 +143,9 @@ void add_element(list* l, void* obj)
   append_element(l, obj, -1);
 }
 
-int _remove_element(list* l, void* obj)
+int32_t _remove_element(list* l, void* obj)
 {
-  int i, d;
+  int32_t i, d;
   for(i = 0;i < l->count; i++)
     {
       d = (i + l->start) % l->capacity;
@@ -169,7 +169,7 @@ int _remove_element(list* l, void* obj)
 }
 
 static void collapse_generic_list(list* l){
-  int i = 0, c = 0, d, e;
+  int32_t i = 0, c = 0, d, e;
   for(; i < l->count; i++){
     d = (l->start + i) % l->capacity;
     if(l->array[d] == NULL){
@@ -184,28 +184,28 @@ static void collapse_generic_list(list* l){
   l->count -= c;
 }
 
-int remove_element(list* l, void* obj)
+int32_t remove_element(list* l, void* obj)
 {
-  int p = _remove_element(l, obj);
+  int32_t p = _remove_element(l, obj);
   if(p > 0 && p != l->count){
     collapse_generic_list(l);
   }
   return p;
 }
 
-int remove_all(list* l, void* obj)
+int32_t remove_all(list* l, void* obj)
 {
-  int c = 0;
+  int32_t c = 0;
   while(_remove_element(l, obj) == -1){ c++; }
   if(c > 0){ collapse_generic_list(l); }
 
   return c;
 }
 
-void* remove_element_at(list* l, int pos)
+void* remove_element_at(list* l, int32_t pos)
 {
   if(pos >= l->count){ log(W, "Trying to remove object on position (%d) greater than element count (%d)", pos, l->count); return NULL; }
-  int d = (l->start + pos) % l->capacity;
+  int32_t d = (l->start + pos) % l->capacity;
 
   void* r = l->array[d]->element;
 
@@ -224,21 +224,21 @@ void* remove_element_at(list* l, int pos)
   return r;
 }
 
-void* get_element_and_type_at(list* l, int pos, short* type)
+void* get_element_and_type_at(list* l, int32_t pos, int16_t* type)
 {
   if(pos < 0 || pos >= l->count){ log(W, "Trying to access object on position (%d) outside range (0 to %d)", pos, l->count-1); return NULL; }
-  int d = (l->start + pos) % l->capacity;
+  int32_t d = (l->start + pos) % l->capacity;
   void* r = l->array[d]->element;
   *type = l->array[d]->type;
   return r;
 }
 
-void* get_element_at(list* l, int pos){
-  short type;
+void* get_element_at(list* l, int32_t pos){
+  int16_t type;
   return get_element_and_type_at(l, pos, &type);
 }
 
-void enqueue_with_type(queue* q, void* obj, short type)
+void enqueue_with_type(queue* q, void* obj, int16_t type)
 {
   add_element_with_type(q, obj, type);
 }
@@ -253,7 +253,7 @@ void* dequeue(queue* q)
   return remove_element_at(q, 0);
 }
 
-void push_stack_type(stack* s, void* obj, short type)
+void push_stack_type(stack* s, void* obj, int16_t type)
 {
   add_element_with_type(s, obj, type);
 }
@@ -268,13 +268,13 @@ void* pop_stack(stack* s)
   return remove_element_at(s, s->count-1);
 }
 
-short peek_element_type_at(list* l, int pos)
+int16_t peek_element_type_at(list* l, int32_t pos)
 {
   if(pos < 0 || pos >= l->count){ log(W, "Trying to access object on position (%d) outside range (0 to %d)", pos, l->count-1); exit(1); }
   return l->array[(l->start + pos) % l->capacity]->type;
 }
 
-short peek_stack_type(stack *s)
+int16_t peek_stack_type(stack *s)
 {
   if(s == NULL)
     {
@@ -290,7 +290,7 @@ short peek_stack_type(stack *s)
   return s->array[s->count-1]->type;
 }
 
-short peek_queue_type(queue *s)
+int16_t peek_queue_type(queue *s)
 {
   if(s == NULL)
     {
@@ -308,10 +308,10 @@ short peek_queue_type(queue *s)
 
 struct generic_list_s *merge_lists(struct generic_list_s *l1, struct generic_list_s *l2)
 {
-  int new_count = l1->count + l2->count, i;
+  int32_t new_count = l1->count + l2->count, i;
   struct generic_list_s *r = new_generic_list(new_count);
 
-  int n_d = 0, d;
+  int32_t n_d = 0, d;
   for(i = 0; i < l1->count; i++)
   {
     d = (l1->start + i) % l1->capacity;
@@ -332,7 +332,7 @@ struct generic_list_s *merge_lists(struct generic_list_s *l1, struct generic_lis
 
 void destroy_generic_list(struct generic_list_s *s)
 {
-  int i, d;
+  int32_t i, d;
   for(i = 0; i < s->count; i++)
     {
       d = (s->start + i) % s->capacity;

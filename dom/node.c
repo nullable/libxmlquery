@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 #include "macros.h"
 #include "node.h"
 
@@ -101,7 +102,7 @@ void* key(struct stree_node* node){
   return ((dom_node*) node->node)->name;
 }
 
-int compare(void* keyA, void* keyB){
+int64_t compare(void* keyA, void* keyB){
   return strcmp((char*) keyA, (char*) keyB);
 }
 

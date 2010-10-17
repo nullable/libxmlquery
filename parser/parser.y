@@ -70,12 +70,12 @@ namespace: WORD                                             { $$ = new_element_n
 
 declaration: START_EL '?' namespace attrs '?' END_EL        {
                                                               if(strcmp(get_name($3), "xml") != 0){
-                                                              yyerror("Declaration does not begin with xml.\n");
-                                                              exit(-1);
+                                                                yyerror("Declaration does not begin with xml.\n");
+                                                                exit(-1);
                                                               }
                                                               $$ = $4;
                                                               set_name($$, get_name($3));
-                                                              set_namespace($$, get_namespace($3));
+                                                              set_namespace($$, get_namespace($3));							  
                                                               destroy_dom_node($3);
                                                             }
            ;

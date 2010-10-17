@@ -9,7 +9,7 @@ int main(){
   parse_dom();
 
   //printf("\n\n\n==========================================================\n\n\n");
-  /*  output_xml(document);*/
+  output_xml(document);
 
   if(document != NULL)
     destroy_dom_tree(document);

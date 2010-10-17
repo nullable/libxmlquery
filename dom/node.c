@@ -5,7 +5,12 @@
 #include "node.h"
 
 void set_namespace(dom_node* node, char* namespace){
-  int size = strlen(namespace) + 1;
+  int size;
+
+  if(namespace == NULL)
+    return;
+
+  size = strlen(namespace) + 1;
 
   if(node->namespace != NULL){
     free(node->namespace);
@@ -16,7 +21,9 @@ void set_namespace(dom_node* node, char* namespace){
 }
 
 void set_name(dom_node* node, char* name){
-  int size = strlen(name) + 1;
+  int size;
+
+  size = strlen(name) + 1;
 
   if(node->name != NULL){
     free(node->name);
@@ -331,9 +338,9 @@ static void __output_xml(dom_node* root, int pad){
 	struct siterator *it = new_tree_iterator(root->attributes);
 	while(tree_iterator_has_next(it)){
 	  dom_node* attr = (dom_node*) tree_iterator_next(it);
-	  printf("%s=\"", attr->name);
 	  if(attr->namespace != NULL)
 	    printf("%s:", attr->namespace);
+	  printf("%s=\"", attr->name);
 	  printf("%s\" ", attr->value);
 	}
 	destroy_iterator(it);

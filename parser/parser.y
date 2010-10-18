@@ -1,6 +1,10 @@
 %{
 #include <stdio.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include "../dom/node.h"
 #include "../data_structures/stack.h"
 #include "../selectors/query_parser.h"
@@ -8,8 +12,9 @@
 
 extern int yylex(void);
 extern int yyparse(void);
+extern FILE* yyin;
 
-doc* document;
+doc* lxq_document;
 
 void yyerror(const char *str)
 {
@@ -19,6 +24,30 @@ void yyerror(const char *str)
 int yywrap()
 {
         return 1;
+}
+
+void parse_file(char* filename){
+  char* address;
+  int32_t fdin;
+  struct stat st;
+
+  /*fdin = open(filename, O_RDONLY);
+  if(fdin < 0){
+    log(F, "Unnable to open file %s for reading\n", filename);
+    exit(-1);
+  }
+
+  fstat(fdin, &st);
+  address = mmap(0, st.st_size, PROT_READ, MAP_PRIVATE, fdin, 0);
+  if(address == (caddr_t) -1){
+    log(F, "Could map file into memory.\n");
+    exit(-1);
+  }*/    
+  //yy_scan_string(address);
+  char* coco = "<this />";
+  yy_scan_string(coco);
+  yyparse();
+  yylex_destroy();
 }
 
 %}
@@ -60,8 +89,8 @@ choose: '@' selector_group
       | document
       ;
 
-document: node                                              {document = new_document(NULL); set_doc_root(document, $1);}
-        | declaration node                                  {document = new_document($1); set_doc_root(document, $2);}
+document: node                                              {lxq_document = new_document(NULL); set_doc_root(lxq_document, $1);}
+        | declaration node                                  {lxq_document = new_document($1); set_doc_root(lxq_document, $2);}
         ;
 
 namespace: WORD                                             { $$ = new_element_node($1);}

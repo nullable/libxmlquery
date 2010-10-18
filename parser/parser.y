@@ -6,6 +6,9 @@
 #include "../selectors/query_parser.h"
 #include "../dom/macros.h"
 
+#define LXQ_RELATION_TYPE 0
+#define LXQ_SELECTOR_TYPE 1
+
 extern int yylex(void);
 extern int yyparse(void);
 
@@ -138,12 +141,12 @@ value: '"' TEXT '"'                                         {$$ = $2;}
      | '"' '"'                                              {$$ = "";}
      ;
 
-selector_group: selector                                    { $$ = new_queue(16); enqueue_with_type($$, $1, 0); }
+selector_group: selector                                    { $$ = new_queue(16); enqueue_with_type($$, $1, LXQ_SELECTOR_TYPE); }
               | selector_group relation_operator selector   { int* a = alloc(int, 1);
                                                               *a = $2;
                                                               $$ = $1;
-                                                              enqueue_with_type($$, a, 1);
-                                                              enqueue_with_type($$, $3, 0);
+                                                              enqueue_with_type($$, a, LXQ_RELATION_TYPE);
+                                                              enqueue_with_type($$, $3, LXQ_SELECTOR_TYPE);
                                                             }
               ;
 

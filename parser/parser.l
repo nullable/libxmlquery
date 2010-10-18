@@ -54,6 +54,8 @@ int lxq_parser_last_state;
 <QUERY_INITIAL>[ ]*\~[ ]*                                   { return '~'; }
 <QUERY_INITIAL>\(                                           { BEGIN PARAMS; return '('; }
 <QUERY_INITIAL>\)                                           { return ')'; }
+<QUERY_INITIAL>\.                                           { return '.'; }
+<QUERY_INITIAL>\#                                           { return '#'; }
 <QUERY_INITIAL>[ ]*=[ ]*                                    { return EQUAL_OP; }
 <QUERY_INITIAL>[ ]*"~="[ ]*                                 { return WSSV_OP; }
 <QUERY_INITIAL>[ ]*"^="[ ]*                                 { return STARTSW_OP; }

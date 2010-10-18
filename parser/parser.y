@@ -10,6 +10,8 @@ extern int yylex(void);
 extern int yyparse(void);
 
 doc* document;
+char* lxq_parser_dot_query_operator = "class";
+char* lxq_parser_pound_query_operator = "id";
 
 void yyerror(const char *str)
 {
@@ -75,7 +77,7 @@ declaration: START_EL '?' namespace attrs '?' END_EL        {
                                                               }
                                                               $$ = $4;
                                                               set_name($$, get_name($3));
-                                                              set_namespace($$, get_namespace($3));							  
+                                                              set_namespace($$, get_namespace($3));
                                                               destroy_dom_node($3);
                                                             }
            ;
@@ -150,6 +152,8 @@ selector: id attrsels pseudo_filters                        { $$ = new_selector(
 
 attrsels:                                                   { $$ = new_stack(4); }
         | attrsels '[' attrsel ']'                          { $$ = $1; push_stack($$, $3); }
+        | attrsels '.' WORD                                 { $$ = $1; push_stack($$, new_attr_value_selector(lxq_parser_dot_query_operator, EQUAL_OP, $3)); }
+        | attrsels '#' WORD                                 { $$ = $1; push_stack($$, new_attr_value_selector(lxq_parser_pound_query_operator, EQUAL_OP, $3)); }
         ;
 
 attrsel: WORD attr_filter                                   { if($2 == NULL) {

@@ -11,14 +11,17 @@ int lxq_parser_last_state;
 
 %%
 \@                                                          {BEGIN QUERY_INITIAL; return '@';}
-[^@]                                                        {unput(*yytext); BEGIN XML_INITIAL;}
+"<!--"                                         { BEGIN COMMENT; lxq_parser_last_state = XML_INITIAL;}
+"<![CDATA["                                    { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); BEGIN CDATA; }
+\n                                             {BEGIN XML_INITIAL;}
+[^<\n]*                                        { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); BEGIN XML_INITIAL; return TEXT; }
+\<                                             { BEGIN IN_STATE; return START_EL; }
 
 <XML_INITIAL>"<!--"                                         { BEGIN COMMENT; lxq_parser_last_state = XML_INITIAL;}
 <XML_INITIAL>"<![CDATA["                                    { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); BEGIN CDATA; }
 <XML_INITIAL>\n                                             ;
 <XML_INITIAL>[^<\n]*                                        { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return TEXT; }
 <XML_INITIAL>\<                                             { BEGIN IN_STATE; return START_EL; }
-
 
 <IN_STATE>"<!--"                                            { BEGIN COMMENT; lxq_parser_last_state = IN_STATE;}
 <IN_STATE>\>                                                { BEGIN XML_INITIAL; return END_EL; }
@@ -28,7 +31,7 @@ int lxq_parser_last_state;
 <IN_STATE>[-_a-zA-Z][-_a-zA-Z0-9]*                          { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return WORD; }
 <IN_STATE>\:                                                { return ':'; }
 <IN_STATE>\"                                                { BEGIN TEXT_BLOCK; return '"'; }
-<IN_STATE>[\r\n\s]+                                         ;
+<IN_STATE>[\r\n \t]+                                         ;
 
 <TEXT_BLOCK>[^"]*                                           { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return TEXT; }
 <TEXT_BLOCK>\"                                              { BEGIN IN_STATE; return '"'; }

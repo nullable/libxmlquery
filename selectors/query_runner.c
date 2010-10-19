@@ -59,6 +59,6 @@ list* query(char* query_string, dom_node* node){
         }
     }
 
-    return merge_lists(result, nodes);
+    return remove(duplicates, merge_lists(result, nodes));
 }
 

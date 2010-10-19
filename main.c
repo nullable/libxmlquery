@@ -3,10 +3,8 @@
 #include "parser/dom_parser.h"
 #include "data_structures/stack.h"
 
-extern doc* document;
-
 int main(){
-  parse_dom();
+  doc* document = parse_dom("test.xml");
 
   //printf("\n\n\n==========================================================\n\n\n");
   output_xml(document);

@@ -9,6 +9,7 @@
 extern doc* lxq_document;
 extern stack* trash_bin;
 extern void parse_file(char*);
+extern void parse_string(const char*);
 
 doc* parse_dom(char* filename){
   doc* document;
@@ -30,3 +31,4 @@ doc* parse_dom(char* filename){
   lxq_document = NULL;
   return document;
 }
+

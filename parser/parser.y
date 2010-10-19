@@ -12,7 +12,6 @@
 
 extern int yylex(void);
 extern int yyparse(void);
-extern FILE* yyin;
 
 doc* lxq_document;
 
@@ -30,23 +29,31 @@ void parse_file(char* filename){
   char* address;
   int32_t fdin;
   struct stat st;
+  struct yy_buffer_state* bs;
 
-  /*fdin = open(filename, O_RDONLY);
+  fdin = open(filename, O_RDONLY);
   if(fdin < 0){
     log(F, "Unnable to open file %s for reading\n", filename);
     exit(-1);
   }
 
   fstat(fdin, &st);
-  address = mmap(0, st.st_size, PROT_READ, MAP_PRIVATE, fdin, 0);
+  address = mmap(0, st.st_size + 2, PROT_READ | PROT_WRITE, MAP_PRIVATE, fdin, 0);
   if(address == (caddr_t) -1){
     log(F, "Could map file into memory.\n");
     exit(-1);
-  }*/    
-  //yy_scan_string(address);
-  char* coco = "<this />";
-  yy_scan_string(coco);
+  }    
+
+  address[st.st_size] = '\0';
+  address[st.st_size + 1] = '\0';
+
+  bs = (struct yy_buffer_state*) yy_scan_buffer(address, st.st_size + 2);
+  if(bs == NULL){
+    log(F, "flex could not allocate a new buffer to parse the file.\n");
+    exit(-1);
+  }
   yyparse();
+  yy_delete_buffer(bs);
   yylex_destroy();
 }
 

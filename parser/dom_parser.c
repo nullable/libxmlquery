@@ -22,6 +22,9 @@ doc* parse_dom(char* filename){
   }
   destroy_generic_list(trash_bin);
 
+  if(lxq_document == NULL)
+    return NULL;
+
   document = alloc(doc, 1);
   memcpy(document, lxq_document, sizeof(doc));
   lxq_document = NULL;

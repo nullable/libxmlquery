@@ -4,4 +4,5 @@
 #include "../dom/node.h"
 
 extern doc* parse_dom(char* filename);
+extern list* parse_query(const char* query);
 #endif

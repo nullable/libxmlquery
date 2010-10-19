@@ -14,6 +14,7 @@ extern int yylex(void);
 extern int yyparse(void);
 
 doc* lxq_document;
+list* lxq_selected_elements;
 
 void yyerror(const char *str)
 {
@@ -193,7 +194,7 @@ value: '"' TEXT '"'                                         {$$ = $2;}
      | '"' '"'                                              {$$ = "";}
      ;
 
-selector_group: selector                                    { $$ = new_queue(16); enqueue_with_type($$, $1, 0); }
+selector_group: selector                                    { lxq_selected_elements = $$ = new_queue(16); enqueue_with_type($$, $1, 0); }
               | selector_group relation_operator selector   { int* a = alloc(int, 1);
                                                               *a = $2;
                                                               $$ = $1;

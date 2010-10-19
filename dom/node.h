@@ -19,9 +19,9 @@ typedef struct snode{
   char* value;
 
   struct sroot* attributes;
-  
+
   struct snode* parent;
-  
+
   struct generic_list_s* children;
 }dom_node;
 
@@ -61,11 +61,11 @@ extern struct generic_list_s* get_text_nodes(doc* root);
 extern dom_node* get_attribute_by_name(dom_node* node, char* attr_name);
 extern struct generic_list_s* get_elements_by_name(doc* root, char* name);
 
-extern void delete_attribute(dom_node* node, char* name); 
+extern void delete_attribute(dom_node* node, char* name);
 extern void remove_node(doc* root, dom_node* node);
 
 extern void destroy_dom_node(dom_node* n);
 extern void destroy_dom_tree(doc* root);
 
-extern void output_xml(doc* root);
 #endif
+

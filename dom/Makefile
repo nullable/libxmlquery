@@ -1,9 +1,13 @@
 include ../Makefile.inc
 
-all: node.o
+OBJS = node.o numbers.o bson.o serialize.o
+includes = $(wildcard include/*.h)
 
-node.o: node.h node.c macros.h
-	$(CC) $(CFLAGS) -c node.c
+all: $(OBJS)
+
+%.o: %.c $(includes)
+	$(CC) $(CFLAGS) -c $<
 
 clean:
 	rm -rf *~ *.out $(OBJS)
+

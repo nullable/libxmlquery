@@ -30,7 +30,7 @@ void append_string_to_buffer(const char* s, byte_buffer* b){
 
 void append_bytes_to_buffer(const char* bytes, byte_buffer* b, size_t size){
     if(b->size + size > b->capacity){
-        b->buffer = (char*)realloc(b->buffer, (b->size+size)*2);
+        b->buffer = (char*)realloc(b->buffer, sizeof(char)*(b->size+size)*2);
         b->capacity = (b->size+size)*2;
     }
 
@@ -143,6 +143,63 @@ byte_buffer* __dom_element_to_json(dom_node* n, int depth){
     return b;
 }
 
+byte_buffer* __dom_element_to_yaml(dom_node* n, int depth){
+    byte_buffer* b = new_byte_buffer(16);
+    int i;
+
+    for(i = 0; i < depth; i++){ append_string_to_buffer("  ", b); }
+    //append_string_to_buffer("{ ", b);
+    //append_string_to_buffer("- ", b);
+    append_string_to_buffer(n->name, b);
+
+
+    if(n->attributes == NULL && n->children == NULL && n->namespace == NULL){
+        append_string_to_buffer(": null\n", b);
+        return b;
+    }
+    else{
+        append_string_to_buffer(":\n", b);
+     }
+
+    if(n->attributes != NULL){
+        for(i = 0; i < depth+1; i++){ append_string_to_buffer("  ", b); }
+        append_string_to_buffer("- !attributes\n", b);
+        struct siterator *it = new_tree_iterator(n->attributes);
+        i = 0;
+        while(tree_iterator_has_next(it)){
+            byte_buffer* attr = __attribute_to_yaml((dom_node*) tree_iterator_next(it), depth+2);
+            append_buffer_to_buffer(attr, b);
+        }
+        destroy_iterator(it);
+    }
+
+    if(n->children != NULL && n->children->count > 0){
+        for(i = 0; i < depth+1; i++){ append_string_to_buffer("  ", b); }
+        append_string_to_buffer("- !children\n", b);
+        byte_buffer* children_xml = __element_list_to_yaml(n->children, depth+2);
+        append_buffer_to_buffer(children_xml, b);
+    }
+
+    if(n->children != NULL && n->children->count > 0){
+        for(i = 0; i < depth+1; i++){ append_string_to_buffer("  ", b); }
+        append_string_to_buffer("- !text >\n", b);
+        byte_buffer* children_xml = __text_list_to_yaml(n->children, depth+2);
+        append_buffer_to_buffer(children_xml, b);
+    }
+
+    if(n->namespace != NULL){
+        for(i = 0; i < depth+1; i++){ append_string_to_buffer("  ", b); }
+        append_string_to_buffer("- !ns ", b);
+        append_string_to_buffer(n->namespace, b);
+        append_string_to_buffer("\n", b);
+    }
+
+    //for(i = 0; i < depth; i++){ append_string_to_buffer("  ", b); }
+    //append_string_to_buffer("},\n", b);
+
+    return b;
+}
+
 byte_buffer* __dom_node_to_json(dom_node* n, int depth){
     int i;
     byte_buffer* b = new_byte_buffer(16);
@@ -164,7 +221,27 @@ byte_buffer* __dom_node_to_json(dom_node* n, int depth){
     }
     return b;
 }
-//char* __dom_element_to_yaml(dom_node* n, char* buffer, int depth);
+
+byte_buffer* __dom_node_to_yaml(dom_node* n, int depth){
+    int i;
+    byte_buffer* b = new_byte_buffer(16);
+    byte_buffer* node_yaml;
+    switch(n->type){
+    case CDATA:
+    case TEXT_NODE:
+        for(i = 0; i < depth; i++){ append_string_to_buffer("  ", b); }
+        append_string_to_buffer(n->value, b);
+        append_string_to_buffer("\n", b);
+        break;
+    case ELEMENT:
+        node_yaml = __dom_element_to_yaml(n, depth);
+        append_buffer_to_buffer(node_yaml, b);
+        break;
+    case ATTRIBUTE:
+        break;
+    }
+    return b;
+}
 
 byte_buffer* __node_list_to_xml(list* l, int depth){
     byte_buffer* b = new_byte_buffer(16);
@@ -183,6 +260,32 @@ byte_buffer* __node_list_to_json(list* l, int depth){
     for(i = 0; i < l->count; i++){
         byte_buffer* element_buffer = __dom_node_to_json(get_element_at(l, i), depth);
         append_buffer_to_buffer(element_buffer, b);
+        //TODO free element_buffer
+    }
+    return b;
+}
+
+byte_buffer* __element_list_to_yaml(list* l, int depth){
+    byte_buffer* b = new_byte_buffer(16);
+    int i;
+    for(i = 0; i < l->count; i++){
+        if(((dom_node*)get_element_at(l, i))->type == ELEMENT){
+            byte_buffer* element_buffer = __dom_node_to_yaml(get_element_at(l, i), depth);
+            append_buffer_to_buffer(element_buffer, b);
+        }
+        //TODO free element_buffer
+    }
+    return b;
+}
+
+byte_buffer* __text_list_to_yaml(list* l, int depth){
+    byte_buffer* b = new_byte_buffer(16);
+    int i;
+    for(i = 0; i < l->count; i++){
+        if(((dom_node*)get_element_at(l, i))->type == TEXT_NODE){
+            byte_buffer* element_buffer = __dom_node_to_yaml(get_element_at(l, i), depth);
+            append_buffer_to_buffer(element_buffer, b);
+        }
         //TODO free element_buffer
     }
     return b;
@@ -215,6 +318,18 @@ byte_buffer* __attribute_to_json(dom_node* attr, int depth){
 	append_string_to_buffer("\",\n", b);
 	return b;
 }
+
+byte_buffer* __attribute_to_yaml(dom_node* attr, int depth){
+    byte_buffer* b = new_byte_buffer(16);
+    int i;
+
+    for(i = 0; i < depth; i++){ append_string_to_buffer("  ", b); }
+    append_string_to_buffer(attr->name, b);
+	append_string_to_buffer(": \"", b);
+	append_string_to_buffer(attr->value, b);
+	append_string_to_buffer("\"\n", b);
+	return b;
+}
 //char* __attribute_to_yaml(dom_node* n, char* buffer);
 
 
@@ -230,6 +345,10 @@ char* document_to_string(doc* root, serialization_type t){
         break;
     case JSON:
         b = __dom_node_to_json(root->root, 0);
+        break;
+    case YAML:
+        b = __dom_node_to_yaml(root->root, 0);
+        break;
     }
     append_bytes_to_buffer("\0", b, 1);
     return b->buffer;

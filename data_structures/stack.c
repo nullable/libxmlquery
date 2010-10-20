@@ -21,7 +21,7 @@ struct generic_list_s *new_generic_list(int32_t initial)
 static void refactor_generic_list(list* l){
   int32_t cpy;
 
-  l->array = realloc(l->array, l->capacity * 2);
+  l->array = realloc(l->array, sizeof(struct list_bucket*) * l->capacity * 2);
   if(l->array == NULL){
     log(F, "Realloc failed.\n");
     exit(-1);

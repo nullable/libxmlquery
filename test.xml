@@ -1,7 +1,9 @@
-<this is="a test">
+<this is="a test" and="another">
   <ola>
-    <adeus foo="bar" />
+    <adeus foo="bar" foo2="bar2" />
   </ola>
+  <hi />
+  <hello />
   seu filho da
   piiiiiiiii
 </this>

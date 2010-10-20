@@ -144,7 +144,7 @@ inner:                                                      { $$ = new_element_n
      ;
 
 prop: CDATA_TOK                                             {$$ = new_cdata($1);}
-    | TEXT                                                  {$$ = new_text_node($1);}
+    | TEXT                                                  {$$ = new_text_node($1); }
     | node                                                  {$$ = $1;}
     ;
 

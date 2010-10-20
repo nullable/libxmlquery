@@ -11,16 +11,17 @@ int lxq_parser_last_state;
 
 %%
 \@                                                          {BEGIN QUERY_INITIAL; return '@';}
-"<!--"                                         { BEGIN COMMENT; lxq_parser_last_state = XML_INITIAL;}
-"<![CDATA["                                    { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); BEGIN CDATA; }
-\n                                             {BEGIN XML_INITIAL;}
-[^<\n]*                                        { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); BEGIN XML_INITIAL; return TEXT; }
-\<                                             { BEGIN IN_STATE; return START_EL; }
+"<!--"                                                      { BEGIN COMMENT; lxq_parser_last_state = XML_INITIAL;}
+"<![CDATA["                                                 { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); BEGIN CDATA; }
+\n                                                          {BEGIN XML_INITIAL;}
+[^<\n]*                                                     { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); BEGIN XML_INITIAL; return TEXT; }
+\<                                                          { BEGIN IN_STATE; return START_EL; }
 
 <XML_INITIAL>"<!--"                                         { BEGIN COMMENT; lxq_parser_last_state = XML_INITIAL;}
 <XML_INITIAL>"<![CDATA["                                    { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); BEGIN CDATA; }
 <XML_INITIAL>\n                                             ;
-<XML_INITIAL>[^<\n]*                                        { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return TEXT; }
+<XML_INITIAL>[ \t]*                                         ;
+<XML_INITIAL>[^<\n \t]*                                        { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return TEXT; }
 <XML_INITIAL>\<                                             { BEGIN IN_STATE; return START_EL; }
 
 <IN_STATE>"<!--"                                            { BEGIN COMMENT; lxq_parser_last_state = IN_STATE;}

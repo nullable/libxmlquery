@@ -9,7 +9,7 @@ int main(){
 
   //printf("\n\n\n==========================================================\n\n\n");
   //output_xml(document);
-  printf(to_xml(document));
+  printf("%s", document_to_string(document, JSON));
 
   if(document != NULL)
     destroy_dom_tree(document);

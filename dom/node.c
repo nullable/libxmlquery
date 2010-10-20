@@ -136,10 +136,11 @@ void append_children(dom_node* parent, struct generic_list_s* children){
   }
   if(parent->children == NULL)
     parent->children = new_generic_list(16);
+
   for(i = 0; i < children->count; i++){
-    append_child(parent, (dom_node*) dequeue(children));
+    append_child(parent, get_element_at(children, i));
   }
-  destroy_generic_list(children);
+  //destroy_generic_list(children);
   return;
 }
 

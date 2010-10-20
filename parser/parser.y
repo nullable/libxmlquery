@@ -14,8 +14,10 @@ extern int yylex(void);
 extern int yyparse(void);
 
 doc* lxq_document;
+
 char* lxq_parser_dot_query_operator = "class";
 char* lxq_parser_pound_query_operator = "id";
+list* lxq_selected_elements;
 
 void yyerror(const char *str)
 {
@@ -57,6 +59,27 @@ void parse_file(char* filename){
   yyparse();
   yy_delete_buffer(bs);
   yylex_destroy();
+}
+
+void parse_string(const char* str){
+  int len = strlen(str);
+  char* internal_cpy = alloc(char, len + 2);
+  struct yy_buffer_state* bs;
+
+  memcpy(internal_cpy, str, len);
+
+  internal_cpy[len] = '\0';
+  internal_cpy[len + 1] = '\0';
+
+  bs = (struct yy_buffer_state*) yy_scan_buffer(internal_cpy, len + 2);
+  if(bs == NULL){
+    log(F, "flex could not allocate a new buffer to parse the file.\n");
+    exit(-1);
+  }
+  yyparse();
+  yy_delete_buffer(bs);
+  yylex_destroy();
+  free(internal_cpy);
 }
 
 %}
@@ -174,7 +197,7 @@ value: '"' TEXT '"'                                         {$$ = $2;}
      | '"' '"'                                              {$$ = "";}
      ;
 
-selector_group: selector                                    { $$ = new_queue(16); enqueue_with_type($$, $1, 0); }
+selector_group: selector                                    { lxq_selected_elements = $$ = new_queue(16); enqueue_with_type($$, $1, 0); }
               | selector_group relation_operator selector   { int* a = alloc(int, 1);
                                                               *a = $2;
                                                               $$ = $1;

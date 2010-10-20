@@ -29,6 +29,7 @@ doc* parse_dom(char* filename){
 
   document = alloc(doc, 1);
   memcpy(document, lxq_document, sizeof(doc));
+  free(lxq_document);
   lxq_document = NULL;
   return document;
 }

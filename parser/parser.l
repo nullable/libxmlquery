@@ -3,7 +3,7 @@
 #include "y.tab.h"
 #include "../data_structures/stack.h"
 
-stack* trash_bin;
+stack* trash_bin = NULL;
 int lxq_parser_last_state;
 %}
 
@@ -21,7 +21,7 @@ int lxq_parser_last_state;
 <XML_INITIAL>"<![CDATA["                                    { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); BEGIN CDATA; }
 <XML_INITIAL>\n                                             ;
 <XML_INITIAL>[ \t]*                                         ;
-<XML_INITIAL>[^<\n \t]*                                        { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return TEXT; }
+<XML_INITIAL>[^<\n \t]*                                     { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return TEXT; }
 <XML_INITIAL>\<                                             { BEGIN IN_STATE; return START_EL; }
 
 <IN_STATE>"<!--"                                            { BEGIN COMMENT; lxq_parser_last_state = IN_STATE;}

@@ -53,3 +53,4 @@ list* parse_query(const char* query){
   lxq_selected_elements = NULL;
   return sles;
 }
+

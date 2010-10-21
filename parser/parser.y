@@ -120,7 +120,7 @@ void parse_string(const char* str){
 
 %%
 
-choose: '@' selector_group
+choose: '@' selector_group 
       | document
       ;
 

@@ -16,6 +16,12 @@ int main(){
   if(document != NULL)
     destroy_dom_tree(document);
 
+    /*  list* cenas = parse_query("@E");
+  int i = 0;
+  for(; i < cenas->count; i++){
+    free(get_element_at(cenas, i));
+  }
+  destroy_generic_list(cenas);*/
   /*  printf("\n\n\nAGORA DE UMA STRING\n");
   yy_scan_string("<this is=\"a test\">texto</this>");
   yyparse();

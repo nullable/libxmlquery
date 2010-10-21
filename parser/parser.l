@@ -14,7 +14,7 @@ int lxq_parser_last_state;
 "<!--"                                                      { BEGIN COMMENT; lxq_parser_last_state = XML_INITIAL;}
 "<![CDATA["                                                 { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); BEGIN CDATA; }
 \n                                                          {BEGIN XML_INITIAL;}
-[^<\n]*                                                     { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); BEGIN XML_INITIAL; return TEXT; }
+[^@<\n]*                                                     { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); BEGIN XML_INITIAL; return TEXT; }
 \<                                                          { BEGIN IN_STATE; return START_EL; }
 
 <XML_INITIAL>"<!--"                                         { BEGIN COMMENT; lxq_parser_last_state = XML_INITIAL;}

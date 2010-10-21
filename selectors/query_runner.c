@@ -3,6 +3,7 @@
 #include "query_runner.h"
 #include "../data_structures/stack.h"
 #include "../dom/node.h"
+#include "../parser/dom_parser.h"
 #include "../parser/y.tab.h"
 #include "query_parser.h"
 

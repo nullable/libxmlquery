@@ -5,7 +5,7 @@
 #include "data_structures/stack.h"
 
 int main(){
-  doc* document = parse_dom("input.xml");
+  doc* document = parse_dom("test.xml");
   char* cha = document_to_string(document, JSON);
   //printf("\n\n\n==========================================================\n\n\n");
   //output_xml(document);

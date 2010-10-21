@@ -318,6 +318,7 @@ void destroy_dom_node(dom_node* n){
 
 void destroy_dom_tree(doc* root){
   destroy_dom_node(root->root);
+  destroy_dom_node(root->xml_declaration);
   free(root);
 }
 

@@ -12,14 +12,17 @@ selector* new_selector(char* id){
   return r;
 }
 
+/*
 attr_selector* new_attr_name_selector(char* name){
   attr_selector* r = alloc(attr_selector, 1);
   r->name = name;
   return r;
 }
+*/
 
 attr_selector* new_attr_value_selector(char* name, int op, char* value){
-  attr_selector* r = new_attr_name_selector(name);
+  attr_selector* r = alloc(attr_selector, 1);
+  r->name = name;
   r->op = op;
   r->value = value;
   return r;
@@ -30,3 +33,4 @@ filter_selector* new_filter(int filter){
   r->op = filter;
   return r;
 }
+

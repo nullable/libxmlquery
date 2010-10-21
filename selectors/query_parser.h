@@ -1,6 +1,9 @@
 #ifndef __QUERY_PARSER_H__
 #define __QUERY_PARSER_H__
 
+#define LXQ_RELATION_TYPE 0
+#define LXQ_SELECTOR_TYPE 1
+
 #include "../data_structures/stack.h"
 
 struct selector_s;
@@ -29,9 +32,10 @@ typedef struct selector_s{
 
 selector* new_selector(char* id);
 
-attr_selector* new_attr_name_selector(char* name);
+//attr_selector* new_attr_name_selector(char* name);
 
 attr_selector* new_attr_value_selector(char* name, int op, char* value);
 
 filter_selector* new_filter(int filter);
 #endif
+

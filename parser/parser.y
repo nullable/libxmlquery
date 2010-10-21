@@ -78,7 +78,7 @@ void parse_file(char* filename){
 
 %token START_EL END_EL SLASH
 %token <string> WORD TEXT CDATA_TOK REGEX
-%token ALL SPACE EQUAL_OP WSSV_OP STARTSW_OP ENDSW_OP CONTAINS_OP REGEX_OP REGEXI_OP DSV_OP NOTEQUAL_OP EVEN ODD
+%token ALL SPACE NO_OP EQUAL_OP WSSV_OP STARTSW_OP ENDSW_OP CONTAINS_OP REGEX_OP REGEXI_OP DSV_OP NOTEQUAL_OP EVEN ODD
 %token NTH_CHILD_FILTER NTH_LAST_CHILD_FILTER FIRST_CHILD_FILTER LAST_CHILD_FILTER ONLY_CHILD_FILTER EMPTY_FILTER NOT_FILTER
 %type <string> value
 %type <dn> attr node prop inner attrs declaration start_tag end_tag namespace
@@ -195,14 +195,7 @@ attrsels:                                                   { $$ = new_stack(4);
         | attrsels '#' WORD                                 { $$ = $1; push_stack($$, new_attr_value_selector(lxq_parser_pound_query_operator, EQUAL_OP, $3)); }
         ;
 
-attrsel: WORD attr_filter                                   { if($2 == NULL) {
-                                                                $$ = new_attr_name_selector($1);
-                                                              }
-                                                              else {
-                                                                $$ = $2;
-                                                                $$->name = $1;
-                                                              }
-                                                            }
+attrsel: WORD attr_filter                                   { $$ = $2; $$->name = $1; }
        ;
 
 id:                                                         { $$ = NULL; }
@@ -253,7 +246,7 @@ relation_operator: '>'                                      { $$ = '>'; }
                  | SPACE                                    { $$ = SPACE; }
                  ;
 
-attr_filter:                                                { $$ = NULL; }
+attr_filter:                                                { $$ = new_attr_value_selector(NULL, NO_OP, NULL); }
            | operator '"' TEXT '"'                          { $$ = new_attr_value_selector(NULL, $1, $3); }
            | operator '\'' TEXT '\''                        { $$ = new_attr_value_selector(NULL, $1, $3); }
            | EQUAL_OP '/' regex '/' rmodifier               {

@@ -1,9 +1,13 @@
 include ../Makefile.inc
 
-all: query_parser.o
-	
+OBJS = query_parser.o query_runner.o
+includes = $(wildcard *.h)
 
-query_parser.o: query_parser.c query_parser.h
-	$(CC) $(CFLAGS) -c query_parser.c
+all: $(OBJS)
+
+%.o: %.c $(includes)
+	$(CC) $(CFLAGS) -c $<
+
 clean:
-	rm -rf *~ *.out
+	rm -rf *~ *.out $(OBJS)
+

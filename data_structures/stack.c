@@ -269,6 +269,17 @@ void* get_element_at(list* l, int32_t pos){
   return get_element_and_type_at(l, pos, &type);
 }
 
+int get_element_pos(list* l, void* el){
+    int i;
+    if(l == NULL) return -1;
+
+    for(i = 0; i < l->count; i++){
+        if(get_element_at(l, i) == el) return i;
+    }
+
+    return -1;
+}
+
 void enqueue_with_type(queue* q, void* obj, int16_t type)
 {
   add_element_with_type(q, obj, type);

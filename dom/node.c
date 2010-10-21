@@ -121,7 +121,9 @@ void add_attribute(dom_node* node, dom_node* attribute){
   if(attribute->type == ATTRIBUTE){
     if(node->attributes == NULL)
       node->attributes = new_rbtree(&key, &compare);
-    rb_tree_insert(node->attributes, attribute);
+    dom_node* older = (dom_node*) rb_tree_insert(node->attributes, attribute);
+    if(older != NULL)
+      destroy_dom_node(older);
     return;
   }
   log(W, "Trying to add node %s as attribute of node %s\n", attribute->name, node->name);

@@ -333,6 +333,9 @@ struct generic_list_s *merge_lists(struct generic_list_s *l1, struct generic_lis
 void destroy_generic_list(struct generic_list_s *s)
 {
   int32_t i, d;
+  if(s == NULL)
+    return;
+
   for(i = 0; i < s->count; i++)
     {
       d = (s->start + i) % s->capacity;

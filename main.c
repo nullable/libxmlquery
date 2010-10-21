@@ -5,11 +5,13 @@
 #include "data_structures/stack.h"
 
 int main(){
-  doc* document = parse_dom("test.xml");
-
+  doc* document = parse_dom("input.xml");
+  char* cha = document_to_string(document, JSON);
   //printf("\n\n\n==========================================================\n\n\n");
   //output_xml(document);
-  printf("%s", document_to_string(document, JSON));
+  printf("%s", cha);
+
+  free(cha);
 
   if(document != NULL)
     destroy_dom_tree(document);

@@ -24,17 +24,8 @@ typedef struct bb_s{
 } byte_buffer;
 
 extern char* document_to_string(doc* root, serialization_type t);
-void append_bytes_to_buffer(const char* bytes, byte_buffer* b, size_t size);
-
-byte_buffer* __node_list_to_xml(list* l, int depth);
-byte_buffer* __node_list_to_json(list* l, int depth);
-
-byte_buffer* __element_list_to_yaml(list* l, int depth);
-byte_buffer* __text_list_to_yaml(list* l, int depth);
-
-byte_buffer* __attribute_to_xml(dom_node* attr);
-byte_buffer* __attribute_to_json(dom_node* attr, int depth);
-byte_buffer* __attribute_to_yaml(dom_node* attr, int depth);
+extern void append_bytes_to_buffer(const char* bytes, byte_buffer* b, size_t size);
+extern void destroy_byte_buffer(byte_buffer* bb);
 
 #endif
 

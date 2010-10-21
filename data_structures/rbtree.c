@@ -140,7 +140,7 @@ static void rb_tree_insert_fixup(tree_root* root, tree_node* z){
   root->root->color = BLACK;
 }
 
-void rb_tree_insert(tree_root* root, void* node){
+void* rb_tree_insert(tree_root* root, void* node){
   tree_node *y = &RBNIL, *x = root->root;
 
   tree_node *z = new_rbtree_node(node);
@@ -149,9 +149,10 @@ void rb_tree_insert(tree_root* root, void* node){
     y = x;
 
     if(root->compare(root->key(z), root->key(x)) == 0){
+      void* holder = x->node;
       free(z);
       x->node = node;
-      return;
+      return holder;
     }      
 
     if(root->compare(root->key(z), root->key(x)) < 0)
@@ -172,6 +173,7 @@ void rb_tree_insert(tree_root* root, void* node){
   }
 
   rb_tree_insert_fixup(root, z);
+  return NULL;
 }
 
 static tree_node* __search_rbtree_node(tree_root root, void* key){

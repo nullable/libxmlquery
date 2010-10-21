@@ -47,6 +47,7 @@ void parse_file(char* filename){
     log(F, "Could map file into memory.\n");
     exit(-1);
   }
+  close(fdin);
 
   address[st.st_size] = '\0';
   address[st.st_size + 1] = '\0';
@@ -59,6 +60,8 @@ void parse_file(char* filename){
   yyparse();
   yy_delete_buffer(bs);
   yylex_destroy();
+  if(munmap(address, st.st_size + 2) == -1)
+    log(W, "munmap failed.");
 }
 
 void parse_string(const char* str){
@@ -73,7 +76,7 @@ void parse_string(const char* str){
 
   bs = (struct yy_buffer_state*) yy_scan_buffer(internal_cpy, len + 2);
   if(bs == NULL){
-    log(F, "flex could not allocate a new buffer to parse the file.\n");
+    log(F, "flex could not allocate a new buffer to parse the string.\n");
     exit(-1);
   }
   yyparse();
@@ -126,7 +129,7 @@ document: node                                              {lxq_document = new_
         ;
 
 namespace: WORD                                             { $$ = new_element_node($1);}
-         | WORD ':' WORD                                    { $$ = new_element_node($3); set_namespace($$, $1); }
+         | WORD ':' WORD                                    { $$ = new_element_node($3); set_namespace($$, $1);}
          ;
 
 declaration: START_EL '?' namespace attrs '?' END_EL        {
@@ -141,17 +144,20 @@ declaration: START_EL '?' namespace attrs '?' END_EL        {
                                                             }
            ;
 
-node: start_tag inner end_tag                               {
+node: start_tag inner end_tag                               { 
                                                               if(strcmp(get_name($1),get_name($3)) != 0)
                                                               {
                                                                 yyerror("Start tag does not match end tag.\n");
                                                                 exit(1);
-                                                              }
+                                                              }							      
                                                               append_children($1, $2->children);
+							      if($2->namespace != NULL)
+								free($2->namespace);
                                                               free($2->name);
                                                               destroy_generic_list($2->children);
                                                               free($2);
                                                               $$ = $1;
+							      destroy_dom_node($3);
                                                             }
     | START_EL namespace attrs SLASH END_EL                 { $$ = $3;
                                                               set_name($$, get_name($2));
@@ -179,7 +185,7 @@ start_tag: START_EL namespace attrs END_EL                  { $$ = $3;
                                                             }
          ;
 
-end_tag: START_EL SLASH namespace END_EL                    { $$ = $3; }
+end_tag: START_EL SLASH namespace END_EL                    { $$ = $3;}
        ;
 
 attrs:                                                      { $$ = new_element_node("~dummy~"); }

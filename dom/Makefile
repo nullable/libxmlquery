@@ -1,7 +1,7 @@
 include ../Makefile.inc
 
 OBJS = node.o numbers.o bson.o serialize.o
-includes = $(wildcard include/*.h)
+includes = $(wildcard *.h)
 
 all: $(OBJS)
 

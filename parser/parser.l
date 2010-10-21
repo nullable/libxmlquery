@@ -40,7 +40,7 @@ int lxq_parser_last_state;
 <CDATA>("\n"|.)+/"]]>"                                      { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return CDATA_TOK; }
 <CDATA>"]]>"                                                { BEGIN XML_INITIAL; }
 
-<COMMENT>[\n.]*"-->"                                        { BEGIN lxq_parser_last_state; return; }
+<COMMENT>("\n"|.)*"-->"                                        { BEGIN lxq_parser_last_state; }
 
 <QUERY_INITIAL>\*                                           { return ALL; }
 <QUERY_INITIAL>[\n\r]+                                      ;

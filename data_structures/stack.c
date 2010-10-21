@@ -50,7 +50,7 @@ static void rebase_generic_list(list* l){
 static void refactor_generic_list(list* l){
   int32_t cpy;
 
-  l->array = realloc(l->array, l->capacity * 2);
+  l->array = realloc(l->array, sizeof(struct list_bucket*) * l->capacity * 2);
   if(l->array == NULL){
     log(F, "Realloc failed.\n");
     exit(-1);
@@ -414,6 +414,9 @@ list* remove_duplicates(list* l){
 void destroy_generic_list(struct generic_list_s *s)
 {
   int32_t i, d;
+  if(s == NULL)
+    return;
+
   for(i = 0; i < s->count; i++)
     {
       d = (s->start + i) % s->capacity;

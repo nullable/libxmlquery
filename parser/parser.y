@@ -17,8 +17,10 @@ extern int yylex(void);
 extern int yyparse(void);
 
 doc* lxq_document;
+
 char* lxq_parser_dot_query_operator = "class";
 char* lxq_parser_pound_query_operator = "id";
+list* lxq_selected_elements;
 
 void yyerror(const char *str)
 {
@@ -49,6 +51,8 @@ void parse_file(char* filename){
     exit(-1);
   }
 
+  close(fdin);
+
   address[st.st_size] = '\0';
   address[st.st_size + 1] = '\0';
 
@@ -60,6 +64,29 @@ void parse_file(char* filename){
   yyparse();
   yy_delete_buffer(bs);
   yylex_destroy();
+  if(munmap(address, st.st_size + 2) == -1)
+    log(W, "munmap failed.");
+}
+
+void parse_string(const char* str){
+  int len = strlen(str);
+  char* internal_cpy = alloc(char, len + 2);
+  struct yy_buffer_state* bs;
+
+  memcpy(internal_cpy, str, len);
+
+  internal_cpy[len] = '\0';
+  internal_cpy[len + 1] = '\0';
+
+  bs = (struct yy_buffer_state*) yy_scan_buffer(internal_cpy, len + 2);
+  if(bs == NULL){
+    log(F, "flex could not allocate a new buffer to parse the string.\n");
+    exit(-1);
+  }
+  yyparse();
+  yy_delete_buffer(bs);
+  yylex_destroy();
+  free(internal_cpy);
 }
 
 %}
@@ -106,7 +133,7 @@ document: node                                              {lxq_document = new_
         ;
 
 namespace: WORD                                             { $$ = new_element_node($1);}
-         | WORD ':' WORD                                    { $$ = new_element_node($3); set_namespace($$, $1); }
+         | WORD ':' WORD                                    { $$ = new_element_node($3); set_namespace($$, $1);}
          ;
 
 declaration: START_EL '?' namespace attrs '?' END_EL        {
@@ -128,10 +155,13 @@ node: start_tag inner end_tag                               {
                                                                 exit(1);
                                                               }
                                                               append_children($1, $2->children);
+							      if($2->namespace != NULL)
+								free($2->namespace);
                                                               free($2->name);
                                                               destroy_generic_list($2->children);
                                                               free($2);
                                                               $$ = $1;
+							      destroy_dom_node($3);
                                                             }
     | START_EL namespace attrs SLASH END_EL                 { $$ = $3;
                                                               set_name($$, get_name($2));
@@ -147,7 +177,7 @@ inner:                                                      { $$ = new_element_n
      ;
 
 prop: CDATA_TOK                                             {$$ = new_cdata($1);}
-    | TEXT                                                  {$$ = new_text_node($1);}
+    | TEXT                                                  {$$ = new_text_node($1); }
     | node                                                  {$$ = $1;}
     ;
 
@@ -159,7 +189,7 @@ start_tag: START_EL namespace attrs END_EL                  { $$ = $3;
                                                             }
          ;
 
-end_tag: START_EL SLASH namespace END_EL                    { $$ = $3; }
+end_tag: START_EL SLASH namespace END_EL                    { $$ = $3;}
        ;
 
 attrs:                                                      { $$ = new_element_node("~dummy~"); }
@@ -177,7 +207,8 @@ value: '"' TEXT '"'                                         {$$ = $2;}
      | '"' '"'                                              {$$ = "";}
      ;
 
-selector_group: selector                                    { $$ = new_queue(16); enqueue_with_type($$, $1, LXQ_SELECTOR_TYPE); }
+
+selector_group: selector                                    { lxq_selected_elements = $$ = new_queue(16); enqueue_with_type($$, $1, 0); }
               | selector_group relation_operator selector   { int* a = alloc(int, 1);
                                                               *a = $2;
                                                               $$ = $1;

@@ -121,7 +121,9 @@ void add_attribute(dom_node* node, dom_node* attribute){
   if(attribute->type == ATTRIBUTE){
     if(node->attributes == NULL)
       node->attributes = new_rbtree(&key, &compare);
-    rb_tree_insert(node->attributes, attribute);
+    dom_node* older = (dom_node*) rb_tree_insert(node->attributes, attribute);
+    if(older != NULL)
+      destroy_dom_node(older);
     return;
   }
   log(W, "Trying to add node %s as attribute of node %s\n", attribute->name, node->name);
@@ -136,10 +138,11 @@ void append_children(dom_node* parent, struct generic_list_s* children){
   }
   if(parent->children == NULL)
     parent->children = new_generic_list(16);
+
   for(i = 0; i < children->count; i++){
-    append_child(parent, (dom_node*) dequeue(children));
+    append_child(parent, get_element_at(children, i));
   }
-  destroy_generic_list(children);
+  //destroy_generic_list(children);
   return;
 }
 
@@ -315,97 +318,8 @@ void destroy_dom_node(dom_node* n){
 
 void destroy_dom_tree(doc* root){
   destroy_dom_node(root->root);
+  destroy_dom_node(root->xml_declaration);
   free(root);
-}
-
-static void __output_xml(dom_node* root, int pad){
-  int i, it;
-
-  if(root == NULL)
-    return;
-
-  switch(root->type){
-  case ELEMENT:
-    {
-      for(i = 0; i < pad; i++, printf(" "));
-
-      printf("<");
-      if(root->namespace != NULL)
-	printf("%s:", root->namespace);
-      printf("%s ", root->name);
-
-      if(root->attributes != NULL){
-	struct siterator *it = new_tree_iterator(root->attributes);
-	while(tree_iterator_has_next(it)){
-	  dom_node* attr = (dom_node*) tree_iterator_next(it);
-	  if(attr->namespace != NULL)
-	    printf("%s:", attr->namespace);
-	  printf("%s=\"", attr->name);
-	  printf("%s\" ", attr->value);
-	}
-	destroy_iterator(it);
-      }
-
-      printf(">\n");
-      break;
-    }
-  case CDATA:
-    {
-      for(i = 0; i < pad; i++, printf(" "));
-      printf("<![CDATA[");
-      /*no break; Will fall to case TEXT_NODE:*/
-    }
-  case TEXT_NODE:
-    {
-      printf("%s", root->value);
-      break;
-    }
-  case ATTRIBUTE: break;
-  default:
-    log(W, "xml_output found an inconsistency in the DOM tree.\n");
-  }
-
-  if(root->children != NULL)
-    for(it = 0; it < root->children->count; it++)
-      __output_xml((dom_node*) get_element_at(root->children, i), pad + 1);
-
-  switch(root->type){
-  case ELEMENT:
-    {
-      for(i = 0; i < pad; i++, printf(" "));
-      printf("</");
-      if(root->namespace != NULL)
-	printf("%s:", root->namespace);
-      printf("%s>\n", root->name);
-      break;
-    }
-  case CDATA:
-    {
-      for(i = 0; i < pad; i++, printf(" "));
-      printf("]]>\n");
-      break;
-    }
-  case ATTRIBUTE: break;
-  case TEXT_NODE: break;
-  }
-}
-
-void output_xml(doc* root){
-  if(root->xml_declaration != NULL){
-    printf("<?%s ", root->xml_declaration->name);
-    struct siterator *it = new_tree_iterator(root->xml_declaration->attributes);
-    while(tree_iterator_has_next(it)){
-      dom_node* attr = (dom_node*) tree_iterator_next(it);
-      printf("%s=\"", attr->name);
-      if(attr->namespace != NULL)
-	printf("%s:", attr->namespace);
-      printf("%s\" ", attr->value);
-    }
-    destroy_iterator(it);
-    printf("?>\n");
-  }
-  __output_xml(root->root, 0);
-  fflush(stdout);
 }
 
 void delete_attribute(dom_node* node, char* name){

@@ -1,3 +1,6 @@
+#include <stdio.h>
+
+
 #include <string.h>
 #include "../dom/macros.h"
 #include "stack.h"
@@ -18,6 +21,32 @@ struct generic_list_s *new_generic_list(int32_t initial)
   return l;
 }
 
+static void rebase_generic_list(list* l){
+    if(l->start == 0){ return ; }
+    struct list_bucket** tmp;
+    printf("[%d] + %d of %d\n", l->start, l->count, l->capacity);
+
+    int cpy = l->count - l->capacity + l->start;
+
+    if(cpy > 0){
+        tmp = alloc(struct list_bucket*, cpy)
+
+        memcpy(tmp, l->array, sizeof(struct list_bucket*)*cpy);
+    }
+    else{ cpy = 0; }
+
+    printf("mv %d + %d to 0\n", l->start, l->count - cpy);
+    memcpy(l->array, l->array + l->start, sizeof(struct list_bucket*)*(l->count - cpy));
+
+    if(cpy > 0){
+        printf("mv + %d to %d\n", cpy, l->count - cpy);
+        memcpy(l->array + l->count - cpy, tmp, sizeof(struct list_bucket*)*cpy);
+        free(tmp);
+    }
+
+    l->start = 0;
+}
+
 static void refactor_generic_list(list* l){
   int32_t cpy;
 
@@ -27,9 +56,11 @@ static void refactor_generic_list(list* l){
     exit(-1);
   }
 
+  //number of items behind start (circular!)
   cpy = l->count - l->capacity + l->start;
 
   if(cpy > 0){
+
     memcpy(l->array + l->capacity, l->array, cpy);
     memset(l->array, 0, cpy);
   }
@@ -328,6 +359,45 @@ struct generic_list_s *merge_lists(struct generic_list_s *l1, struct generic_lis
   destroy_generic_list(l1);
   destroy_generic_list(l2);
   return r;
+}
+
+void __quicksort_generic_list_aux(struct list_bucket** arr, int start, int end) {
+    if (start < end) {
+        struct list_bucket* pivot = arr[end];
+        int i = start;
+        int j = end;
+        while (i != j) {
+            if ((int)(arr[i]->element) < (int)(pivot->element)) {
+                i = i + 1;
+            }
+            else {
+                arr[j] = arr[i];
+                arr[i] = arr[j-1];
+                j = j - 1;
+            }
+        }
+        arr[j] = pivot;
+        __quicksort_generic_list_aux(arr, start, j-1);
+        __quicksort_generic_list_aux(arr, j+1, end);
+    }
+}
+
+void __quicksort_generic_list(list* l) {
+    __quicksort_generic_list_aux(l->array, 0, l->count - 1);
+  }
+
+list* remove_duplicates(list* l){
+    int i;
+    list* r = new_generic_list(l->capacity);
+    rebase_generic_list(l);
+    __quicksort_generic_list(l);
+    for(i = 1; i < l->count; i++){
+        if(get_element_at(l, i-1) != get_element_at(l, i)){
+            add_element(r, get_element_at(l, i));
+            //TODO: memory is not free, save it!!!!
+        }
+    }
+    return r;
 }
 
 void destroy_generic_list(struct generic_list_s *s)

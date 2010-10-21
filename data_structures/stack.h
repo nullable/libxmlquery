@@ -52,6 +52,7 @@ extern void push_stack(stack* s, void* obj);
 extern void* pop_stack(stack* s);
 
 extern void reverse(struct generic_list_s *s);
+extern list* remove_duplicates(list* l);
 
 extern int16_t peek_element_type_at(list* l, int32_t pos);
 extern int16_t peek_stack_type(stack *s);

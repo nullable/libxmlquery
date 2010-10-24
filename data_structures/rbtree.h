@@ -31,7 +31,7 @@ extern tree_root* new_simple_rbtree();
 extern tree_root* new_rbtree(void* (*key_function_pointer)(struct stree_node* node),
 			   int64_t (*compare_function_pointer)(void* keyA, void* keyB));
 extern void* rb_tree_insert(tree_root* root, void* node);
-extern void rb_tree_delete(tree_root* root, void* key);
+extern void* rb_tree_delete(tree_root* root, void* key);
 extern void* search_rbtree(tree_root root, void* key);
 extern void destroy_rbtree(tree_root* root);
 

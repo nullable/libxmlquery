@@ -13,6 +13,17 @@ int main(){
 
   free(cha);
 
+  //get adeus
+  dom_node* aux = get_element_at(get_children(get_element_at(get_children(document->root), 0)), 0);
+
+  printf("%s\n", aux->name);
+
+  dom_node* attr = delete_attribute(aux, "foo");
+  free(attr);
+
+  cha = document_to_string(document, JSON);
+  printf("%s", cha);
+
   if(document != NULL)
     destroy_dom_tree(document);
 

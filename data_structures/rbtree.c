@@ -297,16 +297,19 @@ static void __rb_tree_delete_fixup(tree_root* root, tree_node* x){
   return;
 }
 
-void rb_tree_delete(tree_root* root, void* key){
+void* rb_tree_delete(tree_root* root, void* key){
   tree_node *y, *z, *x;
   uint8_t y_original_color;
+  void* node_to_return;
 
   y = z = __search_rbtree_node(*root, key);
 
   if(y == NULL){
     log(W, "Trying to remove a node from tree that does not exist.");
-    return;
+    return NULL;
   }
+
+  node_to_return = y->node;
 
   y_original_color = y->color;
   if(z->left == &RBNIL){
@@ -336,6 +339,8 @@ void rb_tree_delete(tree_root* root, void* key){
     }
   if(y_original_color == BLACK)
     __rb_tree_delete_fixup(root, x);
+
+  return node_to_return;
 }
 
 tree_iterator* new_tree_iterator(tree_root* root){

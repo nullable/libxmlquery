@@ -322,8 +322,8 @@ void destroy_dom_tree(doc* root){
   free(root);
 }
 
-void delete_attribute(dom_node* node, char* name){
-  rb_tree_delete(node->attributes, name);
+dom_node* delete_attribute(dom_node* node, char* name){
+  return (dom_node*) rb_tree_delete(node->attributes, name);
 }
 
 void remove_node(doc* root, dom_node* node){

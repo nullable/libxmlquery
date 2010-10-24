@@ -45,6 +45,8 @@ tree_root* new_rbtree(void* (*key_function_pointer)(struct stree_node* node),
     r->key = key_function_pointer;
     r->compare = compare_function_pointer;
   }
+
+  log(W, "Vasco, ainda preciso de tratar de memory leaks no rbtree_delete. Preciso do meu livro de ASA por isso é que ainda não o fiz.\n");
   return r;
 }
 

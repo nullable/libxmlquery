@@ -19,10 +19,12 @@ int main(){
   printf("%s\n", aux->name);
 
   dom_node* attr = delete_attribute(aux, "foo");
-  free(attr);
+  destroy_dom_node(attr);
 
-  cha = document_to_string(document, JSON);
+  /*cha = document_to_string(document, JSON);
   printf("%s", cha);
+
+  free(cha);*/
 
   if(document != NULL)
     destroy_dom_tree(document);

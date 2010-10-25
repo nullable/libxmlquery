@@ -45,8 +45,6 @@ tree_root* new_rbtree(void* (*key_function_pointer)(struct stree_node* node),
     r->key = key_function_pointer;
     r->compare = compare_function_pointer;
   }
-
-  log(W, "Vasco, ainda preciso de tratar de memory leaks no rbtree_delete. Preciso do meu livro de ASA por isso é que ainda não o fiz.\n");
   return r;
 }
 
@@ -298,11 +296,11 @@ static void __rb_tree_delete_fixup(tree_root* root, tree_node* x){
 }
 
 void* rb_tree_delete(tree_root* root, void* key){
-  tree_node *y, *z, *x;
+  tree_node *y, *z, *x, *hold_node_to_delete;
   uint8_t y_original_color;
   void* node_to_return;
 
-  y = z = __search_rbtree_node(*root, key);
+  hold_node_to_delete = y = z = __search_rbtree_node(*root, key);
 
   if(y == NULL){
     log(W, "Trying to remove a node from tree that does not exist.");
@@ -340,6 +338,7 @@ void* rb_tree_delete(tree_root* root, void* key){
   if(y_original_color == BLACK)
     __rb_tree_delete_fixup(root, x);
 
+  free(hold_node_to_delete);
   return node_to_return;
 }
 

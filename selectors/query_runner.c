@@ -110,7 +110,6 @@ list* filter_nodes_by_attr(list* nodes, attr_selector* attr_s){
         if(attr == NULL || strcmp(attr->name, attr_s->name)) continue;
         switch(attr_s->op){
         case EQUAL_OP:
-            printf("%s == %s\n", attr->value, attr_s->value);
             if(!strcmp(attr->value, attr_s->value)){
                 add_element(r, n);
             }
@@ -183,7 +182,6 @@ list* filter_nodes_by_selector(list* nodes, selector* s){
 
     if(s->attrs != NULL){
         for(i = 0; i < s->attrs->count; i++){
-            printf("%s\n", ((attr_selector*)get_element_at(s->attrs, i))->name);
             r = filter_nodes_by_attr(r, get_element_at(s->attrs, i));
         }
     }
@@ -230,7 +228,6 @@ list* query(char* query_string, dom_node* node){
             break;
         }
     }
-    print_node_list(nodes);
     return remove_duplicates(merge_lists(result, nodes));
 }
 

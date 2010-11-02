@@ -71,7 +71,7 @@ int lxq_parser_last_state;
 
 <FUNC>"nth-child"                                           { BEGIN QUERY_INITIAL; return NTH_CHILD_FILTER; }
 <FUNC>"nth-last-child"                                      { BEGIN QUERY_INITIAL; return NTH_LAST_CHILD_FILTER; }
-<FUNC>"firts-child"                                         { BEGIN QUERY_INITIAL; return FIRST_CHILD_FILTER; }
+<FUNC>"first-child"                                         { BEGIN QUERY_INITIAL; return FIRST_CHILD_FILTER; }
 <FUNC>"last-child"                                          { BEGIN QUERY_INITIAL; return LAST_CHILD_FILTER; }
 <FUNC>"only-child"                                          { BEGIN QUERY_INITIAL; return ONLY_CHILD_FILTER; }
 <FUNC>"empty"                                               { BEGIN QUERY_INITIAL; return EMPTY_FILTER; }

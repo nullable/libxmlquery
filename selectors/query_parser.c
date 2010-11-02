@@ -7,7 +7,7 @@ extern int yyparse();
 
 selector* new_selector(char* id){
   selector* r = alloc(selector, 1);
-  r->id = strdup(id);
+  r->id = (id == NULL)? NULL : strdup(id);
   r->filters = NULL;
   r->attrs = NULL;
   return r;

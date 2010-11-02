@@ -19,7 +19,7 @@ extern int yyparse(void);
 doc* lxq_document;
 
 char* lxq_parser_dot_query_operator = "class";
-char* lxq_parser_pound_query_operator = "id";
+char* lxq_parser_pound_query_operator = "type";
 list* lxq_selected_elements;
 
 void yyerror(const char *str)

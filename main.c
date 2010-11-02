@@ -5,14 +5,14 @@
 #include "data_structures/stack.h"
 #include "selectors/query_runner.h"
 
-int main(){
+int main(int argc, char** argv){
   doc* document = parse_dom("test.xml");
-  char* cha = document_to_string(document, JSON);
+  //char* cha = document_to_string(document, JSON);
   //printf("\n\n\n==========================================================\n\n\n");
   //output_xml(document);
-  printf("%s", cha);
+  //printf("%s", cha);
 
-  free(cha);
+  //free(cha);
 
 
   /*cha = document_to_string(document, JSON);
@@ -20,13 +20,19 @@ int main(){
 
   free(cha);*/
 
-  list* result = query("@room description:only-child",document->root);
+  if(argc != 2){
+    printf("usage: %s \"query\"\n", argv[0]);
+      return 0;
+  }
 
-  printf("List size is %d\n", result->count);
+  list* result = query(argv[1],document->root);
+
+  //printf("List size is %d\n", result->count);
   int i;
   for(i=0; i < result->count; i++){
     dom_node* t = (dom_node*)get_element_at(result, i);
-    printf("%s\n", get_name(t));
+    printf("Result node:\n");
+    printf("%s", node_to_string(t, XML));
   }
 
 

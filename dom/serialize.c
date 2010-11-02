@@ -331,8 +331,8 @@ byte_buffer* __attribute_to_json(dom_node* attr, int depth){
   byte_buffer* b = new_byte_buffer(16);
   int i;
 
-  for(i = 0; i < depth; i++){ 
-    append_string_to_buffer("  ", b); 
+  for(i = 0; i < depth; i++){
+    append_string_to_buffer("  ", b);
   }
   append_string_to_buffer(attr->name, b);
   append_string_to_buffer(": \"", b);
@@ -344,7 +344,7 @@ byte_buffer* __attribute_to_json(dom_node* attr, int depth){
 byte_buffer* __attribute_to_yaml(dom_node* attr, int depth){
   byte_buffer* b = new_byte_buffer(16);
   int i;
-  
+
   for(i = 0; i < depth; i++){ append_string_to_buffer("  ", b); }
   append_string_to_buffer(attr->name, b);
   append_string_to_buffer(": \"", b);
@@ -359,18 +359,18 @@ byte_buffer* __attribute_to_yaml(dom_node* attr, int depth){
 //char* __node_list_to_bson(list* l, char* buffer, int depth);
 //char* __attribute_to_bson(dom_node* n, char* buffer);
 
-char* document_to_string(doc* root, serialization_type t){
+char* node_to_string(dom_node* root, serialization_type t){
   byte_buffer* b;
   char* buff;
   switch(t){
   case XML:
-    b = __dom_node_to_xml(root->root, 0);
+    b = __dom_node_to_xml(root, 0);
     break;
   case JSON:
-    b = __dom_node_to_json(root->root, 0);
+    b = __dom_node_to_json(root, 0);
     break;
   case YAML:
-    b = __dom_node_to_yaml(root->root, 0);
+    b = __dom_node_to_yaml(root, 0);
     break;
   }
   append_bytes_to_buffer("\0", b, 1);

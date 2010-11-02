@@ -23,7 +23,7 @@ typedef struct bb_s{
     int size;
 } byte_buffer;
 
-extern char* document_to_string(doc* root, serialization_type t);
+extern char* node_to_string(dom_node* root, serialization_type t);
 extern void append_bytes_to_buffer(const char* bytes, byte_buffer* b, size_t size);
 extern void destroy_byte_buffer(byte_buffer* bb);
 

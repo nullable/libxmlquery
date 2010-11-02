@@ -14,20 +14,13 @@ int main(){
 
   free(cha);
 
-  //get adeus
-  dom_node* aux = get_element_at(get_children(get_element_at(get_children(document->root), 0)), 0);
-
-  printf("%s\n", aux->name);
-
-  dom_node* attr = delete_attribute(aux, "foo");
-  destroy_dom_node(attr);
 
   /*cha = document_to_string(document, JSON);
   printf("%s", cha);
 
   free(cha);*/
 
-  list* result = query("@hi",document->root);
+  list* result = query("@room description:only-child",document->root);
 
   printf("List size is %d\n", result->count);
   int i;

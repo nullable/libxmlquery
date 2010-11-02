@@ -23,9 +23,9 @@ attr_selector* new_attr_name_selector(char* name){
 
 attr_selector* new_attr_value_selector(char* name, int op, char* value){
   attr_selector* r = alloc(attr_selector, 1);
-  r->name = strdup(name);
+  r->name = (name == NULL)? NULL : strdup(name);
   r->op = op;
-  r->value = strdup(value);
+  r->value = (value == NULL)? NULL : strdup(value);
   return r;
 }
 

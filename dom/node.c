@@ -269,15 +269,16 @@ list* get_children(dom_node* node){
 
 list* get_descendants(dom_node* node)
 {
+  int i;
   if(node == NULL) return NULL;
 
   list* children = get_children(node);
   if(children == NULL) return NULL;
 
   list* descendants = new_generic_list(1);
-  while(children->count > 0)
+  for(i = 0; i < children->count; i++)
   {
-    dom_node* n = pop_stack(children);
+    dom_node* n = get_element_at(children, i);
     if(n->type != ELEMENT) continue;
 
     list* nd = get_descendants(n);
@@ -343,3 +344,4 @@ void print_node_list(struct generic_list_s* l){
     printf("\t[%d] %s\n", i, ((dom_node*)get_element_at(l, i))->name);
   return;
 }
+

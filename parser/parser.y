@@ -226,7 +226,7 @@ attrsels:                                                   { $$ = new_stack(4);
         | attrsels '#' WORD                                 { $$ = $1; push_stack($$, new_attr_value_selector(lxq_parser_pound_query_operator, EQUAL_OP, $3)); }
         ;
 
-attrsel: WORD attr_filter                                   { $$ = $2; $$->name = $1; }
+attrsel: WORD attr_filter                                   { $$ = $2; $$->name = strdup($1); }
        ;
 
 id:                                                         { $$ = NULL; }

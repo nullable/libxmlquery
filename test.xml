@@ -1,11 +1,34 @@
 <?xml version="1.0" ?>
-<this is="a test" and="another">
-  <ola>
-   <adeus foo="bar" foo2="bar2" />
-  </ola>
- <hi />
-     <hello />
-  seu filho da
-  piiiiiiiii
-</this>
+<domobus>
+  <rooms>
+    <room name="r1">
+      <devices>
+        <device type="switch" state="on"/>
+        <device type="blind" state="87" />
+        <device type="lights" state="94">
+          <coord>
+            <x>205</x>
+            <y>97</y>
+            <z>256</z>
+          </coord>
+        </device>
+      </devices>
+    </room>
+    <room name="r2">
+      <description>
+        Empty room!!!!
+      </description>
+    </room>
+    <room name="r3" />
+    <room name="r4" />
+    <!-- Imaginary rooms following -->
+<!--    <room name="r5" />-->
+    <room name="r6" />
+  </rooms>
+  <debug_output>
+    <![CDATA[20101101234918::on->off
+20101101235257::off->on
+20101101235534::on->off]]>
+  </debug_output>
+</domobus>
 

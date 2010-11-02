@@ -8,6 +8,7 @@
 #include "query_parser.h"
 
 list* filter_nodes_by_type(list* nodes, enum node_type type){
+    if(nodes == NULL) return NULL;
     int i;
     list* r = new_generic_list(nodes->capacity);
     for(i = 0; i < nodes->count; i++){
@@ -109,6 +110,7 @@ list* filter_nodes_by_attr(list* nodes, attr_selector* attr_s){
         if(attr == NULL || strcmp(attr->name, attr_s->name)) continue;
         switch(attr_s->op){
         case EQUAL_OP:
+            printf("%s == %s\n", attr->value, attr_s->value);
             if(!strcmp(attr->value, attr_s->value)){
                 add_element(r, n);
             }
@@ -181,6 +183,7 @@ list* filter_nodes_by_selector(list* nodes, selector* s){
 
     if(s->attrs != NULL){
         for(i = 0; i < s->attrs->count; i++){
+            printf("%s\n", ((attr_selector*)get_element_at(s->attrs, i))->name);
             r = filter_nodes_by_attr(r, get_element_at(s->attrs, i));
         }
     }
@@ -209,10 +212,10 @@ list* query(char* query_string, dom_node* node){
     while(query->count > 0){
         switch(peek_queue_type(query)){
         case LXQ_RELATION_TYPE:
-	  op = *((int*)dequeue(query));
+	        op = *((int*)dequeue(query));
             if(op == ','){
                 result = merge_lists(result, nodes);
-                nodes = all_nodes;
+                nodes = duplicate_generic_list(all_nodes);
             }
             else{
                 list* old_nodes = nodes;

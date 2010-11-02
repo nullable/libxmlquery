@@ -62,6 +62,7 @@ extern int16_t peek_queue_type(queue *s);
 
 extern struct generic_list_s *merge_lists(struct generic_list_s *l1, struct generic_list_s *l2);
 
+extern struct generic_list_s *duplicate_generic_list(struct generic_list_s*);
 extern void destroy_generic_list(struct generic_list_s *s);
 
 #endif

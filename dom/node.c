@@ -336,3 +336,10 @@ void remove_node(doc* root, dom_node* node){
   return;
 }
 
+void print_node_list(struct generic_list_s* l){
+  int i;
+  printf("List size %d\n", l->count);
+  for(i = 0; i < l->count; i++)
+    printf("\t[%d] %s\n", i, ((dom_node*)get_element_at(l, i))->name);
+  return;
+}

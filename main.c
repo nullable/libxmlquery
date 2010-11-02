@@ -3,6 +3,7 @@
 #include "dom/serialize.h"
 #include "parser/dom_parser.h"
 #include "data_structures/stack.h"
+#include "selectors/query_runner.h"
 
 int main(){
   doc* document = parse_dom("test.xml");
@@ -25,6 +26,16 @@ int main(){
   printf("%s", cha);
 
   free(cha);*/
+
+  list* result = query("@hi",document->root);
+
+  printf("List size is %d\n", result->count);
+  int i;
+  for(i=0; i < result->count; i++){
+    dom_node* t = (dom_node*)get_element_at(result, i);
+    printf("%s\n", get_name(t));
+  }
+
 
   if(document != NULL)
     destroy_dom_tree(document);

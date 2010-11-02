@@ -199,15 +199,17 @@ list* query(char* query_string, dom_node* node){
     int op;
     add_element(all_nodes, node);
 
+
     selector* s;
     list* nodes = all_nodes;
     list* result = new_generic_list(1);
 
     queue* query = parse_query(query_string);
+
     while(query->count > 0){
         switch(peek_queue_type(query)){
         case LXQ_RELATION_TYPE:
-            op = (int)dequeue(query);
+	  op = *((int*)dequeue(query));
             if(op == ','){
                 result = merge_lists(result, nodes);
                 nodes = all_nodes;
@@ -225,7 +227,7 @@ list* query(char* query_string, dom_node* node){
             break;
         }
     }
-
+    print_node_list(nodes);
     return remove_duplicates(merge_lists(result, nodes));
 }
 

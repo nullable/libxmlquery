@@ -345,11 +345,20 @@ int16_t peek_queue_type(queue *s)
       log(F, "Queue is empty");
       exit(1);
     }
-  return s->array[0]->type;
+  return s->array[s->start]->type;
 }
 
 struct generic_list_s *merge_lists(struct generic_list_s *l1, struct generic_list_s *l2)
 {
+  if(l1->count == 0){
+    destroy_generic_list(l1);
+    return l2;
+  }else
+    if(l2->count == 0){
+      destroy_generic_list(l2);
+      return l1;
+    }
+
   int32_t new_count = l1->count + l2->count, i;
   struct generic_list_s *r = new_generic_list(new_count);
 
@@ -397,18 +406,31 @@ void __quicksort_generic_list(list* l) {
     __quicksort_generic_list_aux(l->array, 0, l->count - 1);
   }
 
+list* duplicate_generic_list(list *l){
+  list* new = new_generic_list(l->capacity);
+  int i;
+  for(i = 0; i < l->count; i++)
+    insert_element_at(new, get_element_at(l, i), i);
+  return new;
+}
+
 list* remove_duplicates(list* l){
-    int i;
-    list* r = new_generic_list(l->capacity);
-    rebase_generic_list(l);
-    __quicksort_generic_list(l);
-    for(i = 1; i < l->count; i++){
-        if(get_element_at(l, i-1) != get_element_at(l, i)){
-            add_element(r, get_element_at(l, i));
-            //TODO: memory is not free, save it!!!!
-        }
+  if(l == NULL) 
+    return NULL;
+  if(l->count <= 1)
+    return duplicate_generic_list(l);
+  
+  int i;
+  list* r = new_generic_list(l->capacity);
+  rebase_generic_list(l);
+  __quicksort_generic_list(l);
+  for(i = 1; i < l->count; i++){
+    if(get_element_at(l, i-1) != get_element_at(l, i)){
+      add_element(r, get_element_at(l, i));
+      //TODO: memory is not free, save it!!!!
     }
-    return r;
+  }
+  return r;
 }
 
 void destroy_generic_list(struct generic_list_s *s)

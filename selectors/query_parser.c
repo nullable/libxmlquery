@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include "query_parser.h"
 #include "../dom/macros.h"
 
@@ -6,7 +7,7 @@ extern int yyparse();
 
 selector* new_selector(char* id){
   selector* r = alloc(selector, 1);
-  r->id = id;
+  r->id = strdup(id);
   r->filters = NULL;
   r->attrs = NULL;
   return r;
@@ -22,9 +23,9 @@ attr_selector* new_attr_name_selector(char* name){
 
 attr_selector* new_attr_value_selector(char* name, int op, char* value){
   attr_selector* r = alloc(attr_selector, 1);
-  r->name = name;
+  r->name = strdup(name);
   r->op = op;
-  r->value = value;
+  r->value = strdup(value);
   return r;
 }
 

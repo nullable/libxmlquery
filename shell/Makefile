@@ -3,7 +3,7 @@ include ../Makefile.inc
 EXEC = shell
 
 all: command.o
-	$(CC) -o $(EXEC) $(CFLAGS) ../data_structures/*.o ../selectors/*.o ../dom/*.o ../parser/*.o command.o symbol_table.o shell.c
+	$(CC) -o $(EXEC) $(CFLAGS) ../libxmlquery.so command.o symbol_table.o shell.c
 
 command.o: symbol_table.o command.h command.c
 	$(CC) $(CFLAGS) -c command.c

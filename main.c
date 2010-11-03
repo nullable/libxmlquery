@@ -8,17 +8,11 @@
 int main(int argc, char** argv){
   doc* document = parse_dom("test.xml");
   //char* cha = document_to_string(document, JSON);
-  //printf("\n\n\n==========================================================\n\n\n");
+  
   //output_xml(document);
   //printf("%s", cha);
 
   //free(cha);
-
-
-  /*cha = document_to_string(document, JSON);
-  printf("%s", cha);
-
-  free(cha);*/
 
   if(argc != 2){
     printf("usage: %s \"query\"\n", argv[0]);
@@ -31,11 +25,16 @@ int main(int argc, char** argv){
   int i;
   for(i=0; i < result->count; i++){
     dom_node* t = (dom_node*)get_element_at(result, i);
+    set_name(t, "banana");
     printf("Result node:\n");
     printf("%s", node_to_string(t, XML));
   }
 
+  printf("\n\n\n==========================================================\n\n\n");
+  char *cha = node_to_string(document->root, JSON);
+  printf("%s", cha);
 
+  free(cha);
   if(document != NULL)
     destroy_dom_tree(document);
 

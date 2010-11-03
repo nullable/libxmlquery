@@ -47,7 +47,7 @@ void parse_file(char* filename){
   fstat(fdin, &st);
   address = mmap(0, st.st_size + 2, PROT_READ | PROT_WRITE, MAP_PRIVATE, fdin, 0);
   if(address == (caddr_t) -1){
-    log(F, "Could map file into memory.\n");
+    log(F, "Could not map file into memory.\n");
     exit(-1);
   }
 

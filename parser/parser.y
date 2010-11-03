@@ -5,10 +5,10 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include "../dom/node.h"
-#include "../data_structures/stack.h"
-#include "../selectors/query_parser.h"
-#include "../dom/macros.h"
+#include "../include/node.h"
+#include "../include/stack.h"
+#include "../include/query_parser.h"
+#include "../include/macros.h"
 
 #define LXQ_RELATION_TYPE 0
 #define LXQ_SELECTOR_TYPE 1

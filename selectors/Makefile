@@ -1,7 +1,7 @@
 include ../Makefile.inc
 
 OBJS = query_parser.o query_runner.o
-includes = $(wildcard *.h)
+includes = ../include/query_parser.h ../include/query_runner.h
 
 all: $(OBJS)
 

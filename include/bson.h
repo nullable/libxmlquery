@@ -19,8 +19,8 @@
 #define _BSON_H_
 #define MONGO_USE_LONG_LONG_INT
 
-#include "platform_hacks.h"
 #include <time.h>
+#include "platform_hacks.h"
 
 MONGO_EXTERN_C_START
 

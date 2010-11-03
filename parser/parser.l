@@ -1,7 +1,7 @@
 %{
 #include <stdio.h>
-#include "y.tab.h"
-#include "../data_structures/stack.h"
+#include "../include/y.tab.h"
+#include "../include/stack.h"
 
 stack* trash_bin = NULL;
 int lxq_parser_last_state;

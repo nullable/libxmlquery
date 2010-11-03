@@ -4,7 +4,7 @@
 #define LXQ_RELATION_TYPE 0
 #define LXQ_SELECTOR_TYPE 1
 
-#include "../data_structures/stack.h"
+#include "stack.h"
 
 struct selector_s;
 

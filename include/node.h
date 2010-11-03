@@ -1,8 +1,8 @@
 #ifndef __NODE_H__
 #define __NODE_H__
 
-#include "../data_structures/rbtree.h"
-#include "../data_structures/stack.h"
+#include "rbtree.h"
+#include "stack.h"
 
 enum node_type {
   ATTRIBUTE,

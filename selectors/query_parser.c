@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
-#include "query_parser.h"
-#include "../dom/macros.h"
-#include "../parser/y.tab.h"
+#include "../include/query_parser.h"
+#include "../include/macros.h"
+#include "../include/y.tab.h"
 
 extern int yyparse();
 

@@ -4,10 +4,10 @@
 #include <stdint.h>
 #include "symbol_table.h"
 #include "command.h"
-#include "../parser/dom_parser.h"
-#include "../dom/node.h"
-#include "../dom/serialize.h"
-#include "../selectors/query_runner.h"
+#include "../include/dom_parser.h"
+#include "../include/node.h"
+#include "../include/serialize.h"
+#include "../include/query_runner.h"
 
 #define COMMAND_ERROR(command_desc, reason, ...)		\
   do{								\

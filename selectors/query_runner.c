@@ -1,11 +1,11 @@
 #include <string.h>
 
-#include "query_runner.h"
-#include "../data_structures/stack.h"
-#include "../dom/node.h"
-#include "../parser/dom_parser.h"
-#include "../parser/y.tab.h"
-#include "query_parser.h"
+#include "../include/query_runner.h"
+#include "../include/stack.h"
+#include "../include/node.h"
+#include "../include/dom_parser.h"
+#include "../include/y.tab.h"
+#include "../include/query_parser.h"
 
 list* filter_nodes_by_type(list* nodes, enum node_type type){
     if(nodes == NULL) return NULL;

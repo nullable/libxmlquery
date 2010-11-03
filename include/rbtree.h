@@ -5,7 +5,7 @@
 #define BLACK 2
 
 #include <stdint.h>
-#include "../dom/macros.h"
+#include "macros.h"
 
 typedef struct stree_node{
   void* node;

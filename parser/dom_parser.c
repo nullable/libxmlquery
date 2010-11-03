@@ -1,10 +1,10 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include "y.tab.h"
-#include "../data_structures/stack.h"
-#include "../dom/macros.h"
-#include "dom_parser.h"
+#include "../include/y.tab.h"
+#include "../include/stack.h"
+#include "../include/macros.h"
+#include "../include/dom_parser.h"
 
 extern doc* lxq_document;
 extern list* lxq_selected_elements;

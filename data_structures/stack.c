@@ -1,9 +1,7 @@
 #include <stdio.h>
-
-
 #include <string.h>
-#include "../dom/macros.h"
-#include "stack.h"
+#include "../include/macros.h"
+#include "../include/stack.h"
 
 struct generic_list_s *new_generic_list(int32_t initial)
 {

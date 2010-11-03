@@ -1,9 +1,9 @@
 #include <stdio.h>
-#include "dom/node.h"
-#include "dom/serialize.h"
-#include "parser/dom_parser.h"
-#include "data_structures/stack.h"
-#include "selectors/query_runner.h"
+#include "include/node.h"
+#include "include/serialize.h"
+#include "include/dom_parser.h"
+#include "include/stack.h"
+#include "include/query_runner.h"
 
 int main(int argc, char** argv){
   doc* document = parse_dom("test.xml");

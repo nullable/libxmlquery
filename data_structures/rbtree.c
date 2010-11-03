@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
-#include "rbtree.h"
+#include "../include/rbtree.h"
 
 tree_node RBNIL = {
   .node = NULL,

@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
-#include "macros.h"
-#include "node.h"
+#include "../include/macros.h"
+#include "../include/node.h"
 
 void set_namespace(dom_node* node, char* namespace){
   int size;

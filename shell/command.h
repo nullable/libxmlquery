@@ -2,9 +2,9 @@
 #define __COMMAND_H__
 
 #include <stdarg.h>
-#include "../dom/macros.h"
-#include "../data_structures/stack.h"
-#include "../data_structures/rbtree.h"
+#include "../include/macros.h"
+#include "../include/stack.h"
+#include "../include/rbtree.h"
 
 typedef struct command_s{
   char* name;

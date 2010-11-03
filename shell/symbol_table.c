@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <string.h>
-#include "../data_structures/rbtree.h"
-#include "../dom/macros.h"
+#include "../include/rbtree.h"
+#include "../include/macros.h"
 #include "symbol_table.h"
 
 void* symbol_key(tree_node* node){

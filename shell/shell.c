@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../dom/macros.h"
+#include "../include/macros.h"
 #include "symbol_table.h"
 #include "command.h"
 

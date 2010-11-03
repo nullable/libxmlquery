@@ -282,9 +282,7 @@ list* get_descendants(dom_node* node)
     if(n->type != ELEMENT) continue;
 
     list* nd = get_descendants(n);
-    if(nd != NULL){
-      descendants = merge_lists(descendants, nd);
-    }
+    descendants = merge_lists(descendants, nd);
     add_element(descendants, n);
   }
 

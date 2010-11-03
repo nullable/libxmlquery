@@ -30,12 +30,12 @@ typedef struct selector_s{
   stack* filters;
 } selector;
 
-selector* new_selector(char* id);
+extern selector* new_selector(char* id);
+extern attr_selector* new_attr_value_selector(char* name, int op, char* value);
+extern filter_selector* new_filter(int filter);
 
-//attr_selector* new_attr_name_selector(char* name);
-
-attr_selector* new_attr_value_selector(char* name, int op, char* value);
-
-filter_selector* new_filter(int filter);
+extern void destroy_selector(selector* s);
+extern void destroy_filter_selector(filter_selector* fs);
+extern void destroy_attr_selector(attr_selector* as);
 #endif
 

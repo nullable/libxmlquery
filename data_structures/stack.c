@@ -350,16 +350,16 @@ int16_t peek_queue_type(queue *s)
 
 struct generic_list_s *merge_lists(struct generic_list_s *l1, struct generic_list_s *l2)
 {
-  if(!l2) return duplicate_generic_list(l1);
-  if(!l1) return duplicate_generic_list(l2);
+  if(!l2) return l1;
+  if(!l1) return l2;
 
   if(l1->count == 0){
     destroy_generic_list(l1);
-    return duplicate_generic_list(l2);
+    return l2;
   }else
     if(l2->count == 0){
       destroy_generic_list(l2);
-      return duplicate_generic_list(l1);
+      return l1;
     }
 
   int32_t new_count = l1->count + l2->count, i;
@@ -427,7 +427,7 @@ list* remove_duplicates(list* l){
   if(l == NULL)
     return NULL;
   if(l->count <= 1)
-    return duplicate_generic_list(l);
+    return l;
 
   int i;
   list* r = new_generic_list(l->capacity);
@@ -437,9 +437,10 @@ list* remove_duplicates(list* l){
   for(i = 1; i < l->count; i++){
     if(get_element_at(l, i-1) != get_element_at(l, i)){
       add_element(r, get_element_at(l, i));
-      //TODO: memory is not free, save it!!!!
     }
   }
+
+  destroy_generic_list(l);
   return r;
 }
 

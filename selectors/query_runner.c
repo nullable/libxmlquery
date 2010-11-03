@@ -16,6 +16,8 @@ list* filter_nodes_by_type(list* nodes, enum node_type type){
             add_element(r, get_element_at(nodes, i));
         }
     }
+
+    destroy_generic_list(nodes);
     return r;
 }
 
@@ -77,6 +79,7 @@ list* apply_operator(list* nodes, int op){
         }
     }
 
+    destroy_generic_list(nodes);
     return remove_duplicates(result);
 }
 
@@ -93,6 +96,7 @@ list* filter_nodes_by_name(list* nodes, char* name){
         }
     }
 
+    destroy_generic_list(nodes);
     return r;
 }
 
@@ -115,13 +119,14 @@ list* filter_nodes_by_attr(list* nodes, attr_selector* attr_s){
             }
             break;
         case NO_OP:
-                add_element(r, n);
-            break;
+	  add_element(r, n);
+	  break;
         default:
             log(F, "Regex operators not implemented.\n");
         }
     }
 
+    destroy_generic_list(nodes);
     return r;
 }
 
@@ -169,37 +174,37 @@ list* filter_nodes_by_pseudo_filter(list* nodes, filter_selector* filter_s){
         }
     }
 
+    destroy_generic_list(nodes);
     return r;
 }
 
 list* filter_nodes_by_selector(list* nodes, selector* s){
-    list* r = nodes;
-    int i;
+  list* r = nodes;
+  int i;
 
-    if(s->id != NULL){
-        r = filter_nodes_by_name(nodes, s->id);
+  if(s->id != NULL){
+    r = filter_nodes_by_name(nodes, s->id);
+  }
+  
+  if(s->attrs != NULL){
+    for(i = 0; i < s->attrs->count; i++){
+      r = filter_nodes_by_attr(r, get_element_at(s->attrs, i));
     }
-
-    if(s->attrs != NULL){
-        for(i = 0; i < s->attrs->count; i++){
-            r = filter_nodes_by_attr(r, get_element_at(s->attrs, i));
-        }
+  }
+  
+  if(s->filters != NULL){
+    for(i = 0; i < s->filters->count; i++){
+      r = filter_nodes_by_pseudo_filter(r, get_element_at(s->filters, i));
     }
+  }
 
-    if(s->filters != NULL){
-        for(i = 0; i < s->filters->count; i++){
-            r = filter_nodes_by_pseudo_filter(r, get_element_at(s->filters, i));
-        }
-    }
-
-    return r;
+  return r;
 }
 
 list* query(char* query_string, dom_node* node){
     list* all_nodes = get_descendants(node);
-    int op;
+    int op, *holder;
     add_element(all_nodes, node);
-
 
     selector* s;
     list* nodes = all_nodes;
@@ -210,24 +215,27 @@ list* query(char* query_string, dom_node* node){
     while(query->count > 0){
         switch(peek_queue_type(query)){
         case LXQ_RELATION_TYPE:
-	        op = *((int*)dequeue(query));
-            if(op == ','){
-                result = merge_lists(result, nodes);
-                nodes = duplicate_generic_list(all_nodes);
-            }
-            else{
-                list* old_nodes = nodes;
-                nodes = apply_operator(nodes, op);
-                destroy_generic_list(old_nodes);
-            }
-            break;
+	  holder = ((int*)dequeue(query));
+	  op = *holder;
+	  if(op == ','){
+	    result = merge_lists(result, nodes);
+	    nodes = duplicate_generic_list(all_nodes);
+	    destroy_generic_list(all_nodes);
+	  }
+	  else{
+	    nodes = apply_operator(nodes, op);
+	  }
+	  free(holder);
+	  break;
         case LXQ_SELECTOR_TYPE:
-            s =(selector*)dequeue(query);
-            nodes = filter_nodes_by_selector(nodes, s);
-            //TODO: memory leak
-            break;
+	  s =(selector*)dequeue(query);
+	  nodes = filter_nodes_by_selector(nodes, s);
+	  destroy_selector(s);
+	  break;
         }
     }
+
+    destroy_generic_list(query);
     return remove_duplicates(merge_lists(result, nodes));
 }
 

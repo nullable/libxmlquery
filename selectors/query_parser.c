@@ -2,6 +2,7 @@
 #include <string.h>
 #include "query_parser.h"
 #include "../dom/macros.h"
+#include "../parser/y.tab.h"
 
 extern int yyparse();
 
@@ -12,14 +13,6 @@ selector* new_selector(char* id){
   r->attrs = NULL;
   return r;
 }
-
-/*
-attr_selector* new_attr_name_selector(char* name){
-  attr_selector* r = alloc(attr_selector, 1);
-  r->name = name;
-  return r;
-}
-*/
 
 attr_selector* new_attr_value_selector(char* name, int op, char* value){
   attr_selector* r = alloc(attr_selector, 1);
@@ -35,3 +28,42 @@ filter_selector* new_filter(int filter){
   return r;
 }
 
+void destroy_selector(selector* s);
+
+void destroy_filter_selector(filter_selector* fs){
+  switch(fs->op){
+  case NOT_FILTER:
+    {
+      int i;
+      for(i = 0; i < fs->value.selector->count; i++)
+	destroy_selector((selector*) get_element_at(fs->value.selector, i));
+      destroy_generic_list(fs->value.selector);
+      break;
+    }
+  case NTH_CHILD_FILTER:
+  case NTH_LAST_CHILD_FILTER:
+    free(fs->value.s);
+  }
+  free(fs);
+}
+
+void destroy_attr_selector(attr_selector* as){
+  free(as->name);
+  free(as->value);
+  free(as);
+}
+
+void destroy_selector(selector* s){
+  free(s->id);
+
+  int i;
+  for(i = 0; i < s->attrs->count; i++)
+    destroy_attr_selector((attr_selector*) get_element_at(s->attrs, i));
+  destroy_generic_list(s->attrs);
+
+  for(i = 0; i < s->filters->count; i++)
+    destroy_filter_selector((filter_selector*) get_element_at(s->filters, i));
+  destroy_generic_list(s->filters);
+  
+  free(s);
+}

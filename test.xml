@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <domobus>
   <rooms>
-    <room name="r1">
+    <room name="r1" name="r21">
       <devices>
         <device type="switch" state="on"/>
         <device type="blind" state="87" />
@@ -22,7 +22,7 @@
     <room name="r3" />
     <room name="r4" />
     <!-- Imaginary rooms following -->
-<!--    <room name="r5" />-->
+    <room name="r5" />
     <room name="r6" />
   </rooms>
   <properties>

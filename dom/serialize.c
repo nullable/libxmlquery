@@ -94,6 +94,7 @@ byte_buffer* __dom_node_to_xml(dom_node* n, int depth){
       while(tree_iterator_has_next(it)){
 	byte_buffer* attr = __attribute_to_xml((dom_node*) tree_iterator_next(it));
 	append_buffer_to_buffer(attr, b);
+	destroy_byte_buffer(attr);
       }
       destroy_iterator(it);
     }

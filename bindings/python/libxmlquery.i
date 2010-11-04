@@ -1,5 +1,5 @@
 
-%module xmlquery
+%module libxmlquery
 %{
 /* Put headers and other declarations here */
 #include "../../include/node.h"
@@ -29,3 +29,13 @@ extern struct generic_list_s* get_children(dom_node* node);
 extern dom_node* get_attribute_by_name(dom_node* node, char* attr_name);
 
 extern dom_node* delete_attribute(dom_node* node, char* name);
+
+//query_runner
+extern struct generic_list_s* query(char* q, dom_node*);
+
+//helpers
+extern dom_node* internal_parse_xml_file(char* filename);
+extern char* node_to_xml_string(dom_node* root);
+extern int list_size(struct generic_list_s* l);
+extern dom_node* get_dom_node_at(struct generic_list_s* l, int p);
+

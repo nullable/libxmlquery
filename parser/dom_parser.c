@@ -51,6 +51,7 @@ list* parse_query(const char* query){
 
   sles = alloc(list, 1);
   memcpy(sles, lxq_selected_elements, sizeof(list));
+  free(lxq_selected_elements);
   lxq_selected_elements = NULL;
   return sles;
 }

@@ -17,18 +17,19 @@ list* filter_nodes_by_type(list* nodes, enum node_type type){
         }
     }
 
-    destroy_generic_list(nodes);
     return r;
 }
 
 list* get_xml_descendants(dom_node* n){
-    list* nodes = get_descendants(n);
-    return filter_nodes_by_type(nodes, ELEMENT);
+  list* nodes = get_descendants(n), *res;
+  res = filter_nodes_by_type(nodes, ELEMENT);
+  destroy_generic_list(nodes);
+  return res;
 }
 
 list* get_xml_children(dom_node* n){
-    list* nodes = get_children(n);
-    return filter_nodes_by_type(nodes, ELEMENT);
+  list* nodes = get_children(n);
+  return filter_nodes_by_type(nodes, ELEMENT);
 }
 
 list* get_xml_nodes_after(dom_node* n){
@@ -78,8 +79,6 @@ list* apply_operator(list* nodes, int op){
             break;
         }
     }
-
-    destroy_generic_list(nodes);
     return remove_duplicates(result);
 }
 
@@ -96,7 +95,6 @@ list* filter_nodes_by_name(list* nodes, char* name){
         }
     }
 
-    destroy_generic_list(nodes);
     return r;
 }
 
@@ -126,7 +124,6 @@ list* filter_nodes_by_attr(list* nodes, attr_selector* attr_s){
         }
     }
 
-    destroy_generic_list(nodes);
     return r;
 }
 
@@ -174,27 +171,32 @@ list* filter_nodes_by_pseudo_filter(list* nodes, filter_selector* filter_s){
         }
     }
 
-    destroy_generic_list(nodes);
     return r;
 }
 
 list* filter_nodes_by_selector(list* nodes, selector* s){
-  list* r = nodes;
+  list* r = nodes, *old;
   int i;
 
   if(s->id != NULL){
+    old = nodes;
     r = filter_nodes_by_name(nodes, s->id);
+    destroy_generic_list(old);
   }
   
   if(s->attrs != NULL){
     for(i = 0; i < s->attrs->count; i++){
+      old = r;
       r = filter_nodes_by_attr(r, get_element_at(s->attrs, i));
+      destroy_generic_list(old);
     }
   }
   
   if(s->filters != NULL){
     for(i = 0; i < s->filters->count; i++){
+      old = r;
       r = filter_nodes_by_pseudo_filter(r, get_element_at(s->filters, i));
+      destroy_generic_list(old);
     }
   }
 
@@ -207,7 +209,7 @@ list* query(char* query_string, dom_node* node){
     add_element(all_nodes, node);
 
     selector* s;
-    list* nodes = all_nodes;
+    list* nodes = all_nodes, *old;
     list* result = new_generic_list(1);
 
     queue* query = parse_query(query_string);
@@ -223,7 +225,9 @@ list* query(char* query_string, dom_node* node){
 	    destroy_generic_list(all_nodes);
 	  }
 	  else{
+	    old = nodes;
 	    nodes = apply_operator(nodes, op);
+	    destroy_generic_list(old);
 	  }
 	  free(holder);
 	  break;

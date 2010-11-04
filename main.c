@@ -24,6 +24,9 @@ int main(int argc, char** argv){
   //printf("List size is %d\n", result->count);
   int i;
   char* cha;
+
+  printf("Results: %d\n", result->count);
+
   for(i=0; i < result->count; i++){
     dom_node* t = (dom_node*)get_element_at(result, i);
     set_name(t, "banana");

@@ -1,0 +1,142 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Tutorial &mdash; libxmlquery v0.1.4 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="libxmlquery v0.1.4 documentation" href="index.html" />
+    <link rel="next" title="Document Object Model" href="dom.html" />
+    <link rel="prev" title="Welcome to libxmlquery’s documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="dom.html" title="Document Object Model"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to libxmlquery’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">libxmlquery v0.1.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="tutorial">
+<h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
+<p>The following code shows how to use the library to rename a node in a xml file:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;xmlquery/parse.h&gt;</span>
+<span class="cp">#include &lt;xmlquery/dom.h&gt;</span>
+<span class="cp">#include &lt;xmlquery/serialize.h&gt;</span>
+
+<span class="n">dom_node</span><span class="o">*</span> <span class="n">node</span> <span class="o">=</span> <span class="n">xmlquery_parsefile</span><span class="p">(</span><span class="s">&quot;test.xml&quot;</span><span class="p">);</span>
+<span class="n">node_list</span><span class="o">*</span> <span class="n">q_result</span> <span class="o">=</span> <span class="n">xmlquery_query</span><span class="p">(</span><span class="s">&quot;@hi[foo=bar]&quot;</span><span class="p">);</span>
+<span class="n">dom_node</span><span class="o">*</span> <span class="n">n_result</span> <span class="o">=</span> <span class="n">xmlquery_pop_node</span><span class="p">(</span><span class="n">q_result</span><span class="p">);</span>
+<span class="n">xmlquery_set_node_name</span><span class="p">(</span><span class="n">n_result</span><span class="p">,</span> <span class="s">&quot;bye&quot;</span><span class="p">);</span>
+
+<span class="n">printf</span><span class="p">(</span><span class="s">&quot;%s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">xmlquery_dom_node_to_string</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">XML</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>if <tt class="docutils literal"><span class="pre">test.xml</span></tt> contains:</p>
+<div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;root&gt;</span>
+  <span class="nt">&lt;hi</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;hi</span> <span class="na">foo=</span><span class="s">&quot;bar&quot;</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/root&gt;</span>
+</pre></div>
+</div>
+<p>the resulting output would change the node:</p>
+<div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;hi</span> <span class="na">foo=</span><span class="s">&quot;bar&quot;</span> <span class="nt">/&gt;</span>
+</pre></div>
+</div>
+<p>to:</p>
+<div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;bye</span> <span class="na">foo=</span><span class="s">&quot;bar&quot;</span> <span class="nt">/&gt;</span>
+</pre></div>
+</div>
+<p>this code will read an xml file in <tt class="docutils literal"><span class="pre">test.xml</span></tt> into our abstract representation
+of the DOM (<strong>D</strong>ocument <strong>O</strong>bject <strong>M</strong>odel) tree:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="n">dom_node</span><span class="o">*</span> <span class="n">node</span> <span class="o">=</span> <span class="n">xmlquery_parsefile</span><span class="p">(</span><span class="s">&quot;test.xml&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to libxmlquery&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="dom.html"
+                        title="next chapter">Document Object Model</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/tutorial.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="dom.html" title="Document Object Model"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to libxmlquery’s documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">libxmlquery v0.1.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010, Frederico Gonçalves, Vasco Fernandes.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.4.
+    </div>
+  </body>
+</html>

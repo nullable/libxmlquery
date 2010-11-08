@@ -1,13 +1,21 @@
 #include <stdio.h>
+#include <string.h>
 #include "include/node.h"
 #include "include/serialize.h"
 #include "include/dom_parser.h"
 #include "include/stack.h"
 #include "include/query_runner.h"
+#include "include/bdom.h"
+
+void dump(char* array, int offset, int size){
+  for(; offset < size; offset++)
+    printf("%c", array[offset]);
+  putchar('\n');
+}
 
 int main(int argc, char** argv){
   doc* document = parse_dom("test.xml");
-  //char* cha = document_to_string(document, JSON);
+  //  char* cha = node_to_string(document->root, JSON);
   
   //output_xml(document);
   //printf("%s", cha);
@@ -19,6 +27,12 @@ int main(int argc, char** argv){
       return 0;
   }
 
+  bdom* b = serialize_dom_doc(document);
+  //    printf("bdom size %d\n", *(get_size_pointer(b)));
+  dump(b->bb->buffer, 0, b->bb->size);
+  destroy_bdom(b);
+
+  /*
   list* result = query(argv[1],document->root);
 
   //printf("List size is %d\n", result->count);
@@ -40,12 +54,12 @@ int main(int argc, char** argv){
   cha = node_to_string(document->root, JSON);
   printf("%s", cha);
 
-  free(cha);
+  free(cha);*/
   if(document != NULL)
     destroy_dom_tree(document);
 
-  destroy_generic_list(result);
-    /*  list* cenas = parse_query("@E");
+  /*destroy_generic_list(result);
+  list* cenas = parse_query("@E");
   int i = 0;
   for(; i < cenas->count; i++){
     free(get_element_at(cenas, i));

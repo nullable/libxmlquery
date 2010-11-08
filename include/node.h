@@ -40,7 +40,7 @@ extern void set_parent(dom_node* node, dom_node* parent);
 extern char* get_namespace(dom_node* node);
 extern char* get_name(dom_node* node);
 extern char* get_value(dom_node* node);
-extern char* get_xml_declaration(doc* document);
+extern dom_node* get_xml_declaration(doc* document);
 extern dom_node* get_doc_root(doc* document);
 
 extern void prepend_child(dom_node* parent, dom_node* child);

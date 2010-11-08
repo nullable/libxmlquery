@@ -72,6 +72,10 @@ dom_node* get_doc_root(doc* document){
   return document->root;
 }
 
+dom_node* get_xml_declaration(doc* document){
+  return document->xml_declaration;
+}
+
 void prepend_child(dom_node* parent, dom_node* child){
   if(child == NULL) {
     log(W, "Trying to prepend a NULL child.\n");

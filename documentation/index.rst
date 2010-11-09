@@ -20,7 +20,7 @@ If you're new to **libxmlquery** start by reading the
    tutorial
    dom
    querying
-   datastructures
+   data_structures/datastructures
    shell
    bindings
 

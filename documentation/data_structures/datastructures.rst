@@ -303,7 +303,7 @@ Function description
       ==1188== 
       ==1188== All heap blocks were freed -- no leaks are possible
 
-   Which means that there are no memory leaks and you should always use this function to free the space store by any rbtree you use.
+   Which means that there are no memory leaks and you should always use this function to free the space stored by any rbtree you use.
 
 .. c:function:: tree_iterator* new_tree_iterator(tree_root* root)
 
@@ -344,5 +344,142 @@ Function description
      gcc -o test <above_source_file> -I<folder path where rbtree.h is kept>
 
 .. c:function:: uint8_t tree_iterator_has_next(tree_iterator* it)
+
+   :c:member:`it` A tree iterator created by calling :c:func:`new_tree_iterator`.
+
+   This function returns 1 if there are more elements in the tree to be iterated. The following code shows a simple usage of this function.
+
+   Example::
+
+     #include <stdio.h>
+     #include "rbtree.h"
+
+     void* key_address(tree_node* node){
+        return node->node;
+     }
+
+     int64_t compare_integers(void* keyA, void* keyB){
+        return *((int *) keyA) - *((int *) keyB);
+     }
+
+     int main(){
+        tree_root* rbtree = new_rbtree(& key_address, & compare_integers);
+	int a = 9, b = 6, c = 10;
+	
+	rb_tree_insert(rbtree, &a);
+        rb_tree_insert(rbtree, &b);
+	rb_tree_insert(rbtree, &c);
+	
+	tree_iterator* it = new_tree_iterator(rbtree);
+
+	if(tree_iterator_has_next(it))
+	  printf("There are still elements to be iterated.\n");
+	return 0;
+     }
+
+   You may compile it with 
+
+   .. code-block:: bash 
+
+     gcc -o test <above_source_file> -I<folder path where rbtree.h is kept>
+
 .. c:function:: void* tree_iterator_next(tree_iterator* it)
+
+   :c:member:`it` A tree iterator created by calling :c:func:`new_tree_iterator`.
+
+   This functions returns the current element pointed by iterator ``it`` and advances to the next element in the iteration. This function should be used with :c:func:`tree_iterator_has_next`. Note that there is **no** guaranty about the order of iteration. The following code shows how to use it.
+
+   Example::
+
+     #include <stdio.h>
+     #include "rbtree.h"
+
+     void* key_address(tree_node* node){
+        return node->node;
+     }
+
+     int64_t compare_integers(void* keyA, void* keyB){
+        return *((int *) keyA) - *((int *) keyB);
+     }
+
+     int main(){
+        tree_root* rbtree = new_rbtree(& key_address, & compare_integers);
+	int a = 9, b = 6, c = 10;
+	
+	rb_tree_insert(rbtree, &a);
+        rb_tree_insert(rbtree, &b);
+	rb_tree_insert(rbtree, &c);
+	
+	tree_iterator* it = new_tree_iterator(rbtree);
+
+	while(tree_iterator_has_next(it)){
+	  int d = *((int *) tree_iterator_next(it));
+	  printf("%d\n", d);
+	}
+	return 0;
+     }
+
+   You may compile it with 
+
+   .. code-block:: bash 
+
+     gcc -o test <above_source_file> -I<folder path where rbtree.h is kept>
+
 .. c:function:: void destroy_iterator(tree_iterator* it)
+
+   :c:member:`it` A tree iterator created by calling :c:func:`new_tree_iterator`.
+
+   This function frees the iterator pointed by ``it``. The following example shows how to use it.
+
+   Example::
+
+     #include <stdio.h>
+     #include "rbtree.h"
+
+     void* key_address(tree_node* node){
+        return node->node;
+     }
+
+     int64_t compare_integers(void* keyA, void* keyB){
+        return *((int *) keyA) - *((int *) keyB);
+     }
+
+     int main(){
+        tree_root* rbtree = new_rbtree(& key_address, & compare_integers);
+	int a = 9, b = 6, c = 10;
+	
+	rb_tree_insert(rbtree, &a);
+        rb_tree_insert(rbtree, &b);
+	rb_tree_insert(rbtree, &c);
+	
+	tree_iterator* it = new_tree_iterator(rbtree);
+
+	while(tree_iterator_has_next(it)){
+	  int d = *((int *) tree_iterator_next(it));
+	  printf("%d\n", d);
+	}
+	destroy_iterator(it);
+
+	destroy_rbtree(rbtree);
+	return 0;
+     }
+
+   You may compile it with 
+
+   .. code-block:: bash 
+
+     gcc -o test <above_source_file> -I<folder path where rbtree.h is kept>
+
+   .. code-block:: bash 
+
+      valgrind --show-reachable=yes --leak-check=full ./test
+
+   produces the ouput::
+
+      ==4432== HEAP SUMMARY:
+      ==4432==     in use at exit: 0 bytes in 0 blocks
+      ==4432==   total heap usage: 5 allocs, 5 frees, 76 bytes allocated
+      ==4432== 
+      ==4432== All heap blocks were freed -- no leaks are possible
+
+   Which means that there are no memory leaks and you should always use this function when iterating.

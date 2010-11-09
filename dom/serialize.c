@@ -340,11 +340,15 @@ char* node_to_string(dom_node* root, serialization_type t){
 bdom* serialize_dom_doc(doc* document){
   bdom *bd = init_bdom(BDOM_DOC);
 
-  bdom* dec = bdom_from_dom_node(document->xml_declaration);
-  append_bdom_to_bdom(dec, bd);
-  destroy_bdom(dec);
+  if(document->xml_declaration){
+    bdom* dec = bdom_from_dom_node(document->xml_declaration);
+    finalize_bdom(dec);
+    append_bdom_to_bdom(dec, bd);
+    destroy_bdom(dec);
+  }
 
   bdom* root = bdom_from_dom_node(document->root);
+  finalize_bdom(root);
   append_bdom_to_bdom(root, bd);
   destroy_bdom(root);
 

@@ -30,9 +30,8 @@ int main(int argc, char** argv){
   bdom* b = serialize_dom_doc(document);
 
   dump(b->bb->buffer, 0, b->bb->size);
+  printf("size %d\n", b->bb->size);
 
-
-  printf("bdom size %d, %d\n", b->bb->size, *(get_size_pointer(b)));
   destroy_bdom(b);
 
   /*

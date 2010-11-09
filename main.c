@@ -28,7 +28,7 @@ int main(int argc, char** argv){
   }
 
   bdom* b = serialize_dom_doc(document);
-  //    printf("bdom size %d\n", *(get_size_pointer(b)));
+  printf("bdom size %d, %d\n", b->bb->size, *(get_size_pointer(b)));
   dump(b->bb->buffer, 0, b->bb->size);
   destroy_bdom(b);
 

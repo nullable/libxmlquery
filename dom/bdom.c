@@ -15,7 +15,7 @@ bdom* init_bdom(enum bdom_type t){
   bdom* b = alloc(bdom, 1); 
 
   b->bb = new_byte_buffer(sizeof(int) + 1);
-  *(get_size_pointer(b)) = 0;
+  *(get_size_pointer(b)) = 5;
   *(get_type_pointer(b)) = t;
 
   /*  char zero_int[sizeof(int)] = {0};
@@ -39,7 +39,7 @@ void destroy_bdom(bdom* b){
 
 /*Append bdom "from" to bdom "to".*/
 void append_bdom_to_bdom(bdom* from, bdom* to){
-  *(get_size_pointer(to)) += *(get_size_pointer(from));
+  *(get_size_pointer(to)) += from->bb->size;
   append_buffer_to_buffer(from->bb, to->bb);
 }
 
@@ -47,7 +47,7 @@ bdom* bdom_from_string(const char* str, enum bdom_type t){
   bdom* b = init_bdom(t);
 
   append_string_to_buffer(str, b->bb);
-  *(get_size_pointer(b)) = strlen(str);
+  *(get_size_pointer(b)) = b->bb->size;
 
   return b;
 }

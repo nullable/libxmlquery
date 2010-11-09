@@ -15,6 +15,8 @@
 
 extern int yylex(void);
 extern int yyparse(void);
+extern int yylineno;
+extern char* yytext;
 
 doc* lxq_document;
 
@@ -24,7 +26,7 @@ list* lxq_selected_elements;
 
 void yyerror(const char *str)
 {
-        fprintf(stderr,"error: %s\n",str);
+  fprintf(stderr,"error:%d: %s at '%s'\n", yylineno, str, yytext);
 }
 
 int yywrap()
@@ -61,6 +63,7 @@ void parse_file(char* filename){
     log(F, "flex could not allocate a new buffer to parse the file.\n");
     exit(-1);
   }
+  yylineno = 1;
   yyparse();
   yy_delete_buffer(bs);
   yylex_destroy();
@@ -83,6 +86,7 @@ void parse_string(const char* str){
     log(F, "flex could not allocate a new buffer to parse the string.\n");
     exit(-1);
   }
+  yylineno = 1;
   yyparse();
   yy_delete_buffer(bs);
   yylex_destroy();

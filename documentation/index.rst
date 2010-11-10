@@ -21,6 +21,7 @@ If you're new to **libxmlquery** start by reading the
    dom
    querying
    data_structures/datastructures
+   macros.h
    shell
    bindings
 

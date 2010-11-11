@@ -458,3 +458,21 @@ void destroy_generic_list(struct generic_list_s *s)
   free(s);
 }
 
+generic_list_iterator* new_generic_list_iterator(struct generic_list_s* l){
+  generic_list_iterator* i = alloc(generic_list_iterator, 1);
+  i->pos = 0;
+  i->list = l;
+  return i;
+}
+
+uint8_t generic_list_iterator_has_next(generic_list_iterator* i){
+  return i->pos < i->list->count;
+}
+
+void* generic_list_iterator_next(generic_list_iterator* i){
+  return get_element_at(i->list, (i->pos)++);
+}
+
+void destroy_generic_list_iterator(generic_list_iterator* i){
+  free(i);
+}

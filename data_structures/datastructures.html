@@ -1,0 +1,600 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Data Structures &mdash; libxmlquery v0.1.4 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="libxmlquery v0.1.4 documentation" href="../index.html" />
+    <link rel="next" title="Special Macros" href="../macros.h.html" />
+    <link rel="prev" title="Querying" href="../querying.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../macros.h.html" title="Special Macros"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../querying.html" title="Querying"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">libxmlquery v0.1.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="data-structures">
+<h1>Data Structures<a class="headerlink" href="#data-structures" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="generic-list">
+<h2>Generic List<a class="headerlink" href="#generic-list" title="Permalink to this headline">¶</a></h2>
+<dl class="type">
+<dt id="generic_list">
+<tt class="descname">generic_list</tt><a class="headerlink" href="#generic_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Generic array list optimized for fast access.</p>
+<div class="section" id="list">
+<h3>List<a class="headerlink" href="#list" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="stack">
+<h3>Stack<a class="headerlink" href="#stack" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="queue">
+<h3>Queue<a class="headerlink" href="#queue" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="generic-red-black-tree">
+<h2>Generic Red Black Tree<a class="headerlink" href="#generic-red-black-tree" title="Permalink to this headline">¶</a></h2>
+<p>The file rbtree.c contains the source code for a generic red black tree. This data structure is capable of storing any kind of data and its defined in rbtree.h as:</p>
+<dl class="type">
+<dt id="tree_root">
+<tt class="descname">tree_root</tt><a class="headerlink" href="#tree_root" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="type">
+<dt id="sroot">
+struct <tt class="descname">sroot</tt><a class="headerlink" href="#sroot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<div class="highlight-c"><div class="highlight"><pre><span class="k">typedef</span> <span class="k">struct</span> <span class="n">sroot</span><span class="p">{</span>
+   <span class="k">struct</span> <span class="n">stree_node</span><span class="o">*</span> <span class="n">root</span><span class="p">;</span>
+   <span class="kt">void</span><span class="o">*</span> <span class="p">(</span><span class="o">*</span><span class="n">key</span><span class="p">)(</span><span class="k">struct</span> <span class="n">stree_node</span><span class="o">*</span> <span class="n">node</span><span class="p">);</span>
+   <span class="kt">int64_t</span> <span class="p">(</span><span class="o">*</span><span class="n">compare</span><span class="p">)(</span><span class="kt">void</span><span class="o">*</span> <span class="n">keyA</span><span class="p">,</span> <span class="kt">void</span><span class="o">*</span> <span class="n">keyB</span><span class="p">);</span>
+<span class="p">}</span><span class="n">tree_root</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>There are two things to notice here. First, this is only the root of the tree and points to the first tree_node of the rbtree. Second, it contains two function pointers. The first points to a function, which receives a <a class="reference internal" href="#tree_node" title="tree_node"><tt class="xref c c-type docutils literal"><span class="pre">tree_node</span></tt></a> and should return a <strong>pointer</strong> to that node&#8217;s key. The second is a pointer to a compare function, which compares two keys and should return:</p>
+<ul class="simple">
+<li>A negative integer if the first key is smaller than the second.</li>
+<li>0 if the keys are the same.</li>
+<li>A positive integer if the first key is bigger than the second.</li>
+</ul>
+<p>These pointers must be provided by the user. Why do we need these pointers? Because the data stored in the rbtree can be anything, but we still need to know how to sort it. Nevertheless, if you wish to use this data structure as a container and don&#8217;t care how things are sorted, you can always use the method <a class="reference internal" href="#new_simple_rbtree" title="new_simple_rbtree"><tt class="xref c c-func docutils literal"><span class="pre">new_simple_rbtree()</span></tt></a>.</p>
+<p>Each node in an rbtree is called a tree_node and is defined in rbtree.h as:</p>
+<dl class="type">
+<dt id="tree_node">
+<tt class="descname">tree_node</tt><a class="headerlink" href="#tree_node" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="type">
+<dt id="stree_node">
+struct <tt class="descname">stree_node</tt><a class="headerlink" href="#stree_node" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<div class="highlight-c"><div class="highlight"><pre><span class="k">typedef</span> <span class="k">struct</span> <span class="n">stree_node</span><span class="p">{</span>
+   <span class="kt">void</span><span class="o">*</span> <span class="n">node</span><span class="p">;</span>
+
+   <span class="kt">uint8_t</span> <span class="n">color</span><span class="p">;</span>
+
+   <span class="k">struct</span> <span class="n">stree_node</span><span class="o">*</span> <span class="n">parent</span><span class="p">;</span>
+   <span class="k">struct</span> <span class="n">stree_node</span><span class="o">*</span> <span class="n">left</span><span class="p">;</span>
+   <span class="k">struct</span> <span class="n">stree_node</span><span class="o">*</span> <span class="n">right</span><span class="p">;</span>
+ <span class="p">}</span><span class="n">tree_node</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>There&#8217;s not much to say about this structure, the only thing relevant is the field <tt class="docutils literal"><span class="pre">node</span></tt>, which is used to store the actual data. The other fields are used to keep the rbtree intact.</p>
+<p>Finally, there&#8217;s one more structure, which is defined in rbtree.h as:</p>
+<dl class="type">
+<dt id="tree_iterator">
+<tt class="descname">tree_iterator</tt><a class="headerlink" href="#tree_iterator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="type">
+<dt id="siterator">
+struct <tt class="descname">siterator</tt><a class="headerlink" href="#siterator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<div class="highlight-c"><div class="highlight"><pre><span class="k">typedef</span> <span class="k">struct</span> <span class="n">siterator</span><span class="p">{</span>
+   <span class="k">struct</span> <span class="n">stree_node</span><span class="o">*</span> <span class="n">current</span><span class="p">;</span>
+<span class="p">}</span><span class="n">tree_iterator</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>As the name implies, this structure is an iterator to the tree nodes.</p>
+<p>As a final note, remember that we provide functions to destroy our structures, but the actual data must be destroyed by you. Do not use iterators for this purpose.</p>
+<div class="section" id="function-description">
+<h3>Function description<a class="headerlink" href="#function-description" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="new_simple_rbtree">
+<a class="reference internal" href="#tree_root" title="tree_root">tree_root</a>* <tt class="descname">new_simple_rbtree</tt><big>(</big><big>)</big><a class="headerlink" href="#new_simple_rbtree" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function creates an rbtree, which sorts the data acording to its memory pointer. This function should be used when you just want the rbtree to behave as a container,
+but you still need O(log(n)) when accessing the data. Keep in mind that in order to retreive the stored data, you need to know it&#8217;s memory pointer.</p>
+<p>The return value is a tree_root structure.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="new_rbtree">
+<a class="reference internal" href="#tree_root" title="tree_root">tree_root</a>* <tt class="descname">new_rbtree</tt><big>(</big>void* (*key_function_pointer)(struct <a class="reference internal" href="#stree_node" title="stree_node">stree_node</a>*<em> node)</em>, int64_t (*compare_function_pointer)(void*<em> keyA</em>, void*<em> keyB)</em><big>)</big><a class="headerlink" href="#new_rbtree" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">key_function_pointer</span></tt> A function that should return the address of the node&#8217;s key.</p>
+<p><tt class="xref c c-member docutils literal"><span class="pre">compare_function_pointer</span></tt> A function that should compare two keys and return values as described above. It receives the addresses of each key.</p>
+<p>This function creates an rbtree, which sorts the data according to the given functions. The following example shows how to create an rbtree to store integers.</p>
+<p>Example:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &quot;rbtree.h&quot;</span>
+
+<span class="kt">void</span><span class="o">*</span> <span class="n">key_address</span><span class="p">(</span><span class="n">tree_node</span><span class="o">*</span> <span class="n">node</span><span class="p">){</span>
+   <span class="k">return</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">node</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int64_t</span> <span class="n">compare_integers</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">keyA</span><span class="p">,</span> <span class="kt">void</span><span class="o">*</span> <span class="n">keyB</span><span class="p">){</span>
+   <span class="k">return</span> <span class="o">*</span><span class="p">((</span><span class="kt">int</span> <span class="o">*</span><span class="p">)</span> <span class="n">keyA</span><span class="p">)</span> <span class="o">-</span> <span class="o">*</span><span class="p">((</span><span class="kt">int</span> <span class="o">*</span><span class="p">)</span> <span class="n">keyB</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">(){</span>
+   <span class="n">tree_root</span><span class="o">*</span> <span class="n">rbtree</span> <span class="o">=</span> <span class="n">new_rbtree</span><span class="p">(</span><span class="o">&amp;</span> <span class="n">key_address</span><span class="p">,</span> <span class="o">&amp;</span> <span class="n">compare_integers</span><span class="p">);</span>
+   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>You may compile it with</p>
+<div class="highlight-bash"><div class="highlight"><pre>gcc -o <span class="nb">test</span> &lt;above_source_file&gt; -I&lt;folder path where rbtree.h is kept&gt;
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="rb_tree_insert">
+void* <tt class="descname">rb_tree_insert</tt><big>(</big><a class="reference internal" href="#tree_root" title="tree_root">tree_root</a>*<em> root</em>, void*<em> node</em><big>)</big><a class="headerlink" href="#rb_tree_insert" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">root</span></tt> A pointer to the tree root where to insert the data represented by <tt class="docutils literal"><span class="pre">node</span></tt>.</p>
+<p><tt class="xref c c-member docutils literal"><span class="pre">node</span></tt> A pointer to the data, which will be inserted in the tree.</p>
+<p>As the name implies this function inserts data into the rbtree. In the eventuality that the inserted value is already in the tree, it will be replaced and a pointer to the older value is returned. This is done so the user can free the space stored by that data. The following example shows how to insert integers in an rbtree.</p>
+<p>Example:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &quot;rbtree.h&quot;</span>
+
+<span class="kt">void</span><span class="o">*</span> <span class="n">key_address</span><span class="p">(</span><span class="n">tree_node</span><span class="o">*</span> <span class="n">node</span><span class="p">){</span>
+   <span class="k">return</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">node</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int64_t</span> <span class="n">compare_integers</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">keyA</span><span class="p">,</span> <span class="kt">void</span><span class="o">*</span> <span class="n">keyB</span><span class="p">){</span>
+   <span class="k">return</span> <span class="o">*</span><span class="p">((</span><span class="kt">int</span> <span class="o">*</span><span class="p">)</span> <span class="n">keyA</span><span class="p">)</span> <span class="o">-</span> <span class="o">*</span><span class="p">((</span><span class="kt">int</span> <span class="o">*</span><span class="p">)</span> <span class="n">keyB</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">(){</span>
+   <span class="n">tree_root</span><span class="o">*</span> <span class="n">rbtree</span> <span class="o">=</span> <span class="n">new_rbtree</span><span class="p">(</span><span class="o">&amp;</span> <span class="n">key_address</span><span class="p">,</span> <span class="o">&amp;</span> <span class="n">compare_integers</span><span class="p">);</span>
+   <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">9</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>
+
+   <span class="n">rb_tree_insert</span><span class="p">(</span><span class="n">rbtree</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">);</span>
+   <span class="n">rb_tree_insert</span><span class="p">(</span><span class="n">rbtree</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">b</span><span class="p">);</span>
+   <span class="n">rb_tree_insert</span><span class="p">(</span><span class="n">rbtree</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">c</span><span class="p">);</span>
+   <span class="kt">int</span> <span class="n">older</span> <span class="o">=</span> <span class="o">*</span><span class="p">((</span><span class="kt">int</span> <span class="o">*</span><span class="p">)</span> <span class="n">rb_tree_insert</span><span class="p">(</span><span class="n">rbtree</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">d</span><span class="p">));</span>
+
+   <span class="c1">//don&#39;t free older because it was &quot;alloched&quot; by the compiler.</span>
+   <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Found a %d already stored in the tree.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">older</span><span class="p">);</span>
+
+   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>You may compile it with</p>
+<div class="highlight-bash"><div class="highlight"><pre>gcc -o <span class="nb">test</span> &lt;above_source_file&gt; -I&lt;folder path where rbtree.h is kept&gt;
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="rb_tree_delete">
+void* <tt class="descname">rb_tree_delete</tt><big>(</big><a class="reference internal" href="#tree_root" title="tree_root">tree_root</a>*<em> root</em>, void*<em> key</em><big>)</big><a class="headerlink" href="#rb_tree_delete" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">root</span></tt> A pointer to the tree root where to delete the data with key pointed by <tt class="docutils literal"><span class="pre">key</span></tt>.</p>
+<p><tt class="xref c c-member docutils literal"><span class="pre">key</span></tt> A pointer to the key of the node to be deleted.</p>
+<p>This function deletes a node from an rbtree. If a node with a key equal to the one pointed by <tt class="docutils literal"><span class="pre">key</span></tt> does not exist, NULL will be return. However, if such a node is found, then a pointer to the data is returned. This is done so the user can free the space used by that data. The following example shows how to use this function on an rbtree that stores integers.</p>
+<p>Example:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &quot;rbtree.h&quot;</span>
+
+<span class="kt">void</span><span class="o">*</span> <span class="n">key_address</span><span class="p">(</span><span class="n">tree_node</span><span class="o">*</span> <span class="n">node</span><span class="p">){</span>
+   <span class="k">return</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">node</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int64_t</span> <span class="n">compare_integers</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">keyA</span><span class="p">,</span> <span class="kt">void</span><span class="o">*</span> <span class="n">keyB</span><span class="p">){</span>
+   <span class="k">return</span> <span class="o">*</span><span class="p">((</span><span class="kt">int</span> <span class="o">*</span><span class="p">)</span> <span class="n">keyA</span><span class="p">)</span> <span class="o">-</span> <span class="o">*</span><span class="p">((</span><span class="kt">int</span> <span class="o">*</span><span class="p">)</span> <span class="n">keyB</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">(){</span>
+   <span class="n">tree_root</span><span class="o">*</span> <span class="n">rbtree</span> <span class="o">=</span> <span class="n">new_rbtree</span><span class="p">(</span><span class="o">&amp;</span> <span class="n">key_address</span><span class="p">,</span> <span class="o">&amp;</span> <span class="n">compare_integers</span><span class="p">);</span>
+   <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">9</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+
+   <span class="n">rb_tree_insert</span><span class="p">(</span><span class="n">rbtree</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">);</span>
+   <span class="n">rb_tree_insert</span><span class="p">(</span><span class="n">rbtree</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">b</span><span class="p">);</span>
+   <span class="n">rb_tree_insert</span><span class="p">(</span><span class="n">rbtree</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">c</span><span class="p">);</span>
+
+   <span class="kt">int</span> <span class="n">d</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">stored</span><span class="p">;</span>
+   <span class="n">stored</span> <span class="o">=</span> <span class="o">*</span><span class="p">((</span><span class="kt">int</span> <span class="o">*</span><span class="p">)</span> <span class="n">rb_tree_delete</span><span class="p">(</span><span class="n">rbtree</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">d</span><span class="p">));</span>
+
+   <span class="c1">//don&#39;t free stored because it was &quot;alloched&quot; by the compiler.</span>
+   <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Found a %d stored in the tree.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">stored</span><span class="p">);</span>
+
+   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>You may compile it with</p>
+<div class="highlight-bash"><div class="highlight"><pre>gcc -o <span class="nb">test</span> &lt;above_source_file&gt; -I&lt;folder path where rbtree.h is kept&gt;
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="search_rbtree">
+void* <tt class="descname">search_rbtree</tt><big>(</big><a class="reference internal" href="#tree_root" title="tree_root">tree_root</a><em> root</em>, void*<em> key</em><big>)</big><a class="headerlink" href="#search_rbtree" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">root</span></tt> The root of the tree where to perform the search.</p>
+<p><tt class="xref c c-member docutils literal"><span class="pre">key</span></tt> A pointer to the key of the node to be searched.</p>
+<p>This function searchs an rbtree for a node. It returns NULL if nothing is found, or the data stored in the tree with a key equal to the value pointed by <tt class="docutils literal"><span class="pre">key</span></tt>. The following example shows how to search a tree that stores integers.</p>
+<p>Example:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &quot;rbtree.h&quot;</span>
+
+<span class="kt">void</span><span class="o">*</span> <span class="n">key_address</span><span class="p">(</span><span class="n">tree_node</span><span class="o">*</span> <span class="n">node</span><span class="p">){</span>
+   <span class="k">return</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">node</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int64_t</span> <span class="n">compare_integers</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">keyA</span><span class="p">,</span> <span class="kt">void</span><span class="o">*</span> <span class="n">keyB</span><span class="p">){</span>
+   <span class="k">return</span> <span class="o">*</span><span class="p">((</span><span class="kt">int</span> <span class="o">*</span><span class="p">)</span> <span class="n">keyA</span><span class="p">)</span> <span class="o">-</span> <span class="o">*</span><span class="p">((</span><span class="kt">int</span> <span class="o">*</span><span class="p">)</span> <span class="n">keyB</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">(){</span>
+   <span class="n">tree_root</span><span class="o">*</span> <span class="n">rbtree</span> <span class="o">=</span> <span class="n">new_rbtree</span><span class="p">(</span><span class="o">&amp;</span> <span class="n">key_address</span><span class="p">,</span> <span class="o">&amp;</span> <span class="n">compare_integers</span><span class="p">);</span>
+   <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">9</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+
+   <span class="n">rb_tree_insert</span><span class="p">(</span><span class="n">rbtree</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">);</span>
+   <span class="n">rb_tree_insert</span><span class="p">(</span><span class="n">rbtree</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">b</span><span class="p">);</span>
+   <span class="n">rb_tree_insert</span><span class="p">(</span><span class="n">rbtree</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">c</span><span class="p">);</span>
+
+   <span class="kt">int</span> <span class="n">d</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">stored</span><span class="p">;</span>
+   <span class="n">stored</span> <span class="o">=</span> <span class="o">*</span><span class="p">((</span><span class="kt">int</span> <span class="o">*</span><span class="p">)</span> <span class="n">search_rbtree</span><span class="p">(</span><span class="o">*</span><span class="n">rbtree</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">d</span><span class="p">));</span>
+
+   <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Found a %d stored in the tree.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">stored</span><span class="p">);</span>
+
+   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>You may compile it with</p>
+<div class="highlight-bash"><div class="highlight"><pre>gcc -o <span class="nb">test</span> &lt;above_source_file&gt; -I&lt;folder path where rbtree.h is kept&gt;
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="destroy_rbtree">
+void <tt class="descname">destroy_rbtree</tt><big>(</big><a class="reference internal" href="#tree_root" title="tree_root">tree_root</a>*<em> root</em><big>)</big><a class="headerlink" href="#destroy_rbtree" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">root</span></tt> A pointer to the tree to be destroyed.</p>
+<p>This function destroys an rbtree. Note that this doesn&#8217;t free the user stored data. The following example shows how to use this in a tree that stores integers.</p>
+<p>Example:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &quot;rbtree.h&quot;</span>
+
+<span class="kt">void</span><span class="o">*</span> <span class="n">key_address</span><span class="p">(</span><span class="n">tree_node</span><span class="o">*</span> <span class="n">node</span><span class="p">){</span>
+   <span class="k">return</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">node</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int64_t</span> <span class="n">compare_integers</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">keyA</span><span class="p">,</span> <span class="kt">void</span><span class="o">*</span> <span class="n">keyB</span><span class="p">){</span>
+   <span class="k">return</span> <span class="o">*</span><span class="p">((</span><span class="kt">int</span> <span class="o">*</span><span class="p">)</span> <span class="n">keyA</span><span class="p">)</span> <span class="o">-</span> <span class="o">*</span><span class="p">((</span><span class="kt">int</span> <span class="o">*</span><span class="p">)</span> <span class="n">keyB</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">(){</span>
+   <span class="n">tree_root</span><span class="o">*</span> <span class="n">rbtree</span> <span class="o">=</span> <span class="n">new_rbtree</span><span class="p">(</span><span class="o">&amp;</span> <span class="n">key_address</span><span class="p">,</span> <span class="o">&amp;</span> <span class="n">compare_integers</span><span class="p">);</span>
+   <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">9</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+
+   <span class="n">rb_tree_insert</span><span class="p">(</span><span class="n">rbtree</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">);</span>
+   <span class="n">rb_tree_insert</span><span class="p">(</span><span class="n">rbtree</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">b</span><span class="p">);</span>
+   <span class="n">rb_tree_insert</span><span class="p">(</span><span class="n">rbtree</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">c</span><span class="p">);</span>
+
+   <span class="n">destroy_rbtree</span><span class="p">(</span><span class="n">rbtree</span><span class="p">);</span>
+   <span class="c1">//We do not need to free the stored data because it was &quot;alloched&quot; by the compiler.</span>
+
+   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>You may compile it with</p>
+<div class="highlight-bash"><div class="highlight"><pre>gcc -o <span class="nb">test</span> &lt;above_source_file&gt; -I&lt;folder path where rbtree.h is kept&gt;
+</pre></div>
+</div>
+<p>Notice that running the command</p>
+<div class="highlight-bash"><div class="highlight"><pre>valgrind --show-reachable<span class="o">=</span>yes --leak-check<span class="o">=</span>full ./test
+</pre></div>
+</div>
+<p>produces the ouput:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="o">==</span><span class="mi">1188</span><span class="o">==</span> <span class="n">HEAP</span> <span class="n">SUMMARY</span><span class="o">:</span>
+<span class="o">==</span><span class="mi">1188</span><span class="o">==</span>     <span class="n">in</span> <span class="n">use</span> <span class="n">at</span> <span class="n">exit</span><span class="o">:</span> <span class="mi">0</span> <span class="n">bytes</span> <span class="n">in</span> <span class="mi">0</span> <span class="n">blocks</span>
+<span class="o">==</span><span class="mi">1188</span><span class="o">==</span>   <span class="n">total</span> <span class="n">heap</span> <span class="n">usage</span><span class="o">:</span> <span class="mi">4</span> <span class="n">allocs</span><span class="p">,</span> <span class="mi">4</span> <span class="n">frees</span><span class="p">,</span> <span class="mi">72</span> <span class="n">bytes</span> <span class="n">allocated</span>
+<span class="o">==</span><span class="mi">1188</span><span class="o">==</span>
+<span class="o">==</span><span class="mi">1188</span><span class="o">==</span> <span class="n">All</span> <span class="n">heap</span> <span class="n">blocks</span> <span class="n">were</span> <span class="n">freed</span> <span class="o">--</span> <span class="n">no</span> <span class="n">leaks</span> <span class="n">are</span> <span class="n">possible</span>
+</pre></div>
+</div>
+<p>Which means that there are no memory leaks and you should always use this function to free the space stored by any rbtree you use.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="new_tree_iterator">
+<a class="reference internal" href="#tree_iterator" title="tree_iterator">tree_iterator</a>* <tt class="descname">new_tree_iterator</tt><big>(</big><a class="reference internal" href="#tree_root" title="tree_root">tree_root</a>*<em> root</em><big>)</big><a class="headerlink" href="#new_tree_iterator" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">root</span></tt> A pointer to a tree root, which the iteration will be performed.</p>
+<p>This function creates an iterator to an rbtree. Note that when you create an iterator, you should not insert or delete nodes from the tree before the iteration is over. Otherwise, the behaviour of the program will be unpredictable. It returns pointer to the created iterator. The following example shows how to create an iterator for a tree that stores integers.</p>
+<p>Example:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &quot;rbtree.h&quot;</span>
+
+<span class="kt">void</span><span class="o">*</span> <span class="n">key_address</span><span class="p">(</span><span class="n">tree_node</span><span class="o">*</span> <span class="n">node</span><span class="p">){</span>
+   <span class="k">return</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">node</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int64_t</span> <span class="n">compare_integers</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">keyA</span><span class="p">,</span> <span class="kt">void</span><span class="o">*</span> <span class="n">keyB</span><span class="p">){</span>
+   <span class="k">return</span> <span class="o">*</span><span class="p">((</span><span class="kt">int</span> <span class="o">*</span><span class="p">)</span> <span class="n">keyA</span><span class="p">)</span> <span class="o">-</span> <span class="o">*</span><span class="p">((</span><span class="kt">int</span> <span class="o">*</span><span class="p">)</span> <span class="n">keyB</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">(){</span>
+   <span class="n">tree_root</span><span class="o">*</span> <span class="n">rbtree</span> <span class="o">=</span> <span class="n">new_rbtree</span><span class="p">(</span><span class="o">&amp;</span> <span class="n">key_address</span><span class="p">,</span> <span class="o">&amp;</span> <span class="n">compare_integers</span><span class="p">);</span>
+   <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">9</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+
+   <span class="n">rb_tree_insert</span><span class="p">(</span><span class="n">rbtree</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">);</span>
+   <span class="n">rb_tree_insert</span><span class="p">(</span><span class="n">rbtree</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">b</span><span class="p">);</span>
+   <span class="n">rb_tree_insert</span><span class="p">(</span><span class="n">rbtree</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">c</span><span class="p">);</span>
+
+   <span class="n">tree_iterator</span><span class="o">*</span> <span class="n">it</span> <span class="o">=</span> <span class="n">new_tree_iterator</span><span class="p">(</span><span class="n">rbtree</span><span class="p">);</span>
+
+   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>You may compile it with</p>
+<div class="highlight-bash"><div class="highlight"><pre>gcc -o <span class="nb">test</span> &lt;above_source_file&gt; -I&lt;folder path where rbtree.h is kept&gt;
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="tree_iterator_has_next">
+uint8_t <tt class="descname">tree_iterator_has_next</tt><big>(</big><a class="reference internal" href="#tree_iterator" title="tree_iterator">tree_iterator</a>*<em> it</em><big>)</big><a class="headerlink" href="#tree_iterator_has_next" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">it</span></tt> A tree iterator created by calling <a class="reference internal" href="#new_tree_iterator" title="new_tree_iterator"><tt class="xref c c-func docutils literal"><span class="pre">new_tree_iterator()</span></tt></a>.</p>
+<p>This function returns 1 if there are more elements in the tree to be iterated. The following code shows a simple usage of this function.</p>
+<p>Example:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &quot;rbtree.h&quot;</span>
+
+<span class="kt">void</span><span class="o">*</span> <span class="n">key_address</span><span class="p">(</span><span class="n">tree_node</span><span class="o">*</span> <span class="n">node</span><span class="p">){</span>
+   <span class="k">return</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">node</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int64_t</span> <span class="n">compare_integers</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">keyA</span><span class="p">,</span> <span class="kt">void</span><span class="o">*</span> <span class="n">keyB</span><span class="p">){</span>
+   <span class="k">return</span> <span class="o">*</span><span class="p">((</span><span class="kt">int</span> <span class="o">*</span><span class="p">)</span> <span class="n">keyA</span><span class="p">)</span> <span class="o">-</span> <span class="o">*</span><span class="p">((</span><span class="kt">int</span> <span class="o">*</span><span class="p">)</span> <span class="n">keyB</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">(){</span>
+   <span class="n">tree_root</span><span class="o">*</span> <span class="n">rbtree</span> <span class="o">=</span> <span class="n">new_rbtree</span><span class="p">(</span><span class="o">&amp;</span> <span class="n">key_address</span><span class="p">,</span> <span class="o">&amp;</span> <span class="n">compare_integers</span><span class="p">);</span>
+   <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">9</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+
+   <span class="n">rb_tree_insert</span><span class="p">(</span><span class="n">rbtree</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">);</span>
+   <span class="n">rb_tree_insert</span><span class="p">(</span><span class="n">rbtree</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">b</span><span class="p">);</span>
+   <span class="n">rb_tree_insert</span><span class="p">(</span><span class="n">rbtree</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">c</span><span class="p">);</span>
+
+   <span class="n">tree_iterator</span><span class="o">*</span> <span class="n">it</span> <span class="o">=</span> <span class="n">new_tree_iterator</span><span class="p">(</span><span class="n">rbtree</span><span class="p">);</span>
+
+   <span class="k">if</span><span class="p">(</span><span class="n">tree_iterator_has_next</span><span class="p">(</span><span class="n">it</span><span class="p">))</span>
+     <span class="n">printf</span><span class="p">(</span><span class="s">&quot;There are still elements to be iterated.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>You may compile it with</p>
+<div class="highlight-bash"><div class="highlight"><pre>gcc -o <span class="nb">test</span> &lt;above_source_file&gt; -I&lt;folder path where rbtree.h is kept&gt;
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="tree_iterator_next">
+void* <tt class="descname">tree_iterator_next</tt><big>(</big><a class="reference internal" href="#tree_iterator" title="tree_iterator">tree_iterator</a>*<em> it</em><big>)</big><a class="headerlink" href="#tree_iterator_next" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">it</span></tt> A tree iterator created by calling <a class="reference internal" href="#new_tree_iterator" title="new_tree_iterator"><tt class="xref c c-func docutils literal"><span class="pre">new_tree_iterator()</span></tt></a>.</p>
+<p>This functions returns the current element pointed by iterator <tt class="docutils literal"><span class="pre">it</span></tt> and advances to the next element in the iteration. This function should be used with <a class="reference internal" href="#tree_iterator_has_next" title="tree_iterator_has_next"><tt class="xref c c-func docutils literal"><span class="pre">tree_iterator_has_next()</span></tt></a>. Note that there is <strong>no</strong> guaranty about the order of iteration. The following code shows how to use it.</p>
+<p>Example:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &quot;rbtree.h&quot;</span>
+
+<span class="kt">void</span><span class="o">*</span> <span class="n">key_address</span><span class="p">(</span><span class="n">tree_node</span><span class="o">*</span> <span class="n">node</span><span class="p">){</span>
+   <span class="k">return</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">node</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int64_t</span> <span class="n">compare_integers</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">keyA</span><span class="p">,</span> <span class="kt">void</span><span class="o">*</span> <span class="n">keyB</span><span class="p">){</span>
+   <span class="k">return</span> <span class="o">*</span><span class="p">((</span><span class="kt">int</span> <span class="o">*</span><span class="p">)</span> <span class="n">keyA</span><span class="p">)</span> <span class="o">-</span> <span class="o">*</span><span class="p">((</span><span class="kt">int</span> <span class="o">*</span><span class="p">)</span> <span class="n">keyB</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">(){</span>
+   <span class="n">tree_root</span><span class="o">*</span> <span class="n">rbtree</span> <span class="o">=</span> <span class="n">new_rbtree</span><span class="p">(</span><span class="o">&amp;</span> <span class="n">key_address</span><span class="p">,</span> <span class="o">&amp;</span> <span class="n">compare_integers</span><span class="p">);</span>
+   <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">9</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+
+   <span class="n">rb_tree_insert</span><span class="p">(</span><span class="n">rbtree</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">);</span>
+   <span class="n">rb_tree_insert</span><span class="p">(</span><span class="n">rbtree</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">b</span><span class="p">);</span>
+   <span class="n">rb_tree_insert</span><span class="p">(</span><span class="n">rbtree</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">c</span><span class="p">);</span>
+
+   <span class="n">tree_iterator</span><span class="o">*</span> <span class="n">it</span> <span class="o">=</span> <span class="n">new_tree_iterator</span><span class="p">(</span><span class="n">rbtree</span><span class="p">);</span>
+
+   <span class="k">while</span><span class="p">(</span><span class="n">tree_iterator_has_next</span><span class="p">(</span><span class="n">it</span><span class="p">)){</span>
+     <span class="kt">int</span> <span class="n">d</span> <span class="o">=</span> <span class="o">*</span><span class="p">((</span><span class="kt">int</span> <span class="o">*</span><span class="p">)</span> <span class="n">tree_iterator_next</span><span class="p">(</span><span class="n">it</span><span class="p">));</span>
+     <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">d</span><span class="p">);</span>
+   <span class="p">}</span>
+   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>You may compile it with</p>
+<div class="highlight-bash"><div class="highlight"><pre>gcc -o <span class="nb">test</span> &lt;above_source_file&gt; -I&lt;folder path where rbtree.h is kept&gt;
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="destroy_iterator">
+void <tt class="descname">destroy_iterator</tt><big>(</big><a class="reference internal" href="#tree_iterator" title="tree_iterator">tree_iterator</a>*<em> it</em><big>)</big><a class="headerlink" href="#destroy_iterator" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">it</span></tt> A tree iterator created by calling <a class="reference internal" href="#new_tree_iterator" title="new_tree_iterator"><tt class="xref c c-func docutils literal"><span class="pre">new_tree_iterator()</span></tt></a>.</p>
+<p>This function frees the iterator pointed by <tt class="docutils literal"><span class="pre">it</span></tt>. The following example shows how to use it.</p>
+<p>Example:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &quot;rbtree.h&quot;</span>
+
+<span class="kt">void</span><span class="o">*</span> <span class="n">key_address</span><span class="p">(</span><span class="n">tree_node</span><span class="o">*</span> <span class="n">node</span><span class="p">){</span>
+   <span class="k">return</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">node</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int64_t</span> <span class="n">compare_integers</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">keyA</span><span class="p">,</span> <span class="kt">void</span><span class="o">*</span> <span class="n">keyB</span><span class="p">){</span>
+   <span class="k">return</span> <span class="o">*</span><span class="p">((</span><span class="kt">int</span> <span class="o">*</span><span class="p">)</span> <span class="n">keyA</span><span class="p">)</span> <span class="o">-</span> <span class="o">*</span><span class="p">((</span><span class="kt">int</span> <span class="o">*</span><span class="p">)</span> <span class="n">keyB</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">(){</span>
+   <span class="n">tree_root</span><span class="o">*</span> <span class="n">rbtree</span> <span class="o">=</span> <span class="n">new_rbtree</span><span class="p">(</span><span class="o">&amp;</span> <span class="n">key_address</span><span class="p">,</span> <span class="o">&amp;</span> <span class="n">compare_integers</span><span class="p">);</span>
+   <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">9</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+
+   <span class="n">rb_tree_insert</span><span class="p">(</span><span class="n">rbtree</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">);</span>
+   <span class="n">rb_tree_insert</span><span class="p">(</span><span class="n">rbtree</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">b</span><span class="p">);</span>
+   <span class="n">rb_tree_insert</span><span class="p">(</span><span class="n">rbtree</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">c</span><span class="p">);</span>
+
+   <span class="n">tree_iterator</span><span class="o">*</span> <span class="n">it</span> <span class="o">=</span> <span class="n">new_tree_iterator</span><span class="p">(</span><span class="n">rbtree</span><span class="p">);</span>
+
+   <span class="k">while</span><span class="p">(</span><span class="n">tree_iterator_has_next</span><span class="p">(</span><span class="n">it</span><span class="p">)){</span>
+     <span class="kt">int</span> <span class="n">d</span> <span class="o">=</span> <span class="o">*</span><span class="p">((</span><span class="kt">int</span> <span class="o">*</span><span class="p">)</span> <span class="n">tree_iterator_next</span><span class="p">(</span><span class="n">it</span><span class="p">));</span>
+     <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">d</span><span class="p">);</span>
+   <span class="p">}</span>
+   <span class="n">destroy_iterator</span><span class="p">(</span><span class="n">it</span><span class="p">);</span>
+
+   <span class="n">destroy_rbtree</span><span class="p">(</span><span class="n">rbtree</span><span class="p">);</span>
+   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>You may compile it with</p>
+<div class="highlight-bash"><div class="highlight"><pre>gcc -o <span class="nb">test</span> &lt;above_source_file&gt; -I&lt;folder path where rbtree.h is kept&gt;
+</pre></div>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre>valgrind --show-reachable<span class="o">=</span>yes --leak-check<span class="o">=</span>full ./test
+</pre></div>
+</div>
+<p>produces the ouput:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="o">==</span><span class="mi">4432</span><span class="o">==</span> <span class="n">HEAP</span> <span class="n">SUMMARY</span><span class="o">:</span>
+<span class="o">==</span><span class="mi">4432</span><span class="o">==</span>     <span class="n">in</span> <span class="n">use</span> <span class="n">at</span> <span class="n">exit</span><span class="o">:</span> <span class="mi">0</span> <span class="n">bytes</span> <span class="n">in</span> <span class="mi">0</span> <span class="n">blocks</span>
+<span class="o">==</span><span class="mi">4432</span><span class="o">==</span>   <span class="n">total</span> <span class="n">heap</span> <span class="n">usage</span><span class="o">:</span> <span class="mi">5</span> <span class="n">allocs</span><span class="p">,</span> <span class="mi">5</span> <span class="n">frees</span><span class="p">,</span> <span class="mi">76</span> <span class="n">bytes</span> <span class="n">allocated</span>
+<span class="o">==</span><span class="mi">4432</span><span class="o">==</span>
+<span class="o">==</span><span class="mi">4432</span><span class="o">==</span> <span class="n">All</span> <span class="n">heap</span> <span class="n">blocks</span> <span class="n">were</span> <span class="n">freed</span> <span class="o">--</span> <span class="n">no</span> <span class="n">leaks</span> <span class="n">are</span> <span class="n">possible</span>
+</pre></div>
+</div>
+<p>Which means that there are no memory leaks and you should always use this function when iterating.</p>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Data Structures</a><ul>
+<li><a class="reference internal" href="#generic-list">Generic List</a><ul>
+<li><a class="reference internal" href="#list">List</a></li>
+<li><a class="reference internal" href="#stack">Stack</a></li>
+<li><a class="reference internal" href="#queue">Queue</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#generic-red-black-tree">Generic Red Black Tree</a><ul>
+<li><a class="reference internal" href="#function-description">Function description</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../querying.html"
+                        title="previous chapter">Querying</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../macros.h.html"
+                        title="next chapter">Special Macros</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/data_structures/datastructures.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../macros.h.html" title="Special Macros"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../querying.html" title="Querying"
+             >previous</a> |</li>
+        <li><a href="../index.html">libxmlquery v0.1.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010, Frederico Gonçalves, Vasco Fernandes.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.4.
+    </div>
+  </body>
+</html>

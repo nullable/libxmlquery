@@ -19,6 +19,14 @@ struct generic_list_s *new_generic_list(int32_t initial)
   return l;
 }
 
+uint8_t generic_list_is_empty(struct generic_list_s* l){
+  return l->count == 0;
+}
+
+int32_t generic_list_get_count(struct generic_list_s* l){
+  return l->count;
+}
+
 static void rebase_generic_list(list* l){
     if(l->start == 0){ return ; }
     struct list_bucket** tmp;

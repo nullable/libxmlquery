@@ -19,6 +19,9 @@ typedef struct generic_list_s{
 typedef struct generic_list_s stack;
 typedef struct generic_list_s queue;
 
+extern uint8_t generic_list_is_empty(struct generic_list_s* l);
+extern int32_t generic_list_get_count(struct generic_list_s* l);
+
 extern struct generic_list_s *new_generic_list(int32_t initial);
 extern list* new_generic_list(int32_t initial);
 extern stack* new_stack(int32_t initial);

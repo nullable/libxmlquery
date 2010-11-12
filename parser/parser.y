@@ -137,7 +137,11 @@ document: node                                              {lxq_document = new_
         ;
 
 namespace: WORD                                             { $$ = new_element_node($1);}
-         | WORD ':' WORD                                    { $$ = new_element_node($3); set_namespace($$, $1);}
+         | WORD ':' WORD                                    { $$ = new_element_node($3); 
+                                                              char* old = set_namespace($$, $1);
+							      if(old)
+								free(old);
+	                                                    }
          ;
 
 declaration: START_EL '?' namespace attrs '?' END_EL        {
@@ -146,8 +150,12 @@ declaration: START_EL '?' namespace attrs '?' END_EL        {
                                                                 exit(-1);
                                                               }
                                                               $$ = $4;
-                                                              set_name($$, get_name($3));
-                                                              set_namespace($$, get_namespace($3));
+                                                              char* old = set_name($$, get_name($3));
+							      if(old)
+								free(old);
+                                                              old = set_namespace($$, get_namespace($3));
+							      if(old)
+								free(old);
                                                               destroy_dom_node($3);
                                                             }
            ;
@@ -168,8 +176,12 @@ node: start_tag inner end_tag                               {
 							      destroy_dom_node($3);
                                                             }
     | START_EL namespace attrs SLASH END_EL                 { $$ = $3;
-                                                              set_name($$, get_name($2));
-                                                              set_namespace($$, get_namespace($2));
+                                                              char* old = set_name($$, get_name($2));
+							      if(old)
+								free(old);							    
+                                                              old = set_namespace($$, get_namespace($2));
+							      if(old)
+								free(old);
                                                               destroy_dom_node($2);
                                                             }
     ;
@@ -187,8 +199,12 @@ prop: CDATA_TOK                                             {$$ = new_cdata($1);
 
 
 start_tag: START_EL namespace attrs END_EL                  { $$ = $3;
-                                                              set_name($$, get_name($2));
-                                                              set_namespace($$, get_namespace($2));
+                                                              char* old = set_name($$, get_name($2));
+							      if(old)
+								free(old);
+                                                              old = set_namespace($$, get_namespace($2));
+							      if(old)
+								free(old);
                                                               destroy_dom_node($2);
                                                             }
          ;
@@ -203,7 +219,11 @@ attrs:                                                      { $$ = new_element_n
                                                             }
      ;
 
-attr:  namespace '=' value                                  {$$ = new_attribute(get_name($1), $3); set_namespace($$, get_namespace($1)); destroy_dom_node($1); }
+attr:  namespace '=' value                                  {$$ = new_attribute(get_name($1), $3); 
+                                                             char* old = set_namespace($$, get_namespace($1)); 
+							     if(old)
+							       free(old);
+							     destroy_dom_node($1); }
     ;
 
 

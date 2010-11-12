@@ -14,7 +14,7 @@ void dump(char* array, int offset, int size){
 }
 
 int main(int argc, char** argv){
-  doc* document = parse_dom("big.xml");
+  doc* document = parse_dom("test.xml");
   //  char* cha = node_to_string(document->root, JSON);
   
   //output_xml(document);
@@ -27,12 +27,12 @@ int main(int argc, char** argv){
       return 0;
   }
 
-  bdom* b = serialize_dom_doc(document);
+  //bdom* b = serialize_dom_doc(document);
 
-  dump(b->bb->buffer, 0, b->bb->size);
-  printf("size %d\n", b->bb->size);
+  //  dump(b->bb->buffer, 0, b->bb->size);
+  //printf("size %d\n", b->bb->size);
 
-  destroy_bdom(b);
+  //destroy_bdom(b);
 
   /*
   list* result = query(argv[1],document->root);

@@ -16,6 +16,11 @@ typedef struct generic_list_s{
   int32_t capacity;
 } list;
 
+typedef struct generic_list_iterator_s{
+  uint32_t pos;
+  struct generic_list_s* list;
+} generic_list_iterator;
+
 typedef struct generic_list_s stack;
 typedef struct generic_list_s queue;
 
@@ -65,5 +70,9 @@ extern struct generic_list_s *merge_lists(struct generic_list_s *l1, struct gene
 extern struct generic_list_s *duplicate_generic_list(struct generic_list_s*);
 extern void destroy_generic_list(struct generic_list_s *s);
 
+extern generic_list_iterator* new_generic_list_iterator(struct generic_list_s*);
+extern uint8_t generic_list_iterator_has_next(generic_list_iterator* i);
+extern void* generic_list_iterator_next(generic_list_iterator* i);
+extern void destroy_generic_list_iterator(generic_list_iterator* i);
 #endif
 

@@ -205,6 +205,10 @@ list* filter_nodes_by_selector(list* nodes, selector* s){
 
 list* query(char* query_string, dom_node* node){
     list* all_nodes = get_descendants(node);
+
+    if(!all_nodes)
+      all_nodes = new_generic_list(1);
+
     int op, *holder;
     add_element(all_nodes, node);
 

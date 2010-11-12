@@ -14,7 +14,7 @@ void dump(char* array, int offset, int size){
 }
 
 int main(int argc, char** argv){
-  doc* document = parse_dom("test.xml");
+  doc* document = parse_dom("big.xml");
   //  char* cha = node_to_string(document->root, JSON);
   
   //output_xml(document);

@@ -14,7 +14,7 @@ void dump(char* array, int offset, int size){
 }
 
 int main(int argc, char** argv){
-  doc* document = parse_dom("big.xml");
+
   //  char* cha = node_to_string(document->root, JSON);
   
   //output_xml(document);
@@ -22,11 +22,11 @@ int main(int argc, char** argv){
 
   //free(cha);
 
-  if(argc != 2){
-    printf("usage: %s \"query\"\n", argv[0]);
+  if(argc != 3){
+    printf("usage: %s \"xml_file\" \"query\"\n", argv[0]);
       return 0;
   }
-
+  doc* document = parse_dom(argv[1]);
   //bdom* b = serialize_dom_doc(document);
 
   //  dump(b->bb->buffer, 0, b->bb->size);
@@ -34,24 +34,22 @@ int main(int argc, char** argv){
 
   //destroy_bdom(b);
 
-  /*
-  list* result = query(argv[1],document->root);
+  list* result = query(argv[2],document->root);
 
   //printf("List size is %d\n", result->count);
   int i;
   char* cha;
 
-  printf("Results: %d\n", result->count);
+
 
   for(i=0; i < result->count; i++){
     dom_node* t = (dom_node*)get_element_at(result, i);
-    set_name(t, "banana");
-    printf("Result node:\n");
     cha = node_to_string(t, XML);
     printf("%s", cha);
     free(cha);
   }
-
+  printf("Results: %d\n", result->count);
+  /*
   printf("\n\n\n==========================================================\n\n\n");
   cha = node_to_string(document->root, JSON);
   printf("%s", cha);

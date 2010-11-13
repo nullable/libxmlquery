@@ -72,9 +72,9 @@ list* apply_operator(list* nodes, int op){
 	    generic_list_iterator* it = new_generic_list_iterator(get_xml_descendants(node));
 	    while(generic_list_iterator_has_next(it)){
 	      void* aux = generic_list_iterator_next(it);
-	      aux = rb_tree_insert(rbtree, aux);
-	      if(!aux)
-		push_stack(result, aux);
+	      void* old = rb_tree_insert(rbtree, aux);
+	      if(!old)
+		add_element(result, aux);
 	    }
 	    destroy_generic_list_iterator(it);
             break;
@@ -85,9 +85,9 @@ list* apply_operator(list* nodes, int op){
 	    generic_list_iterator* it = new_generic_list_iterator(get_xml_children(node));
 	    while(generic_list_iterator_has_next(it)){
 	      void* aux = generic_list_iterator_next(it);
-	      aux = rb_tree_insert(rbtree, aux);
-	      if(!aux)
-		push_stack(result, aux);
+	      void* old = rb_tree_insert(rbtree, aux);
+	      if(!old)
+		add_element(result, aux);
 	    }
 	    destroy_generic_list_iterator(it);
             break;
@@ -98,9 +98,9 @@ list* apply_operator(list* nodes, int op){
 	    generic_list_iterator* it = new_generic_list_iterator(get_xml_nodes_after(node));
 	    while(generic_list_iterator_has_next(it)){
 	      void* aux = generic_list_iterator_next(it);
-	      aux = rb_tree_insert(rbtree, aux);
-	      if(!aux)
-		push_stack(result, aux);
+	      void* old = rb_tree_insert(rbtree, aux);
+	      if(!old)
+		add_element(result, aux);
 	    }
 	    destroy_generic_list_iterator(it);
             break;
@@ -110,15 +110,16 @@ list* apply_operator(list* nodes, int op){
             next_node = get_xml_node_after(node);
 	    // if(next_node != NULL) add_element(result, next_node);
 	    if(next_node != NULL){
-	      void* aux = rb_tree_insert(rbtree, next_node);
-	      if(!aux)
-		push_stack(result, aux);
+	      void* old = rb_tree_insert(rbtree, next_node);
+	      if(!old)
+		add_element(result, next_node);
 	    }	      
             break;
 	  }
         }
     }
     //    return remove_duplicates(result);
+    destroy_rbtree(rbtree);
     return result;
 }
 
@@ -269,9 +270,9 @@ list* query(char* query_string, dom_node* node){
 	    generic_list_iterator* it = new_generic_list_iterator(nodes);
 	    while(generic_list_iterator_has_next(it)){
 	      void* aux = generic_list_iterator_next(it);
-	      aux = rb_tree_insert(rbtree, aux);
-	      if(!aux)
-		push_stack(result, aux);
+	      void* old = rb_tree_insert(rbtree, aux);
+	      if(!old)
+		add_element(result, aux);
 	    }
 	    destroy_generic_list_iterator(it);
 	    nodes = duplicate_generic_list(all_nodes);
@@ -297,11 +298,12 @@ list* query(char* query_string, dom_node* node){
     generic_list_iterator* it = new_generic_list_iterator(nodes);
     while(generic_list_iterator_has_next(it)){
       void* aux = generic_list_iterator_next(it);
-      aux = rb_tree_insert(rbtree, aux);
-      if(!aux)
-	push_stack(result, aux);
+      void* old = rb_tree_insert(rbtree, aux);
+      if(!old)
+	add_element(result, aux);
     }
     destroy_generic_list_iterator(it);
+    destroy_rbtree(rbtree);
     return result;
 }
 

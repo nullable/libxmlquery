@@ -162,11 +162,9 @@ doc* new_document(dom_node* xml_declaration){
 
 dom_node* new_element_node(char* name){
   dom_node* node = alloc(dom_node, 1);
-  int name_size = strlen(name) + 1;
 
   node->type = ELEMENT;
-  node->name = alloc(char, name_size);
-  strncpy(node->name, name, name_size);
+  node->name = strdup(name);
   node->value = NULL;
   node->namespace = NULL;
   node->attributes = NULL;
@@ -176,12 +174,10 @@ dom_node* new_element_node(char* name){
 
 dom_node* new_text_node(char* text){
   dom_node* node = alloc(dom_node, 1);
-  int text_size = strlen(text) + 1;
 
   node->type = TEXT_NODE;
-  node->name = "~#TEXT_NODE#~";
-  node->value = alloc(char, text_size);
-  strncpy(node->value, text, text_size);
+  node->name = NULL;
+  node->value = strdup(text);
   node->namespace = NULL;
   node->attributes = NULL;
   node->children = NULL;
@@ -190,14 +186,10 @@ dom_node* new_text_node(char* text){
 
 dom_node* new_attribute(char* name, char* value){
   dom_node* node = alloc(dom_node, 1);
-  int name_size = strlen(name) + 1;
-  int value_size = strlen(value) + 1;
 
   node->type = ATTRIBUTE;
-  node->name = alloc(char,name_size);
-  strncpy(node->name, name, name_size);
-  node->value = alloc(char, value_size);
-  strncpy(node->value, value, value_size);
+  node->name = strdup(name);
+  node->value = strdup(value);
   node->namespace = NULL;
   node->attributes = NULL;
   node->children = NULL;
@@ -206,12 +198,10 @@ dom_node* new_attribute(char* name, char* value){
 
 dom_node* new_cdata(char* cdata_text){
   dom_node* node = alloc(dom_node, 1);
-  int cdata_size = strlen(cdata_text) + 1;
 
   node->type = CDATA;
-  node->name = "~#CDATA#~";
-  node->value = alloc(char, cdata_size);
-  strncpy(node->value, cdata_text, cdata_size);
+  node->name = NULL;
+  node->value = strdup(cdata_text);
   node->namespace = NULL;
   node->attributes = NULL;
   node->children = NULL;

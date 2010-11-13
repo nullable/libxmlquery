@@ -186,7 +186,7 @@ node: start_tag inner end_tag                               {
                                                             }
     ;
 
-inner:                                                      { $$ = new_element_node("~dummy~");}
+inner:                                                      { $$ = new_element_node("");}
      | inner prop                                           { $$ = $1;
                                                               append_child($$, $2);
                                                             }
@@ -212,7 +212,7 @@ start_tag: START_EL namespace attrs END_EL                  { $$ = $3;
 end_tag: START_EL SLASH namespace END_EL                    { $$ = $3;}
        ;
 
-attrs:                                                      { $$ = new_element_node("~dummy~"); }
+attrs:                                                      { $$ = new_element_node(""); }
      | attrs attr                                           {
                                                               $$ = $1;
                                                               add_attribute($$, $2);

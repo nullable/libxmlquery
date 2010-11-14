@@ -18,6 +18,7 @@ If you're new to **libxmlquery** start by reading the
    :maxdepth: 2
 
    tutorial
+   parser/parser
    dom
    querying
    data_structures/datastructures

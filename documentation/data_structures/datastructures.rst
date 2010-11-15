@@ -7,9 +7,40 @@ Data Structures
 Generic List
 ------------
 
-.. c:type:: generic_list
+Generic array list optimized for fast access. This structure is defined in stack.h and implemented in stack.c. It can act as a stack, queue or random access list. Although they seem different, the datastructure is the same and every function of one type can be used in another. This means that you can have a random access list and start poping out elements as though it was a stack.
 
-Generic array list optimized for fast access.
+.. c:type:: struct generic_list_s
+.. c:type:: list
+
+This structure defines the random access list. Its structure definition is::
+
+  typedef struct generic_list_s{
+    struct list_bucket** array;
+    int32_t start;
+    int32_t count;
+    int32_t capacity;
+  } list;
+
+As you can see this is just a list backed up by an array of :c:type:`struct list_bucket`. These buckets are defined as follows:
+
+.. c:type:: struct list_bucket
+
+::
+
+  struct list_bucket
+  {
+    int16_t type;
+    void* element;
+  };
+
+Finally, notice that the stack and queue type are just typedefs of :c:type:`list`.
+
+::
+
+  typedef struct generic_list_s stack;
+  typedef struct generic_list_s queue;
+
+The next sections will show how to use these types.
 
 List
 ^^^^

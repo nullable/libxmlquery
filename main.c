@@ -1,20 +1,28 @@
 #include <stdio.h>
+#include <string.h>
 #include "include/node.h"
 #include "include/serialize.h"
 #include "include/dom_parser.h"
 #include "include/stack.h"
 #include "include/query_runner.h"
+#include "include/huffman.h"
+
+
 
 int main(int argc, char** argv){
   doc* document = parse_dom("test.xml");
-  //char* cha = document_to_string(document, JSON);
-  
+  char* cha = node_to_string(document->root, XML);
+
+  //cha = "aabbbcccc";
+  get_huffman_tree(cha, strlen(cha));
+
+
   //output_xml(document);
   //printf("%s", cha);
 
   //free(cha);
 
-  if(argc != 2){
+  /*if(argc != 2){
     printf("usage: %s \"query\"\n", argv[0]);
       return 0;
   }

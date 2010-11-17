@@ -1,7 +1,7 @@
 include ../Makefile.inc
 
-OBJS = node.o numbers.o bson.o serialize.o
-includes = ../include/node.h ../include/bson.h ../include/serializer.h
+OBJS = node.o numbers.o bson.o serialize.o huffman.o
+includes = ../include/node.h ../include/bson.h ../include/serializer.h ../include/bitbuffer.h ../includes/huffman.h
 
 all: $(OBJS)
 

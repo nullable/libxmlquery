@@ -1,0 +1,17 @@
+#ifndef __HUFFMAN_H__
+#define __HUFFMAN_H__
+
+#include "btree.h"
+#include "bitbuffer.h"
+
+typedef struct byte_count{
+    int count;
+    char byte;
+    btree* bt;
+    bitbuffer* bb;
+} bc;
+
+extern btree* get_huffman_tree(char* byte_string, int size);
+
+#endif
+

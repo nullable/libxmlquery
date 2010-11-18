@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include "../include/byte_buffer.h"
 #include "../include/macros.h"
 
@@ -10,7 +11,7 @@ void destroy_byte_buffer(byte_buffer* bb){
   free(bb);
 }
 
-byte_buffer* new_byte_buffer(int initial){
+byte_buffer* new_byte_buffer(int32_t initial){
   byte_buffer* b = alloc(byte_buffer, 1);
   b->buffer = alloc(char, initial);
   b->size = 0;
@@ -20,11 +21,11 @@ byte_buffer* new_byte_buffer(int initial){
 }
 
 void append_string_to_buffer(const char* s, byte_buffer* b){
-  int strl = strlen(s);
+  int32_t strl = strlen(s);
   append_bytes_to_buffer(s, b, strl);
 }
 
-void append_bytes_to_buffer(const char* bytes, byte_buffer* b, size_t size){
+void append_bytes_to_buffer(const char* bytes, byte_buffer* b, int32_t size){
   if(b->size + size > b->capacity){
     b->buffer = (char*)realloc(b->buffer, (b->size+size)*2);
     b->capacity = (b->size+size)*2;
@@ -43,3 +44,4 @@ void append_buffer_to_buffer(byte_buffer* b2, byte_buffer* b){
   memcpy(b->buffer+b->size, b2->buffer, b2->size);
   b->size += b2->size;
 }
+

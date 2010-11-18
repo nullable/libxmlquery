@@ -6,16 +6,22 @@
 #include "include/stack.h"
 #include "include/query_runner.h"
 #include "include/huffman.h"
+#include "include/lzw.h"
 
 
 
 int main(int argc, char** argv){
-  doc* document = parse_dom("test.xml");
+  doc* document = parse_dom("big.xml");
   char* cha = node_to_string(document->root, XML);
 
   //cha = "abcdefg";
-  printf("%s", huffman_decode(huffman_encode(cha, strlen(cha))));
+  //printf("%s", huffman_decode(huffman_encode(cha, strlen(cha))));
+  bitbuffer* lzw_encoded = lzw_encode(cha, strlen(cha));
 
+  //printf("%s\n", huffman_decode(huffman_encode(cha, strlen(cha))));
+
+  printf("size after lzw: %d B\n", (lzw_encoded->size / 8) + 1);
+  printf("%d\n", huffman_encode((char *)lzw_encoded->buffer, (lzw_encoded->size / 8))->size / 8);
 
 
   //output_xml(document);

@@ -11,7 +11,7 @@ typedef struct stree_node{
   void* node;
 
   uint8_t color;
-  
+
   struct stree_node* parent;
   struct stree_node* left;
   struct stree_node* right;
@@ -27,6 +27,8 @@ typedef struct siterator{
   struct stree_node* current;
 }tree_iterator;
 
+extern void* identity_key(tree_node* node);
+
 extern tree_root* new_simple_rbtree();
 extern tree_root* new_rbtree(void* (*key_function_pointer)(struct stree_node* node),
 			   int64_t (*compare_function_pointer)(void* keyA, void* keyB));
@@ -40,3 +42,4 @@ extern uint8_t tree_iterator_has_next(tree_iterator* it);
 extern void* tree_iterator_next(tree_iterator* it);
 extern void destroy_iterator(tree_iterator* it);
 #endif
+

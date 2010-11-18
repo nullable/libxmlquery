@@ -4,9 +4,9 @@
 #include "../include/bitbuffer.h"
 
 
-bitbuffer* new_bitbuffer(int byte_size){
+bitbuffer* new_bitbuffer(unsigned int byte_size){
     bitbuffer* r = alloc(bitbuffer, 1);
-    r->buffer = alloc(char, byte_size);
+    r->buffer = alloc(unsigned char, byte_size);
     memset(r->buffer, 0, byte_size);
     r->capacity = byte_size;
     r->size = 0;
@@ -23,14 +23,14 @@ bitbuffer* duplicate_bitbuffer(bitbuffer* bb){
 }
 
 void append_bitbuffer_to_bitbuffer(const bitbuffer* from, bitbuffer* to){
-    int i;
+    unsigned int i;
     for(i = 0; i < from->size; i++){
         append_bit_to_buffer(get_bit_from_buffer(from, i), to);
     }
 }
 
 void print_bitbuffer(bitbuffer* bb){
-    int j;
+    unsigned int j;
 
     for(j = 0; j < bb->size; j++){
         printf("%d", get_bit_from_buffer(bb, j));
@@ -38,10 +38,10 @@ void print_bitbuffer(bitbuffer* bb){
     printf("\n");
 }
 
-void append_bit_to_buffer(char c, bitbuffer* bb){
-    char v = c & (unsigned char) 0x01;
+void append_bit_to_buffer(unsigned char c, bitbuffer* bb){
+    unsigned char v = c & (unsigned char) 0x01;
     int bit_offset = bb->size % 8;
-    char* cur = bb->buffer + (bb->size / 8);
+    unsigned char* cur = bb->buffer + (bb->size / 8);
     //char* cur = bb->buffer + (bb->size / 8);
 
     //for(i = 0; i < bit_offset; i++){ v <<= 1; }
@@ -51,7 +51,7 @@ void append_bit_to_buffer(char c, bitbuffer* bb){
     bb->size += 1;
     if(bit_offset == 7){
         if(cur - bb->buffer >= bb->capacity){
-            bb->buffer = (char*)realloc(bb->buffer, bb->capacity*2);
+            bb->buffer = (unsigned char*)realloc(bb->buffer, bb->capacity*2);
             memset(bb->buffer + (bb->size/8), 0, bb->capacity*2 - (bb->size/8));
             bb->capacity *= 2;
         }
@@ -60,26 +60,27 @@ void append_bit_to_buffer(char c, bitbuffer* bb){
 
 }
 
-void append_bits_to_buffer(char c, int bit_count, bitbuffer* bb){
+void append_bits_to_buffer(unsigned int c, unsigned int bit_count, bitbuffer* bb){
     int i;
     for(i = bit_count; i > 0; i--){
-        char v = c >> (i-1);
+        char v = (char) c >> (i-1);
         append_bit_to_buffer(v, bb);
     }
 
 }
 
-char get_bit_from_buffer(const bitbuffer* bb, int offset){
+
+char get_bit_from_buffer(const bitbuffer* bb, unsigned int offset){
     if(offset < 0 || offset > bb->size){
         exit(-1);
     }
-    char* cur = bb->buffer + (offset / 8);
-    int bit_offset = offset % 8;
+    unsigned char* cur = bb->buffer + (offset / 8);
+    unsigned int bit_offset = offset % 8;
 
     return (*cur >> bit_offset) & 1;
 }
 
-char get_byte_from_buffer(const bitbuffer* bb, int offset){
+char get_byte_from_buffer(const bitbuffer* bb, unsigned int offset){
     char r = 0;
     int i;
 
@@ -88,6 +89,19 @@ char get_byte_from_buffer(const bitbuffer* bb, int offset){
         r <<= 1;
     }
     r |= get_bit_from_buffer(bb, offset+i);
+    return r;
+}
+
+int get_bits_from_buffer(const bitbuffer* bb, unsigned int offset, unsigned int bit_count){
+    int r = 0;
+    int i;
+
+    for(i = 0; i < bit_count-1; i++){
+        r|= get_bit_from_buffer(bb, offset+i);
+        r <<= 1;
+    }
+    r|= get_bit_from_buffer(bb, offset+i);
+
     return r;
 }
 

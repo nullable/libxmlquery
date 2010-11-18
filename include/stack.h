@@ -38,7 +38,7 @@ extern void* set_element_at(list *l, void* obj, int32_t pos);
 extern void insert_element_with_type_at(list* l, void* obj, int16_t type, int32_t pos);
 extern void insert_element_at(list* l, void* obj, int32_t pos);
 
-extern void sorted_insert_element_with_type_at(list* l, void* obj, int16_t type, int(*compare)(void* o1, int16_t type1, void* o2, int16_t type2));
+extern void sorted_insert_element_with_type(list* l, void* obj, int16_t type, int(*compare)(void* o1, int16_t type1, void* o2, int16_t type2));
 
 extern void append_element(list* l, void* obj, int16_t type);
 extern void prepend_element(list* l, void* obj, int16_t type);

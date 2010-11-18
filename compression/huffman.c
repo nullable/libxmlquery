@@ -105,7 +105,6 @@ void print_simple_btree(btree* bt, int depth){
 
 char* huffman_decode(bitbuffer* bit_string){
     int* offset = alloc(int, 1);
-    int j;
     *offset = 0;
     btree* ut = unpack_huffman_tree(bit_string, offset);
 
@@ -144,7 +143,7 @@ bitbuffer* huffman_encode(char* byte_string, int size){
 
     //count
     for(i = 0; i < size; i++){
-        table[(int)(byte_string[i])].count++;
+        table[(unsigned int)(byte_string[i])].count++;
     }
 
     //sort
@@ -152,7 +151,7 @@ bitbuffer* huffman_encode(char* byte_string, int size){
     for(i = 0; i < 256; i++){
         if(table[i].count == 0) continue;
 
-        sorted_insert_element_with_type_at(l, table+i, 0, &compare_bc);
+        sorted_insert_element_with_type(l, table+i, 0, &compare_bc);
     }
 
 
@@ -181,7 +180,7 @@ bitbuffer* huffman_encode(char* byte_string, int size){
         }
         else {parent->bt->right = c2->bt; }
 
-        sorted_insert_element_with_type_at(l, parent, 1, &compare_bc);
+        sorted_insert_element_with_type(l, parent, 1, &compare_bc);
     }
 
     bc* root = pop_stack(l);
@@ -191,10 +190,8 @@ bitbuffer* huffman_encode(char* byte_string, int size){
     pack_huffman_tree(root->bt, packed_data);
 
     for(i = 0; i < size; i++){
-        append_bitbuffer_to_bitbuffer(table[(int)byte_string[i]].bb, packed_data);
-
-        int j;
-        bitbuffer* bib = table[(int)byte_string[i]].bb;
+        //printf("%d\n", i);
+        append_bitbuffer_to_bitbuffer(table[(unsigned int)byte_string[i]].bb, packed_data);
     }
 
 

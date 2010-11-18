@@ -20,5 +20,7 @@ extern char get_bit_from_buffer(const bitbuffer* bb, unsigned int offset);
 extern char get_byte_from_buffer(const bitbuffer* bb, unsigned int offset);
 int get_bits_from_buffer(const bitbuffer* bb, unsigned int offset, unsigned int bit_count);
 
+
+extern void dump_bit_buffer(bitbuffer* b);
 #endif
 

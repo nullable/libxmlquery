@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 #include "../include/macros.h"
 #include "../include/bitbuffer.h"
 
@@ -56,17 +57,57 @@ void append_bit_to_buffer(unsigned char c, bitbuffer* bb){
             bb->capacity *= 2;
         }
     }
+}
 
-
+void dump_bit_buffer(bitbuffer* b){
+  int how_many_bytes = b->size / 8 + 1, i;
+  printf("Size %d\n", b->size);
+  for(i = 0; i < how_many_bytes; i++){
+    int offset = 7;
+    for(; offset >= 0; offset--)
+      if(b->buffer[i] & (((uint8_t) 0x01) << offset))
+	printf("1");
+      else
+	printf("0");
+    putchar(' ');
+  }
+  putchar('\n');
 }
 
 void append_bits_to_buffer(unsigned int c, unsigned int bit_count, bitbuffer* bb){
-    int i;
+  /*    int i;
     for(i = bit_count; i > 0; i--){
         char v = (char) c >> (i-1);
         append_bit_to_buffer(v, bb);
-    }
+	}*/
 
+  while(bit_count > 0){
+    uint8_t bit_offset = bb->size % 8;
+    //how many bits can we eat from c?
+    uint8_t mask_offset = (bit_count > 8)? 8 - bit_offset: bit_count;
+    unsigned char* cur = bb->buffer + (bb->size / 8);
+
+    //2^bit_offset - 1 = mascara para fazer or
+    uint8_t mask = (1 << mask_offset) - 1;
+    uint8_t val = c & mask;
+
+    //forward bits (a.k.a eat bits from c)
+    c >>= mask_offset;
+    
+    //Align values of val with the right offset and store those bits.
+    *cur |= (val << bit_offset);
+
+    bit_count -= mask_offset;
+
+    bb->size += mask_offset;
+    if(bit_offset == 7){
+        if(cur - bb->buffer >= bb->capacity){
+            bb->buffer = (unsigned char*)realloc(bb->buffer, bb->capacity << 1);
+            memset(bb->buffer + (bb->size >> 3), 0, (bb->capacity << 1) - (bb->size >> 3));
+            bb->capacity <<= 1;
+        }
+    }
+  }
 }
 
 

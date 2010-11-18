@@ -6,22 +6,22 @@
 stack* trash_bin = NULL;
 int lxq_parser_last_state;
 %}
-
 %x IN_STATE TEXT_BLOCK CDATA COMMENT FUNC PARAMS NOT_STATE XML_INITIAL QUERY_INITIAL TEXT_BLOCK_DQ_QUERY TEXT_BLOCK_SQ_QUERY REGEX_BLOCK ESCAPE
 
+%option yylineno
 %%
 \@                                                          {BEGIN QUERY_INITIAL; return '@';}
 "<!--"                                                      { BEGIN COMMENT; lxq_parser_last_state = XML_INITIAL;}
 "<![CDATA["                                                 { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); BEGIN CDATA; }
-\n                                                          {BEGIN XML_INITIAL;}
-[^@<\n]*                                                     { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); BEGIN XML_INITIAL; return TEXT; }
+\r?\n                                                          {BEGIN XML_INITIAL;}
+[^@<\n\r]*                                                     { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); BEGIN XML_INITIAL; return TEXT; }
 \<                                                          { BEGIN IN_STATE; return START_EL; }
 
 <XML_INITIAL>"<!--"                                         { BEGIN COMMENT; lxq_parser_last_state = XML_INITIAL;}
 <XML_INITIAL>"<![CDATA["                                    { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); BEGIN CDATA; }
-<XML_INITIAL>\n                                             ;
+<XML_INITIAL>\r?\n                                             ;
 <XML_INITIAL>[ \t]*                                         ;
-<XML_INITIAL>[^<\n \t]*                                     { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return TEXT; }
+<XML_INITIAL>[^<\r\n \t]*                                     { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return TEXT; }
 <XML_INITIAL>\<                                             { BEGIN IN_STATE; return START_EL; }
 
 <IN_STATE>"<!--"                                            { BEGIN COMMENT; lxq_parser_last_state = IN_STATE;}
@@ -37,10 +37,11 @@ int lxq_parser_last_state;
 <TEXT_BLOCK>[^"]*                                           { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return TEXT; }
 <TEXT_BLOCK>\"                                              { BEGIN IN_STATE; return '"'; }
 
-<CDATA>("\n"|.)+/"]]>"                                      { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return CDATA_TOK; }
+<CDATA>("\n"|.|"\r")+/"]]>"                                      { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return CDATA_TOK; }
 <CDATA>"]]>"                                                { BEGIN XML_INITIAL; }
 
-<COMMENT>("\n"|.)*"-->"                                        { BEGIN lxq_parser_last_state; }
+<COMMENT>("\n"|.|"\r")                                           {;}
+<COMMENT>"-->"                                              { BEGIN lxq_parser_last_state; }
 
 <QUERY_INITIAL>\*                                           { return ALL; }
 <QUERY_INITIAL>[\n\r]+                                      ;

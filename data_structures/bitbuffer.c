@@ -48,6 +48,7 @@ void append_bit_to_buffer(char c, bitbuffer* bb){
 
     *cur |= (v << bit_offset);
 
+    bb->size += 1;
     if(bit_offset == 7){
         if(cur - bb->buffer >= bb->capacity){
             bb->buffer = (char*)realloc(bb->buffer, bb->capacity*2);
@@ -55,7 +56,7 @@ void append_bit_to_buffer(char c, bitbuffer* bb){
             bb->capacity *= 2;
         }
     }
-    bb->size += 1;
+
 
 }
 
@@ -76,6 +77,18 @@ char get_bit_from_buffer(const bitbuffer* bb, int offset){
     int bit_offset = offset % 8;
 
     return (*cur >> bit_offset) & 1;
+}
+
+char get_byte_from_buffer(const bitbuffer* bb, int offset){
+    char r = 0;
+    int i;
+
+    for(i = 0; i < 7; i++){
+        r |= get_bit_from_buffer(bb, offset+i);
+        r <<= 1;
+    }
+    r |= get_bit_from_buffer(bb, offset+i);
+    return r;
 }
 
 

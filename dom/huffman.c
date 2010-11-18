@@ -2,6 +2,7 @@
 #include "../include/btree.h"
 #include "../include/bitbuffer.h"
 #include "../include/stack.h"
+#include "../include/byte_buffer.h"
 
 int compare_bc(void* o1, int16_t t1, void* o2, int16_t t2){
     return ((bc*)o2)->count - ((bc*)o1)->count;
@@ -28,10 +29,46 @@ void print_btree(btree* node, int depth){
     }
 }
 
+
+
+void pack_huffman_tree(btree* tree, bitbuffer* bb){
+    if(tree->left != NULL && tree->right != NULL){
+        append_bit_to_buffer(0, bb);
+        pack_huffman_tree(tree->left, bb);
+        append_bit_to_buffer(0, bb);
+        pack_huffman_tree(tree->right, bb);
+        append_bit_to_buffer(1, bb);
+    }
+    else{
+        append_bit_to_buffer(1, bb);
+        bc* node_bc = (bc*)tree->value;
+        append_bits_to_buffer(node_bc->byte, 8, bb);
+    }
+}
+
+btree* unpack_huffman_tree(bitbuffer* packed_tree, int* i){
+    btree* tree = new_btree();
+
+    char bit = get_bit_from_buffer(packed_tree, (*i)++);
+    if(bit == 0){
+        tree->left = unpack_huffman_tree(packed_tree, i);
+        bit = get_bit_from_buffer(packed_tree, (*i)++);
+        if(bit == 0) tree->right = unpack_huffman_tree(packed_tree, i);
+        (*i)++; //next value must be 1
+    }
+    else{
+        char value = get_byte_from_buffer(packed_tree, *i);
+        (*i) += 8;
+        tree->value = alloc(char, 1);
+        *((char*)tree->value) = value;
+    }
+
+    return tree;
+}
+
 void set_translation(btree* node){
     bc* node_bc = (bc*)node->value;
     bc *left_bc, *right_bc;
-    int j;
 
     if(node->left != NULL){
         left_bc = (bc*)node->left->value;
@@ -46,16 +83,54 @@ void set_translation(btree* node){
         append_bit_to_buffer(1, right_bc->bb);;
         set_translation(node->right);
     }
-    else{
-        printf("%d:%d => ", node_bc->byte, node_bc->count);
-        for(j = 0; j < node_bc->bb->size; j++){
-            printf("%d", get_bit_from_buffer(node_bc->bb, j));
-        }
-        printf("\n");
+}
+
+void print_simple_btree(btree* bt, int depth){
+    int i;
+    if(bt->left != NULL){
+        for(i = 0; i++ < depth; printf("  "));
+        printf("|\n");
+        print_simple_btree(bt->left, depth+1);
+    }
+    if(bt->right != NULL){
+        for(i = 0; i++ < depth; printf("  "));
+        printf("|\n");
+        print_simple_btree(bt->right, depth+1);
+    }
+    if(bt->value != NULL){
+        for(i = 0; i++ < depth; printf("  "));
+        printf("'%c'\n", *((char*)bt->value));
     }
 }
 
-btree* get_huffman_tree(char* byte_string, int size){
+char* huffman_decode(bitbuffer* bit_string){
+    int* offset = alloc(int, 1);
+    int j;
+    *offset = 0;
+    btree* ut = unpack_huffman_tree(bit_string, offset);
+
+    int i = *offset;
+
+    btree* ct = ut;
+    byte_buffer* bb = new_byte_buffer(bit_string->size / 8);
+
+    for(; i < bit_string->size; i++){
+        char b = get_bit_from_buffer(bit_string, i);
+        if(b == 0) ct = ct->left;
+        else ct = ct->right;
+
+        if(ct->left == NULL && ct->right == NULL){
+            append_bytes_to_buffer(ct->value, bb, 1);
+            ct = ut;
+        }
+    }
+
+    char end = 0;
+    append_bytes_to_buffer(&end, bb, 1);
+    return bb->buffer;
+}
+
+bitbuffer* huffman_encode(char* byte_string, int size){
     bc* table = alloc(bc, 256);
     int i;
 
@@ -80,10 +155,6 @@ btree* get_huffman_tree(char* byte_string, int size){
         sorted_insert_element_with_type_at(l, table+i, 0, &compare_bc);
     }
 
-    for(i = 0; i < l->count; i++){
-        printf("%d:%d <> ", ((bc*)get_element_at(l, i))->byte, ((bc*)get_element_at(l, i))->count);
-    }
-    printf("\n");
 
     while(l->count > 1){
         int16_t t1 = peek_stack_type(l);
@@ -114,25 +185,19 @@ btree* get_huffman_tree(char* byte_string, int size){
     }
 
     bc* root = pop_stack(l);
-    print_btree(root->bt, 1);
-
-    //root->bt->value = root;
     root->bb = new_bitbuffer(256);
     set_translation(root->bt);
-/*
-    for(i = 0; i < 256; i++){
-        if(table[i].count == 0) continue;
-        printf("%d:%d => ", table[i].byte, table[i].count);
+    bitbuffer* packed_data = new_bitbuffer(256);
+    pack_huffman_tree(root->bt, packed_data);
+
+    for(i = 0; i < size; i++){
+        append_bitbuffer_to_bitbuffer(table[(int)byte_string[i]].bb, packed_data);
 
         int j;
-        bitbuffer* bb = table[i].bb;
-        for(j = 0; j < bb->size; j++){
-            printf("%d", get_bit_from_buffer(bb, j));
-        }
-        printf("\n");
+        bitbuffer* bib = table[(int)byte_string[i]].bb;
     }
-*/
-    return NULL;
 
+
+    return packed_data;
 }
 

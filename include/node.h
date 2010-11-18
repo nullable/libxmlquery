@@ -30,17 +30,17 @@ typedef struct sdoc{
   struct snode* xml_declaration;
 }doc;
 
-extern void set_namespace(dom_node* node, char* namespace);
-extern void set_name(dom_node* node, char* name);
-extern void set_value(dom_node* node, char* value);
-extern void set_doc_root(doc* document, struct snode* root);
-extern void set_xml_declaration(doc* document, struct snode* vers);
+extern char* set_namespace(dom_node* node, char* namespace);
+extern char* set_name(dom_node* node, char* name);
+extern char* set_value(dom_node* node, char* value);
+extern dom_node* set_doc_root(doc* document, struct snode* root);
+extern dom_node* set_xml_declaration(doc* document, struct snode* vers);
 extern void set_parent(dom_node* node, dom_node* parent);
 
 extern char* get_namespace(dom_node* node);
 extern char* get_name(dom_node* node);
 extern char* get_value(dom_node* node);
-extern char* get_xml_declaration(doc* document);
+extern dom_node* get_xml_declaration(doc* document);
 extern dom_node* get_doc_root(doc* document);
 
 extern void prepend_child(dom_node* parent, dom_node* child);

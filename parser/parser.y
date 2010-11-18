@@ -15,6 +15,8 @@
 
 extern int yylex(void);
 extern int yyparse(void);
+extern int yylineno;
+extern char* yytext;
 
 doc* lxq_document;
 
@@ -24,7 +26,7 @@ list* lxq_selected_elements;
 
 void yyerror(const char *str)
 {
-        fprintf(stderr,"error: %s\n",str);
+  fprintf(stderr,"error:%d: %s at '%s'\n", yylineno, str, yytext);
 }
 
 int yywrap()
@@ -61,6 +63,7 @@ void parse_file(char* filename){
     log(F, "flex could not allocate a new buffer to parse the file.\n");
     exit(-1);
   }
+  yylineno = 1;
   yyparse();
   yy_delete_buffer(bs);
   yylex_destroy();
@@ -83,6 +86,7 @@ void parse_string(const char* str){
     log(F, "flex could not allocate a new buffer to parse the string.\n");
     exit(-1);
   }
+  yylineno = 1;
   yyparse();
   yy_delete_buffer(bs);
   yylex_destroy();
@@ -133,7 +137,11 @@ document: node                                              {lxq_document = new_
         ;
 
 namespace: WORD                                             { $$ = new_element_node($1);}
-         | WORD ':' WORD                                    { $$ = new_element_node($3); set_namespace($$, $1);}
+         | WORD ':' WORD                                    { $$ = new_element_node($3); 
+                                                              char* old = set_namespace($$, $1);
+							      if(old)
+								free(old);
+	                                                    }
          ;
 
 declaration: START_EL '?' namespace attrs '?' END_EL        {
@@ -142,8 +150,12 @@ declaration: START_EL '?' namespace attrs '?' END_EL        {
                                                                 exit(-1);
                                                               }
                                                               $$ = $4;
-                                                              set_name($$, get_name($3));
-                                                              set_namespace($$, get_namespace($3));
+                                                              char* old = set_name($$, get_name($3));
+							      if(old)
+								free(old);
+                                                              old = set_namespace($$, get_namespace($3));
+							      if(old)
+								free(old);
                                                               destroy_dom_node($3);
                                                             }
            ;
@@ -164,13 +176,17 @@ node: start_tag inner end_tag                               {
 							      destroy_dom_node($3);
                                                             }
     | START_EL namespace attrs SLASH END_EL                 { $$ = $3;
-                                                              set_name($$, get_name($2));
-                                                              set_namespace($$, get_namespace($2));
+                                                              char* old = set_name($$, get_name($2));
+							      if(old)
+								free(old);							    
+                                                              old = set_namespace($$, get_namespace($2));
+							      if(old)
+								free(old);
                                                               destroy_dom_node($2);
                                                             }
     ;
 
-inner:                                                      { $$ = new_element_node("~dummy~");}
+inner:                                                      { $$ = new_element_node("");}
      | inner prop                                           { $$ = $1;
                                                               append_child($$, $2);
                                                             }
@@ -183,8 +199,12 @@ prop: CDATA_TOK                                             {$$ = new_cdata($1);
 
 
 start_tag: START_EL namespace attrs END_EL                  { $$ = $3;
-                                                              set_name($$, get_name($2));
-                                                              set_namespace($$, get_namespace($2));
+                                                              char* old = set_name($$, get_name($2));
+							      if(old)
+								free(old);
+                                                              old = set_namespace($$, get_namespace($2));
+							      if(old)
+								free(old);
                                                               destroy_dom_node($2);
                                                             }
          ;
@@ -192,14 +212,18 @@ start_tag: START_EL namespace attrs END_EL                  { $$ = $3;
 end_tag: START_EL SLASH namespace END_EL                    { $$ = $3;}
        ;
 
-attrs:                                                      { $$ = new_element_node("~dummy~"); }
+attrs:                                                      { $$ = new_element_node(""); }
      | attrs attr                                           {
                                                               $$ = $1;
                                                               add_attribute($$, $2);
                                                             }
      ;
 
-attr:  namespace '=' value                                  {$$ = new_attribute(get_name($1), $3); set_namespace($$, get_namespace($1)); destroy_dom_node($1); }
+attr:  namespace '=' value                                  {$$ = new_attribute(get_name($1), $3); 
+                                                             char* old = set_namespace($$, get_namespace($1)); 
+							     if(old)
+							       free(old);
+							     destroy_dom_node($1); }
     ;
 
 

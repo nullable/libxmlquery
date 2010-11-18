@@ -11,7 +11,8 @@ typedef struct byte_count{
     bitbuffer* bb;
 } bc;
 
-extern btree* get_huffman_tree(char* byte_string, int size);
+extern bitbuffer* huffman_encode(char* byte_string, int size);
+extern char* huffman_decode(bitbuffer* bit_string);
 
 #endif
 

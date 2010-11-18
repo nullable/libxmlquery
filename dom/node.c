@@ -4,52 +4,56 @@
 #include "../include/macros.h"
 #include "../include/node.h"
 
-void set_namespace(dom_node* node, char* namespace){
-  int size;
+char* set_namespace(dom_node* node, char* namespace){
+  char* old;
 
-  if(namespace == NULL)
-    return;
+  if(!namespace)
+    return NULL;
 
-  size = strlen(namespace) + 1;
+  old = node->namespace;
 
-  if(node->namespace != NULL){
-    free(node->namespace);
-  }
-
-  node->namespace = alloc(char, size);
-  strncpy(node->namespace, namespace, size);
+  node->namespace = strdup(namespace);
+  return old;
 }
 
-void set_name(dom_node* node, char* name){
-  int size;
+char* set_name(dom_node* node, char* name){
+  char* old;
+  
+  if(!name)
+    return NULL;
 
-  size = strlen(name) + 1;
-
-  if(node->name != NULL){
-    free(node->name);
-  }
-
-  node->name = alloc(char, size);
-  strncpy(node->name, name, size);
+  old = node->name;
+  node->name = strdup(name);
+  return old;
 }
 
-void set_value(dom_node* node, char* value){
-  int size = strlen(value) + 1;
+char* set_value(dom_node* node, char* value){
+  char* old;
 
-  if(node->value != NULL){
-    free(node->value);
-  }
+  if(!value)
+    return NULL;
 
-  node->value = alloc(char, size);
-  strncpy(node->value, value, size);
+  old = node->value;
+  node->value = strdup(value);
+  return old;
 }
 
-void set_doc_root(doc* document, struct snode* root){
+dom_node* set_doc_root(doc* document, struct snode* root){
+  dom_node* old;
+  if(!document)
+    return NULL;
+  old = document->root;
   document->root = root;
+  return old;
 }
 
-void set_xml_declaration(doc* document, dom_node* vers){
+dom_node* set_xml_declaration(doc* document, dom_node* vers){
+  dom_node* old;
+  if(!document)
+    return NULL;
+  old = document->xml_declaration;
   document->xml_declaration = vers;
+  return old;
 }
 
 void set_parent(dom_node* node, dom_node* parent){
@@ -70,6 +74,10 @@ char* get_value(dom_node* node){
 
 dom_node* get_doc_root(doc* document){
   return document->root;
+}
+
+dom_node* get_xml_declaration(doc* document){
+  return document->xml_declaration;
 }
 
 void prepend_child(dom_node* parent, dom_node* child){
@@ -154,11 +162,9 @@ doc* new_document(dom_node* xml_declaration){
 
 dom_node* new_element_node(char* name){
   dom_node* node = alloc(dom_node, 1);
-  int name_size = strlen(name) + 1;
 
   node->type = ELEMENT;
-  node->name = alloc(char, name_size);
-  strncpy(node->name, name, name_size);
+  node->name = strdup(name);
   node->value = NULL;
   node->namespace = NULL;
   node->attributes = NULL;
@@ -168,12 +174,10 @@ dom_node* new_element_node(char* name){
 
 dom_node* new_text_node(char* text){
   dom_node* node = alloc(dom_node, 1);
-  int text_size = strlen(text) + 1;
 
   node->type = TEXT_NODE;
-  node->name = "~#TEXT_NODE#~";
-  node->value = alloc(char, text_size);
-  strncpy(node->value, text, text_size);
+  node->name = NULL;
+  node->value = strdup(text);
   node->namespace = NULL;
   node->attributes = NULL;
   node->children = NULL;
@@ -182,14 +186,10 @@ dom_node* new_text_node(char* text){
 
 dom_node* new_attribute(char* name, char* value){
   dom_node* node = alloc(dom_node, 1);
-  int name_size = strlen(name) + 1;
-  int value_size = strlen(value) + 1;
 
   node->type = ATTRIBUTE;
-  node->name = alloc(char,name_size);
-  strncpy(node->name, name, name_size);
-  node->value = alloc(char, value_size);
-  strncpy(node->value, value, value_size);
+  node->name = strdup(name);
+  node->value = strdup(value);
   node->namespace = NULL;
   node->attributes = NULL;
   node->children = NULL;
@@ -198,12 +198,10 @@ dom_node* new_attribute(char* name, char* value){
 
 dom_node* new_cdata(char* cdata_text){
   dom_node* node = alloc(dom_node, 1);
-  int cdata_size = strlen(cdata_text) + 1;
 
   node->type = CDATA;
-  node->name = "~#CDATA#~";
-  node->value = alloc(char, cdata_size);
-  strncpy(node->value, cdata_text, cdata_size);
+  node->name = NULL;
+  node->value = strdup(cdata_text);
   node->namespace = NULL;
   node->attributes = NULL;
   node->children = NULL;

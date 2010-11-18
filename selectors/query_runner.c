@@ -61,25 +61,66 @@ list* apply_operator(list* nodes, int op){
     int i;
     dom_node* next_node;
     list* result = new_generic_list(1);
+    tree_root* rbtree = new_simple_rbtree();
+
     for(i = 0; i < nodes->count; i++){
         dom_node* node = get_element_at(nodes, i);
         switch(op){
         case SPACE:
-            result = merge_lists(result, get_xml_descendants(node));
+	  {
+	  //result = merge_lists(result, get_xml_descendants(node));
+	    generic_list_iterator* it = new_generic_list_iterator(get_xml_descendants(node));
+	    while(generic_list_iterator_has_next(it)){
+	      void* aux = generic_list_iterator_next(it);
+	      void* old = rb_tree_insert(rbtree, aux);
+	      if(!old)
+		add_element(result, aux);
+	    }
+	    destroy_generic_list_iterator(it);
             break;
+	  }
         case '>':
-            result = merge_lists(result, get_xml_children(node));
+	  {
+	    // result = merge_lists(result, get_xml_children(node));
+	    generic_list_iterator* it = new_generic_list_iterator(get_xml_children(node));
+	    while(generic_list_iterator_has_next(it)){
+	      void* aux = generic_list_iterator_next(it);
+	      void* old = rb_tree_insert(rbtree, aux);
+	      if(!old)
+		add_element(result, aux);
+	    }
+	    destroy_generic_list_iterator(it);
             break;
+	  }
         case '~':
-            result = merge_lists(result, get_xml_nodes_after(node));
+	  {
+	    // result = merge_lists(result, get_xml_nodes_after(node));
+	    generic_list_iterator* it = new_generic_list_iterator(get_xml_nodes_after(node));
+	    while(generic_list_iterator_has_next(it)){
+	      void* aux = generic_list_iterator_next(it);
+	      void* old = rb_tree_insert(rbtree, aux);
+	      if(!old)
+		add_element(result, aux);
+	    }
+	    destroy_generic_list_iterator(it);
             break;
+	  }
         case '+':
+	  {
             next_node = get_xml_node_after(node);
-            if(next_node != NULL) add_element(result, next_node);
+	    // if(next_node != NULL) add_element(result, next_node);
+	    if(next_node != NULL){
+	      void* old = rb_tree_insert(rbtree, next_node);
+	      if(!old)
+		add_element(result, next_node);
+	    }	      
             break;
+	  }
         }
     }
-    return remove_duplicates(result);
+    //    return remove_duplicates(result);
+    destroy_rbtree(rbtree);
+    return result;
 }
 
 list* filter_nodes_by_name(list* nodes, char* name){
@@ -205,12 +246,17 @@ list* filter_nodes_by_selector(list* nodes, selector* s){
 
 list* query(char* query_string, dom_node* node){
     list* all_nodes = get_descendants(node);
+
+    if(!all_nodes)
+      all_nodes = new_generic_list(1);
+
     int op, *holder;
     add_element(all_nodes, node);
 
     selector* s;
     list* nodes = all_nodes, *old;
     list* result = new_generic_list(1);
+    tree_root* rbtree = new_simple_rbtree();
 
     queue* query = parse_query(query_string);
 
@@ -220,7 +266,15 @@ list* query(char* query_string, dom_node* node){
 	  holder = ((int*)dequeue(query));
 	  op = *holder;
 	  if(op == ','){
-	    result = merge_lists(result, nodes);
+	    //	    result = merge_lists(result, nodes);
+	    generic_list_iterator* it = new_generic_list_iterator(nodes);
+	    while(generic_list_iterator_has_next(it)){
+	      void* aux = generic_list_iterator_next(it);
+	      void* old = rb_tree_insert(rbtree, aux);
+	      if(!old)
+		add_element(result, aux);
+	    }
+	    destroy_generic_list_iterator(it);
 	    nodes = duplicate_generic_list(all_nodes);
 	    destroy_generic_list(all_nodes);
 	  }
@@ -240,6 +294,16 @@ list* query(char* query_string, dom_node* node){
     }
 
     destroy_generic_list(query);
-    return remove_duplicates(merge_lists(result, nodes));
+    //    return remove_duplicates(merge_lists(result, nodes));
+    generic_list_iterator* it = new_generic_list_iterator(nodes);
+    while(generic_list_iterator_has_next(it)){
+      void* aux = generic_list_iterator_next(it);
+      void* old = rb_tree_insert(rbtree, aux);
+      if(!old)
+	add_element(result, aux);
+    }
+    destroy_generic_list_iterator(it);
+    destroy_rbtree(rbtree);
+    return result;
 }
 

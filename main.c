@@ -13,8 +13,9 @@ int main(int argc, char** argv){
   doc* document = parse_dom("test.xml");
   char* cha = node_to_string(document->root, XML);
 
-  //cha = "aabbbcccc";
-  get_huffman_tree(cha, strlen(cha));
+  //cha = "abcdefg";
+  printf("%s", huffman_decode(huffman_encode(cha, strlen(cha))));
+
 
 
   //output_xml(document);
@@ -22,38 +23,46 @@ int main(int argc, char** argv){
 
   //free(cha);
 
+
   /*if(argc != 2){
     printf("usage: %s \"query\"\n", argv[0]);
+
       return 0;
   }
+  doc* document = parse_dom(argv[1]);
+  //bdom* b = serialize_dom_doc(document);
 
-  list* result = query(argv[1],document->root);
+  //  dump(b->bb->buffer, 0, b->bb->size);
+  //printf("size %d\n", b->bb->size);
+
+  //destroy_bdom(b);
+
+  list* result = query(argv[2],document->root);
 
   //printf("List size is %d\n", result->count);
   int i;
   char* cha;
 
-  printf("Results: %d\n", result->count);
+
 
   for(i=0; i < result->count; i++){
     dom_node* t = (dom_node*)get_element_at(result, i);
-    set_name(t, "banana");
-    printf("Result node:\n");
     cha = node_to_string(t, XML);
     printf("%s", cha);
     free(cha);
   }
-
+  printf("Results: %d\n", result->count);
+  /*
   printf("\n\n\n==========================================================\n\n\n");
   cha = node_to_string(document->root, JSON);
   printf("%s", cha);
 
-  free(cha);
+  free(cha);*/
   if(document != NULL)
     destroy_dom_tree(document);
 
-  destroy_generic_list(result);
-    /*  list* cenas = parse_query("@E");
+  /*destroy_generic_list(result);
+  list* cenas = parse_query("@E");
   int i = 0;
   for(; i < cenas->count; i++){
     free(get_element_at(cenas, i));

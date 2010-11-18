@@ -19,6 +19,14 @@ struct generic_list_s *new_generic_list(int32_t initial)
   return l;
 }
 
+uint8_t generic_list_is_empty(struct generic_list_s* l){
+  return l->count == 0;
+}
+
+int32_t generic_list_get_count(struct generic_list_s* l){
+  return l->count;
+}
+
 static void rebase_generic_list(list* l){
     if(l->start == 0){ return ; }
     struct list_bucket** tmp;
@@ -136,7 +144,7 @@ void sorted_insert_element_with_type_at(list* l, void* obj, int16_t type, int(*c
 
     for(i = 0; i < l->count; i++){
         void* v = get_element_and_type_at(l, i, &type_v);
-        printf("%d:%d <> %d:%d => %d\n", ((bc*)obj)->byte, ((bc*)obj)->count, ((bc*)v)->byte, ((bc*)v)->count, compare(obj, type, v, type_v));
+        //printf("%d:%d <> %d:%d => %d\n", ((bc*)obj)->byte, ((bc*)obj)->count, ((bc*)v)->byte, ((bc*)v)->count, compare(obj, type, v, type_v));
         if(compare(obj, type, v, type_v) < 0) break;
     }
 
@@ -470,5 +478,24 @@ void destroy_generic_list(struct generic_list_s *s)
 
   free(s->array);
   free(s);
+}
+
+generic_list_iterator* new_generic_list_iterator(struct generic_list_s* l){
+  generic_list_iterator* i = alloc(generic_list_iterator, 1);
+  i->pos = 0;
+  i->list = l;
+  return i;
+}
+
+uint8_t generic_list_iterator_has_next(generic_list_iterator* i){
+  return i->pos < i->list->count;
+}
+
+void* generic_list_iterator_next(generic_list_iterator* i){
+  return get_element_at(i->list, (i->pos)++);
+}
+
+void destroy_generic_list_iterator(generic_list_iterator* i){
+  free(i);
 }
 

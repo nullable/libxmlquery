@@ -21,7 +21,7 @@
     </room>
     <room name="r3" />
     <room name="r4" />
-    <!-- Imaginary rooms following -->
+
     <room name="r5" />
     <room name="r6" />
   </rooms>
@@ -34,4 +34,3 @@
 20101101235534::on->off]]>
   </debug_output>
 </domobus>
-

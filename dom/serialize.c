@@ -1,19 +1,7 @@
-#include "../include/serialize.h"
 #include <string.h>
-
-/*void main(){
-  bson_buffer bb;
-  bson b;
-  bson_bool_t success;
-
-  bson_buffer_init(&bb);
-  bson_append_int(&bb, "integer", 1);
-  bson_append_string(&bb, "string" , "foo:bar" );
-  bson_from_buffer(&b, &bb);
-
-  bson_print(&b);
-  }*/
-
+#include "../include/byte_buffer.h"
+#include "../include/serialize.h"
+#include "../include/rbtree.h"
 
 byte_buffer* __node_list_to_xml(list* l, int depth);
 byte_buffer* __node_list_to_json(list* l, int depth);
@@ -24,48 +12,6 @@ byte_buffer* __text_list_to_yaml(list* l, int depth);
 byte_buffer* __attribute_to_xml(dom_node* attr);
 byte_buffer* __attribute_to_json(dom_node* attr, int depth);
 byte_buffer* __attribute_to_yaml(dom_node* attr, int depth);
-
-
-void destroy_byte_buffer(byte_buffer* bb){
-  if(bb == NULL) return;
-
-  free(bb->buffer);
-  free(bb);
-}
-
-byte_buffer* new_byte_buffer(int initial){
-  byte_buffer* b = alloc(byte_buffer, 1);
-  b->buffer = alloc(char, 16);
-  b->size = 0;
-  b->capacity = initial;
-
-  return b;
-}
-
-void append_string_to_buffer(const char* s, byte_buffer* b){
-  int strl = strlen(s);
-  append_bytes_to_buffer(s, b, strl);
-}
-
-void append_bytes_to_buffer(const char* bytes, byte_buffer* b, size_t size){
-  if(b->size + size > b->capacity){
-    b->buffer = (char*)realloc(b->buffer, (b->size+size)*2);
-    b->capacity = (b->size+size)*2;
-  }
-
-  memcpy(b->buffer+b->size, bytes, size);
-  b->size += size;
-}
-
-void append_buffer_to_buffer(byte_buffer* b2, byte_buffer* b){
-  if(b->size + b2->size > b->capacity){
-    b->buffer = (char*)realloc(b->buffer, (b->size+b2->size)*2);
-    b->capacity = (b->size+b2->size)*2;
-  }
-
-  memcpy(b->buffer+b->size, b2->buffer, b2->size);
-  b->size += b2->size;
-}
 
 byte_buffer* __dom_node_to_xml(dom_node* n, int depth){
   int i;
@@ -391,3 +337,20 @@ char* node_to_string(dom_node* root, serialization_type t){
   return buff;
 }
 
+bdom* serialize_dom_doc(doc* document){
+  bdom *bd = init_bdom(BDOM_DOC);
+
+  if(document->xml_declaration){
+    bdom* dec = bdom_from_dom_node(document->xml_declaration);
+    finalize_bdom(dec);
+    append_bdom_to_bdom(dec, bd);
+    destroy_bdom(dec);
+  }
+
+  bdom* root = bdom_from_dom_node(document->root);
+  finalize_bdom(root);
+  append_bdom_to_bdom(root, bd);
+  destroy_bdom(root);
+
+  return bd;  
+}

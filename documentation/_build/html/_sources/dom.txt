@@ -1,8 +1,0 @@
-=====================
-Document Object Model
-=====================
-
-.. c:type:: dom_node
-
-    Abstract representation of an xml node.
-

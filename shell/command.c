@@ -60,6 +60,9 @@ void init_command_table(){
 
   c = COMMAND(query, "Query an existing xml document\n\tUsage:query <variable_name> \"<query_expression>\"\n", 2);
   rb_tree_insert(command_table, c);
+
+  c = COMMAND(gdb, "Call gdb for a given program\n", 1);
+  rb_tree_insert(command_table, c);
 }
 
 int exec_command(char* name, int n_args, char** args){
@@ -79,7 +82,9 @@ int exec_command(char* name, int n_args, char** args){
 
 COMMAND_FUNCTION_HEADER(quit){
   printf("exiting...\n");
-  //TODO: destroy symbol table
+ 
+  destroy_symbol_table();
+
   tree_iterator* it = new_tree_iterator(command_table);
   while(tree_iterator_has_next(it))
     destroy_command((command*) tree_iterator_next(it));
@@ -123,6 +128,11 @@ COMMAND_FUNCTION_HEADER(help){
   return 0;
 }
 
+void destroy_dom_symbol(void* d){
+  doc* dom = (doc*) d;
+  destroy_dom_tree(dom);
+}
+
 COMMAND_FUNCTION_HEADER(load){
   char *filename, *id;
   doc* document;
@@ -130,7 +140,7 @@ COMMAND_FUNCTION_HEADER(load){
   filename = argp[0];
   document = parse_dom(filename);
   id = argp[1];
-  set_symbol(id, document);
+  set_symbol(id, document, destroy_dom_symbol);
 
   printf("XML %s loaded and stored in %s\n", filename, id);
   return 0;
@@ -147,5 +157,18 @@ COMMAND_FUNCTION_HEADER(print_xml){
   char* str = node_to_string(get_doc_root(document), XML);
   printf("%s\n", str);
   free(str);
+  return 0;
+}
+
+COMMAND_FUNCTION_HEADER(gdb){
+  char* exec;
+  char command[64] = {0};
+
+  exec = argp[0];
+
+  strcpy(command, "gdb ");
+  strcpy(command + 4, exec);
+
+  system(command);
   return 0;
 }

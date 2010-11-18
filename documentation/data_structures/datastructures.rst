@@ -42,14 +42,73 @@ Finally, notice that the stack and queue type are just typedefs of :c:type:`list
 
 The next sections will show how to use these types.
 
-List
-^^^^
+Function description
+^^^^^^^^^^^^^^^^^^^^
 
-Stack
-^^^^^
+.. c:function:: uint8_t generic_list_is_empty(struct generic_list_s* l)
 
-Queue
-^^^^^
+   :c:member:`l` The generic list to check if is empty.
+
+   This function checks if the generic list is empty. It return an integer bigger than 0 if true, or 0 if false.
+
+.. c:function:: int32_t generic_list_get_count(struct generic_list_s* l)
+
+   :c:member:`l` The generic list to obtain the count of elements.
+
+   This function return the number of elements in the generic list.
+
+.. c:function:: struct generic_list_s *new_generic_list(int32_t initial)
+.. c:function:: list* new_generic_list(int32_t initial)
+.. c:function:: stack* new_stack(int32_t initial)
+.. c:function:: queue* new_queue(int32_t initial)
+
+.. c:function:: void* set_element_with_type_at(list *l, void* obj, int16_t type, int32_t pos)
+.. c:function:: void* set_element_at(list *l, void* obj, int32_t pos)
+
+.. c:function:: void insert_element_with_type_at(list* l, void* obj, int16_t type, int32_t pos)
+.. c:function:: void insert_element_at(list* l, void* obj, int32_t pos)
+
+.. c:function:: void sorted_insert_element_with_type_at(list* l, void* obj, int16_t type, int(*compare)(void* o1, int16_t type1, void* o2, int16_t type2))
+
+.. c:function:: void append_element(list* l, void* obj, int16_t type)
+.. c:function:: void prepend_element(list* l, void* obj, int16_t type)
+
+.. c:function:: void add_element_with_type(list* l, void* obj, int16_t type)
+.. c:function:: void add_element(list* l, void* obj)
+
+.. c:function:: void* get_element_at(list* l, int32_t pos)
+.. c:function:: void* get_element_and_type_at(list* l, int32_t pos, int16_t* type)
+
+.. c:function:: int get_element_pos(list* l, void* el)
+
+.. c:function:: int32_t remove_element(list *l, void* obj)
+.. c:function:: int32_t remove_all(list *l, void* obj)
+.. c:function:: void* remove_element_at(list* l, int32_t pos)
+
+.. c:function:: void enqueue_with_type(queue* q, void* obj, int16_t type)
+.. c:function:: void enqueue(queue* q, void* obj)
+.. c:function:: void* dequeue(queue* q)
+
+.. c:function:: void push_stack_type(stack* s, void* obj, int16_t type)
+.. c:function:: void push_stack(stack* s, void* obj)
+.. c:function:: void* pop_stack(stack* s)
+
+.. c:function:: void reverse(struct generic_list_s *s)
+.. c:function:: list* remove_duplicates(list* l)
+
+.. c:function:: int16_t peek_element_type_at(list* l, int32_t pos)
+.. c:function:: int16_t peek_stack_type(stack *s)
+.. c:function:: int16_t peek_queue_type(queue *s)
+
+.. c:function:: struct generic_list_s *merge_lists(struct generic_list_s *l1, struct generic_list_s *l2)
+
+.. c:function:: struct generic_list_s *duplicate_generic_list(struct generic_list_s*)
+.. c:function:: void destroy_generic_list(struct generic_list_s *s)
+
+.. c:function:: generic_list_iterator* new_generic_list_iterator(struct generic_list_s*)
+.. c:function:: uint8_t generic_list_iterator_has_next(generic_list_iterator* i)
+.. c:function:: void* generic_list_iterator_next(generic_list_iterator* i)
+.. c:function:: void destroy_generic_list_iterator(generic_list_iterator* i)
 
 Generic Red Black Tree
 ----------------------

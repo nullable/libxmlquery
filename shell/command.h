@@ -22,6 +22,7 @@ extern COMMAND_FUNCTION_HEADER(print_xml);
 extern COMMAND_FUNCTION_HEADER(quit);
 extern COMMAND_FUNCTION_HEADER(help);
 extern COMMAND_FUNCTION_HEADER(query);
+extern COMMAND_FUNCTION_HEADER(gdb);
 
 extern void init_command_table();
 extern int exec_command(char* name, int n_args, char** args);

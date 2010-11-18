@@ -40,14 +40,12 @@ int main(int argc, char** argv){
   int i;
   char* cha;
 
-
-
-  for(i=0; i < result->count; i++){
+  /*for(i=0; i < result->count; i++){
     dom_node* t = (dom_node*)get_element_at(result, i);
     cha = node_to_string(t, XML);
     printf("%s", cha);
     free(cha);
-  }
+  }*/
   printf("Results: %d\n", result->count);
   /*
   printf("\n\n\n==========================================================\n\n\n");

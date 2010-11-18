@@ -146,7 +146,7 @@ namespace: WORD                                             { $$ = new_element_n
 
 declaration: START_EL '?' namespace attrs '?' END_EL        {
                                                               if(strcmp(get_name($3), "xml") != 0){
-                                                                yyerror("Declaration does not begin with xml.\n");
+                                                                yyerror("Declaration does not begin with xml");
                                                                 exit(-1);
                                                               }
                                                               $$ = $4;
@@ -163,7 +163,9 @@ declaration: START_EL '?' namespace attrs '?' END_EL        {
 node: start_tag inner end_tag                               {
                                                               if(strcmp(get_name($1),get_name($3)) != 0)
                                                               {
-                                                                yyerror("Start tag does not match end tag.\n");
+								char error_line[1024] = {0};
+								sprintf(error_line, "Start tag '%s' does not match end tag '%s' ", get_name($1), get_name($3));
+                                                                yyerror(error_line);
                                                                 exit(1);
                                                               }
                                                               append_children($1, $2->children);

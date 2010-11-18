@@ -66,7 +66,5 @@ extern void remove_node(doc* root, dom_node* node);
 
 extern void destroy_dom_node(dom_node* n);
 extern void destroy_dom_tree(doc* root);
-
-extern void print_node_list(struct generic_list_s* l);
 #endif
 

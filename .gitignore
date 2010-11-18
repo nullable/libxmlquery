@@ -7,3 +7,22 @@ y.tab.c
 y.tab.h
 dom_parser
 
+libxmlquery.so
+documentation/_build/singlehtml/
+bindings/python/_libxmlquery.so
+bindings/python/libxmlquery.py
+bindings/python/libxmlquery_wrap.c
+*.pyc
+documentation/_build/latex/*.sty
+documentation/_build/latex/*.aux
+documentation/_build/latex/*.idx
+documentation/_build/latex/*.ind
+documentation/_build/latex/*.log
+documentation/_build/latex/*.tex
+documentation/_build/latex/*.toc
+documentation/_build/latex/*.ist
+documentation/_build/latex/*.cls
+documentation/_build/latex/*.sty
+documentation/_build/doctrees/
+documentation/_build/latex/*.ilg
+*/main.c

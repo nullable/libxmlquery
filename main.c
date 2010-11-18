@@ -5,25 +5,28 @@
 #include "include/dom_parser.h"
 #include "include/stack.h"
 #include "include/query_runner.h"
-#include "include/bdom.h"
+#include "include/huffman.h"
 
-void dump(char* array, int offset, int size){
-  for(; offset < size; offset++)
-    printf("%c", array[offset]);
-  putchar('\n');
-}
+
 
 int main(int argc, char** argv){
+  doc* document = parse_dom("test.xml");
+  char* cha = node_to_string(document->root, XML);
 
-  //  char* cha = node_to_string(document->root, JSON);
-  
+  //cha = "abcdefg";
+  printf("%s", huffman_decode(huffman_encode(cha, strlen(cha))));
+
+
+
   //output_xml(document);
   //printf("%s", cha);
 
   //free(cha);
 
-  if(argc != 3){
-    printf("usage: %s \"xml_file\" \"query\"\n", argv[0]);
+
+  /*if(argc != 2){
+    printf("usage: %s \"query\"\n", argv[0]);
+
       return 0;
   }
   doc* document = parse_dom(argv[1]);

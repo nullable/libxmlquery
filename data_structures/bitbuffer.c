@@ -74,12 +74,43 @@ void dump_bit_buffer(bitbuffer* b){
   putchar('\n');
 }
 
+void dump_bits(uint32_t val){
+  uint32_t mask = 0x80000000;
+  for(; mask > 0; mask >>= 1){
+    if(val & mask)
+      printf("1");
+    else
+      printf("0");
+  }
+  putchar('\n');
+  return;
+}
+
 void append_bits_to_buffer(unsigned int c, unsigned int bit_count, bitbuffer* bb){
   /*    int i;
     for(i = bit_count; i > 0; i--){
         char v = (char) c >> (i-1);
         append_bit_to_buffer(v, bb);
 	}*/
+  unsigned char binary_number[4];
+  memcpy(binary_number, &c, 4);
+
+  //Swap each byte bit order
+  binary_number[0] = (binary_number[0] * 0x0202020202ULL & 0x010884422010ULL) % 1023;
+  binary_number[1] = (binary_number[1] * 0x0202020202ULL & 0x010884422010ULL) % 1023;
+  binary_number[2] = (binary_number[2] * 0x0202020202ULL & 0x010884422010ULL) % 1023;
+  binary_number[3] = (binary_number[3] * 0x0202020202ULL & 0x010884422010ULL) % 1023;
+
+  unsigned char reversed_binary_number[4];
+
+  //swap each byte
+  reversed_binary_number[0] = binary_number[3];
+  reversed_binary_number[1] = binary_number[2];
+  reversed_binary_number[2] = binary_number[1];
+  reversed_binary_number[3] = binary_number[0];
+
+  c = *((unsigned int*) reversed_binary_number);
+  c >>= (32 - bit_count);
 
   while(bit_count > 0){
     uint8_t bit_offset = bb->size % 8;

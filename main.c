@@ -7,11 +7,17 @@
 #include "include/query_runner.h"
 #include "include/huffman.h"
 #include "include/lzw.h"
-
+#include "include/bitbuffer.h"
 
 
 int main(int argc, char** argv){
-  doc* document = parse_dom("big.xml");
+  bitbuffer* b = new_bitbuffer(2);
+
+  int bits, how_many;
+  append_bits_to_buffer(4, 3, b);
+  printf("%d\n", get_bit_from_buffer(b, 0));
+
+  /*  doc* document = parse_dom("big.xml");
   char* cha = node_to_string(document->root, XML);
 
   //cha = "abcdefg";
@@ -21,7 +27,7 @@ int main(int argc, char** argv){
   //printf("%s\n", huffman_decode(huffman_encode(cha, strlen(cha))));
 
   printf("size after lzw: %d B\n", (lzw_encoded->size / 8) + 1);
-  printf("%d\n", huffman_encode((char *)lzw_encoded->buffer, (lzw_encoded->size / 8))->size / 8);
+  printf("%d\n", huffman_encode((char *)lzw_encoded->buffer, (lzw_encoded->size / 8))->size / 8);*/
 
 
   //output_xml(document);
@@ -64,8 +70,8 @@ int main(int argc, char** argv){
   printf("%s", cha);
 
   free(cha);*/
-  if(document != NULL)
-    destroy_dom_tree(document);
+  /*if(document != NULL)
+    destroy_dom_tree(document);*/
 
   /*destroy_generic_list(result);
   list* cenas = parse_query("@E");

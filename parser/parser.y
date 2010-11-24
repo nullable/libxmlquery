@@ -65,7 +65,6 @@ void parse_file(char* filename){
   }
   yylineno = 1;
   yyparse();
-  yy_delete_buffer(bs);
   yylex_destroy();
   if(munmap(address, st.st_size + 2) == -1)
     log(W, "munmap failed.");
@@ -88,7 +87,6 @@ void parse_string(const char* str){
   }
   yylineno = 1;
   yyparse();
-  yy_delete_buffer(bs);
   yylex_destroy();
   free(internal_cpy);
 }

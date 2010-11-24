@@ -15,7 +15,7 @@ object_code:
 	make -C $(SELECTORS) all
 
 exec: object_code
-	$(CC) $(CFLAGS) -o $(OUT) $(PARSER_SRC)/*.o $(DOM_SRC)/*.o $(STRUCTS)/*.o $(SELECTORS)/*.o main.c
+	$(CC) $(CFLAGS) -o $(OUT) -lfl $(PARSER_SRC)/*.o $(DOM_SRC)/*.o $(STRUCTS)/*.o $(SELECTORS)/*.o main.c
 
 clean:
 	make -C $(DOM_SRC) clean
@@ -25,4 +25,4 @@ clean:
 	rm -rf *~ *.o $(OUT) libxmlquery.so
 
 so: object_code
-	$(CC) $(CFLAGS) $(PARSER_SRC)/*.o $(DOM_SRC)/*.o $(STRUCTS)/*.o $(SELECTORS)/*.o -shared -o libxmlquery.so
+	$(CC) $(CFLAGS) -lfl $(PARSER_SRC)/*.o $(DOM_SRC)/*.o $(STRUCTS)/*.o $(SELECTORS)/*.o -shared -o libxmlquery.so

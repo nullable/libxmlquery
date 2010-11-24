@@ -2,4 +2,4 @@
 
 CC = gcc
 CFLAGS = -Wall -g -DDEBUG -pg
-LEXFLAGS = -lfl -DDEBUG -g -pg -c
+LEXFLAGS = -DDEBUG -g -pg -c

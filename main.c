@@ -34,18 +34,18 @@ int main(int argc, char** argv){
 
   //destroy_bdom(b);
 
-  //  list* result = query(argv[2],document->root);
+  list* result = query(argv[2],document->root);
 
   //printf("List size is %d\n", result->count);
-  /*int i;
+  int i;
   char* cha;
 
-  /*for(i=0; i < result->count; i++){
+  for(i=0; i < result->count; i++){
     dom_node* t = (dom_node*)get_element_at(result, i);
     cha = node_to_string(t, XML);
     printf("%s", cha);
     free(cha);
-  }*/
+  }
   //  printf("Results: %d\n", result->count);
   /*
   printf("\n\n\n==========================================================\n\n\n");

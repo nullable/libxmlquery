@@ -5,7 +5,6 @@
 #include "include/dom_parser.h"
 #include "include/stack.h"
 #include "include/query_runner.h"
-#include "include/bdom.h"
 
 void dump(char* array, int offset, int size){
   for(; offset < size; offset++)

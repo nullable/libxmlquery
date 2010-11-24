@@ -131,7 +131,16 @@ There are two things to notice here. First, this is only the root of the tree an
 - 0 if the keys are the same.
 - A positive integer if the first key is bigger than the second.
 
-These pointers must be provided by the user. Why do we need these pointers? Because the data stored in the rbtree can be anything, but we still need to know how to sort it. Nevertheless, if you wish to use this data structure as a container and don't care how things are sorted, you can always use the method :c:func:`new_simple_rbtree`.
+The compare function must be:
+
+- Reflexive: Given an object a. compare(a, a) should always return 0.
+- Symetric: Given two identical objects a and b, if compare(a,b) returns 0, then compare(b,a) must return 0.
+- Transitive: Given three objects a, b, c. If compare(a,b) returns 0, and compare(b,c) returns 0, then compare(a,c) must return 0.
+- Consistent: Multiple invocations of compare on the same objects in the same other, must return always the same value.
+
+These properties should hold even if objects aren't equal.
+
+The compare and key function pointers must be provided by the user. Why do we need these pointers? Because the data stored in the rbtree can be anything, but we still need to know how to sort it. Nevertheless, if you wish to use this data structure as a container and don't care how things are sorted, you can always use the method :c:func:`new_simple_rbtree`.
 
 Each node in an rbtree is called a tree_node and is defined in rbtree.h as:
 

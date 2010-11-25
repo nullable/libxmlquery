@@ -32,14 +32,14 @@ void destroy_selector(selector* s);
 
 void destroy_filter_selector(filter_selector* fs){
   switch(fs->op){
-  case NOT_FILTER:
+  /*case NOT_FILTER:
     {
       int i;
       for(i = 0; i < fs->value.selector->count; i++)
 	destroy_selector((selector*) get_element_at(fs->value.selector, i));
       destroy_generic_list(fs->value.selector);
       break;
-    }
+    }*/
   case NTH_CHILD_FILTER:
   case NTH_LAST_CHILD_FILTER:
     free(fs->value.s);
@@ -64,6 +64,7 @@ void destroy_selector(selector* s){
   for(i = 0; i < s->filters->count; i++)
     destroy_filter_selector((filter_selector*) get_element_at(s->filters, i));
   destroy_generic_list(s->filters);
-  
+
   free(s);
 }
+

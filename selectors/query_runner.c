@@ -191,13 +191,13 @@ list* filter_nodes_by_pseudo_filter(const list* nodes, filter_selector* filter_s
     if(filter_s->op == NOT_FILTER) not_nodes = run_query(filter_s->value.selector, all_nodes);
 
     for(i = 0; i < nodes->count; i++){
+        n = get_element_at(nodes, i);
         switch(filter_s->op){
         case FIRST_CHILD_FILTER:
         case LAST_CHILD_FILTER:
         case ONLY_CHILD_FILTER:
         case NTH_CHILD_FILTER:
         case NTH_LAST_CHILD_FILTER:
-            n = get_element_at(nodes, i);
             if(n->parent == NULL) continue;
             siblings = filter_nodes_by_type(get_children(n->parent), ELEMENT);
         }

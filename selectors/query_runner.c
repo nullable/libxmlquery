@@ -7,6 +7,8 @@
 #include "../include/y.tab.h"
 #include "../include/query_parser.h"
 
+list* run_query(queue* query, const list* all_nodes);
+
 list* filter_nodes_by_type(list* nodes, enum node_type type){
     if(nodes == NULL) return NULL;
     int i;
@@ -119,7 +121,7 @@ list* apply_operator(const list* nodes, int op){
 	      void* old = rb_tree_insert(rbtree, next_node);
 	      if(!old)
 		add_element(result, next_node);
-	    }	      
+	    }
             break;
 	  }
         }
@@ -174,8 +176,8 @@ list* filter_nodes_by_attr(const list* nodes, attr_selector* attr_s){
     return r;
 }
 
-list* filter_nodes_by_pseudo_filter(const list* nodes, filter_selector* filter_s){
-    int i;
+list* filter_nodes_by_pseudo_filter(const list* nodes, filter_selector* filter_s, const list* all_nodes){
+    int i, m, o, pos;
     dom_node* n;
     list* siblings;
     list* children;
@@ -184,12 +186,17 @@ list* filter_nodes_by_pseudo_filter(const list* nodes, filter_selector* filter_s
     if(nodes->count == 0) return NULL;
 
     list* r = new_generic_list(nodes->capacity);
+    list* not_nodes;
+
+    if(filter_s->op == NOT_FILTER) not_nodes = run_query(filter_s->value.selector, all_nodes);
 
     for(i = 0; i < nodes->count; i++){
         switch(filter_s->op){
         case FIRST_CHILD_FILTER:
         case LAST_CHILD_FILTER:
         case ONLY_CHILD_FILTER:
+        case NTH_CHILD_FILTER:
+        case NTH_LAST_CHILD_FILTER:
             n = get_element_at(nodes, i);
             if(n->parent == NULL) continue;
             siblings = filter_nodes_by_type(get_children(n->parent), ELEMENT);
@@ -208,10 +215,34 @@ list* filter_nodes_by_pseudo_filter(const list* nodes, filter_selector* filter_s
             if(siblings->count == 1)
                 add_element(r, n);
             break;
+        case NTH_CHILD_FILTER:
+            m = (filter_s->value).s->multiplier;
+            o = (filter_s->value).s->offset;
+            pos = get_element_pos(siblings, n) + 1;
+
+            if(m == 0 && o == 0) break;
+            else if (m == 0 && o == pos) add_element(r, n);
+            else if (m != 0 && (pos - o) % m == 0 && (pos - o) / m >= 0) add_element(r, n);
+            break;
+
+        case NTH_LAST_CHILD_FILTER:
+            m = filter_s->value.s->multiplier;
+            o = filter_s->value.s->offset;
+            pos = siblings->count - get_element_pos(siblings, n);
+
+            if(m == 0 && o == 0) break;
+            else if (m == 0 && o == pos) add_element(r, n);
+            else if (m != 0 && (pos - o) % m == 0 && (pos - o) / m >= 0) add_element(r, n);
+            break;
+
         case EMPTY_FILTER:
-            children = filter_nodes_by_type(get_children(n), ELEMENT);
+            children = get_children(n);
+            children = filter_nodes_by_type(children, ELEMENT);
             if(children == NULL || children->count == 0)
                 add_element(r, n);
+            break;
+        case NOT_FILTER:
+            if(get_element_pos(not_nodes, n) < 0) add_element(r, n);
             break;
         default:
             log(F, "Only simple pseudo filters are implemented.\n");
@@ -221,7 +252,7 @@ list* filter_nodes_by_pseudo_filter(const list* nodes, filter_selector* filter_s
     return r;
 }
 
-list* filter_nodes_by_selector(const list* nodes, selector* s){
+list* filter_nodes_by_selector(const list* nodes, selector* s, const list* all_nodes){
   list* r = duplicate_generic_list(nodes), *old;
   int i;
 
@@ -230,7 +261,7 @@ list* filter_nodes_by_selector(const list* nodes, selector* s){
     r = filter_nodes_by_name(r, s->id);
     destroy_generic_list(old);
   }
-  
+
   if(s->attrs != NULL){
     for(i = 0; i < s->attrs->count; i++){
       old = r;
@@ -238,11 +269,11 @@ list* filter_nodes_by_selector(const list* nodes, selector* s){
       destroy_generic_list(old);
     }
   }
-  
+
   if(s->filters != NULL){
     for(i = 0; i < s->filters->count; i++){
       old = r;
-      r = filter_nodes_by_pseudo_filter(r, get_element_at(s->filters, i));
+      r = filter_nodes_by_pseudo_filter(r, get_element_at(s->filters, i), all_nodes);
       destroy_generic_list(old);
     }
   }
@@ -250,54 +281,46 @@ list* filter_nodes_by_selector(const list* nodes, selector* s){
   return r;
 }
 
-list* query(char* query_string, dom_node* node){
-    list* all_nodes = get_descendants(node);
-
-    if(!all_nodes)
-      all_nodes = new_generic_list(1);
-
-    int op, *holder;
-    add_element(all_nodes, node);
-
+list* run_query(queue* query, const list* all_nodes){
     selector* s;
     list* nodes = duplicate_generic_list(all_nodes), *old;
     list* result = new_generic_list(1);
     tree_root* rbtree = new_simple_rbtree();
 
-    queue* query = parse_query(query_string);
+    int op, *holder;
 
     while(query->count > 0){
         switch(peek_queue_type(query)){
         case LXQ_RELATION_TYPE:
-	  holder = ((int*)dequeue(query));
-	  op = *holder;
-	  if(op == ','){
-	    //	    result = merge_lists(result, nodes);	    
-	    generic_list_iterator* it = new_generic_list_iterator(nodes);
-	    while(generic_list_iterator_has_next(it)){
-	      void* aux = generic_list_iterator_next(it);
-	      void* old = rb_tree_insert(rbtree, aux);
-	      if(!old)
-		add_element(result, aux);
-	    }
-	    destroy_generic_list_iterator(it);
-	    destroy_generic_list(nodes);
-	    nodes = duplicate_generic_list(all_nodes);
-	  }
-	  else{
-	    old = nodes;
-	    nodes = apply_operator(nodes, op);
-	    destroy_generic_list(old);
-	  }
-	  free(holder);
-	  break;
+	      holder = ((int*)dequeue(query));
+	      op = *holder;
+	      if(op == ','){
+	        //	    result = merge_lists(result, nodes);
+	        generic_list_iterator* it = new_generic_list_iterator(nodes);
+	        while(generic_list_iterator_has_next(it)){
+	          void* aux = generic_list_iterator_next(it);
+	          void* old = rb_tree_insert(rbtree, aux);
+	          if(!old)
+		    add_element(result, aux);
+	        }
+	        destroy_generic_list_iterator(it);
+	        destroy_generic_list(nodes);
+	        nodes = duplicate_generic_list(all_nodes);
+	      }
+	      else{
+	        old = nodes;
+	        nodes = apply_operator(nodes, op);
+	        destroy_generic_list(old);
+	      }
+	      free(holder);
+	      break;
         case LXQ_SELECTOR_TYPE:
-	  s =(selector*)dequeue(query);
-	  list* old = nodes;
-	  nodes = filter_nodes_by_selector(nodes, s);
-	  destroy_generic_list(old);
-	  destroy_selector(s);
-	  break;
+	      s =(selector*)dequeue(query);
+	      list* old = nodes;
+	      nodes = filter_nodes_by_selector(nodes, s, all_nodes);
+	      destroy_generic_list(old);
+	      destroy_selector(s);
+	      break;
         }
     }
 
@@ -308,12 +331,26 @@ list* query(char* query_string, dom_node* node){
       void* aux = generic_list_iterator_next(it);
       void* old = rb_tree_insert(rbtree, aux);
       if(!old)
-	add_element(result, aux);
+	    add_element(result, aux);
     }
     destroy_generic_list_iterator(it);
     destroy_generic_list(nodes);
-    destroy_generic_list(all_nodes);
     destroy_rbtree(rbtree);
     return result;
+
+}
+
+list* query(char* query_string, dom_node* node){
+    list* all_nodes = get_descendants(node);
+
+    if(!all_nodes)
+      all_nodes = new_generic_list(1);
+
+    add_element(all_nodes, node);
+    queue* query = parse_query(query_string);
+
+    list* r = run_query(query, all_nodes);
+    destroy_generic_list(all_nodes);
+    return r;
 }
 

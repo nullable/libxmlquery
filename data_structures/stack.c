@@ -447,6 +447,27 @@ list* duplicate_generic_list(const list *l){
   return new;
 }
 
+list* exclude_list_from_list(const list* l1, const list* l2){
+    if(l2 == NULL || l2->count == 0) return NULL;
+    if(l1 == NULL || l1->count == 0) return duplicate_generic_list(l2);
+
+    int i;
+
+    list* r = new_generic_list(l2->capacity + l1->capacity);
+
+    int pos;
+    int type;
+    void* obj;
+
+    for(i = 0; i < l2->count; i++){
+        obj = get_element_and_type_at(l2, i, &type);
+        pos = get_element_pos(l1, obj);
+        if(pos > 0) append_element(r, obj, type);
+    }
+
+    return r;
+}
+
 list* remove_duplicates(list* l){
   if(l == NULL)
     return NULL;

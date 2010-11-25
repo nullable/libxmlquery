@@ -2,9 +2,6 @@
 *.out
 *.o
 *.gch
-lex.yy.c
-y.tab.c
-y.tab.h
 dom_parser
 
 libxmlquery.so

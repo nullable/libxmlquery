@@ -45,7 +45,9 @@ int main(int argc, char** argv){
     printf("%s", cha);
     free(cha);
   }
-  //  printf("Results: %d\n", result->count);
+  printf("Results: %d\n", result->count);
+  if(result)
+    destroy_generic_list(result);
   /*
   printf("\n\n\n==========================================================\n\n\n");
   cha = node_to_string(document->root, JSON);

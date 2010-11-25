@@ -16,6 +16,7 @@ struct generic_list_s *new_generic_list(int32_t initial)
   l->capacity = initial;
 
   l->array = alloc(struct list_bucket*, initial);
+  memset(l->array, 0, initial * sizeof(struct list_bucket*));
   return l;
 }
 
@@ -66,7 +67,6 @@ static void refactor_generic_list(list* l){
   cpy = l->count - l->capacity + l->start;
 
   if(cpy > 0){
-
     memcpy(l->array + l->capacity, l->array, cpy);
     memset(l->array, 0, cpy);
   }
@@ -87,18 +87,15 @@ void* set_element_with_type_at(list *l, void* obj, int16_t type, int32_t pos)
 {
   void* r = NULL;
 
-  if(l->count >= l->capacity)
-    {
-      refactor_generic_list(l);
-    }
-
-  if(pos >= l->count || pos < 0) log(W, "Tried to add element to list at invalid position, list-size: %d, position requested: %d\n", l->count, pos);
+  if(!(pos < l->count && pos >= 0)){
+    log(E, "Tried to add element to list at invalid position, list-size: %d, position requested: %d\n", l->count, pos);
+    exit(-1);
+  }
 
   struct list_bucket *b = l->array[(l->start + pos) % l->capacity];
   if(b != NULL) { r = b->element; }
   else {
     b = alloc(struct list_bucket, 1);
-    l->count++;
     l->array[(l->start + pos) % l->capacity] = b;
   }
 
@@ -115,11 +112,17 @@ void* set_element_at(list* l, void* obj, int32_t pos)
 
 void insert_element_with_type_at(list* l, void* obj, int16_t type, int32_t pos){
   int32_t i;
+
+  if(!(pos <= l->count && pos >= 0)){
+    log(E, "Tried to insert an element to list at invalid position, list-size: %d, position requested: %d\n", l->count, pos);
+    exit(-1);
+  }
+
   if(l->count >= l->capacity){
     refactor_generic_list(l);
   }
 
-  for(i = l->count; i >= pos; i--){
+  for(i = l->count - 1; i >= pos; i--){
     int32_t d = (l->start + i) % l->capacity;
     int32_t dn = (d+1) % l->capacity;
     l->array[dn] = l->array[d];
@@ -275,7 +278,7 @@ void* remove_element_at(list* l, int32_t pos)
   return r;
 }
 
-void* get_element_and_type_at(list* l, int32_t pos, int16_t* type)
+void* get_element_and_type_at(const list* l, int32_t pos, int16_t* type)
 {
   if(pos < 0 || pos >= l->count){ log(W, "Trying to access object on position (%d) outside range (0 to %d)", pos, l->count-1); return NULL; }
   int32_t d = (l->start + pos) % l->capacity;
@@ -284,7 +287,7 @@ void* get_element_and_type_at(list* l, int32_t pos, int16_t* type)
   return r;
 }
 
-void* get_element_at(list* l, int32_t pos){
+void* get_element_at(const list* l, int32_t pos){
   int16_t type;
   return get_element_and_type_at(l, pos, &type);
 }
@@ -435,7 +438,8 @@ void __quicksort_generic_list(list* l) {
     __quicksort_generic_list_aux(l->array, 0, l->count - 1);
   }
 
-list* duplicate_generic_list(list *l){
+list* duplicate_generic_list(const list *l){
+  if(!l) return NULL;
   list* new = new_generic_list(l->capacity);
   int i;
   for(i = 0; i < l->count; i++)
@@ -488,7 +492,7 @@ generic_list_iterator* new_generic_list_iterator(struct generic_list_s* l){
 }
 
 uint8_t generic_list_iterator_has_next(generic_list_iterator* i){
-  return i->pos < i->list->count;
+  return (i->list == NULL)? 0 : (i->pos < i->list->count);
 }
 
 void* generic_list_iterator_next(generic_list_iterator* i){

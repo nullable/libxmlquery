@@ -57,7 +57,7 @@ dom_node* get_xml_node_after(dom_node* n){
 }
 
 
-list* apply_operator(list* nodes, int op){
+list* apply_operator(const list* nodes, int op){
     int i;
     dom_node* next_node;
     list* result = new_generic_list(1);
@@ -69,7 +69,8 @@ list* apply_operator(list* nodes, int op){
         case SPACE:
 	  {
 	  //result = merge_lists(result, get_xml_descendants(node));
-	    generic_list_iterator* it = new_generic_list_iterator(get_xml_descendants(node));
+	    list* desc = get_xml_descendants(node);
+	    generic_list_iterator* it = new_generic_list_iterator(desc);
 	    while(generic_list_iterator_has_next(it)){
 	      void* aux = generic_list_iterator_next(it);
 	      void* old = rb_tree_insert(rbtree, aux);
@@ -77,12 +78,14 @@ list* apply_operator(list* nodes, int op){
 		add_element(result, aux);
 	    }
 	    destroy_generic_list_iterator(it);
+	    destroy_generic_list(desc);
             break;
 	  }
         case '>':
 	  {
 	    // result = merge_lists(result, get_xml_children(node));
-	    generic_list_iterator* it = new_generic_list_iterator(get_xml_children(node));
+	    list* c = get_xml_children(node);
+	    generic_list_iterator* it = new_generic_list_iterator(c);
 	    while(generic_list_iterator_has_next(it)){
 	      void* aux = generic_list_iterator_next(it);
 	      void* old = rb_tree_insert(rbtree, aux);
@@ -90,12 +93,14 @@ list* apply_operator(list* nodes, int op){
 		add_element(result, aux);
 	    }
 	    destroy_generic_list_iterator(it);
+	    destroy_generic_list(c);
             break;
 	  }
         case '~':
 	  {
 	    // result = merge_lists(result, get_xml_nodes_after(node));
-	    generic_list_iterator* it = new_generic_list_iterator(get_xml_nodes_after(node));
+	    list* a = get_xml_nodes_after(node);
+	    generic_list_iterator* it = new_generic_list_iterator(a);
 	    while(generic_list_iterator_has_next(it)){
 	      void* aux = generic_list_iterator_next(it);
 	      void* old = rb_tree_insert(rbtree, aux);
@@ -103,6 +108,7 @@ list* apply_operator(list* nodes, int op){
 		add_element(result, aux);
 	    }
 	    destroy_generic_list_iterator(it);
+	    destroy_generic_list(a);
             break;
 	  }
         case '+':
@@ -123,10 +129,10 @@ list* apply_operator(list* nodes, int op){
     return result;
 }
 
-list* filter_nodes_by_name(list* nodes, char* name){
+list* filter_nodes_by_name(const list* nodes, char* name){
     int i;
     if(nodes == NULL) return NULL;
-    if(nodes->count == 0) return nodes;
+    if(nodes->count == 0) return NULL;
 
     list* r = new_generic_list(nodes->capacity);
 
@@ -139,11 +145,11 @@ list* filter_nodes_by_name(list* nodes, char* name){
     return r;
 }
 
-list* filter_nodes_by_attr(list* nodes, attr_selector* attr_s){
+list* filter_nodes_by_attr(const list* nodes, attr_selector* attr_s){
     int i;
 
     if(nodes == NULL) return NULL;
-    if(nodes->count == 0) return nodes;
+    if(nodes->count == 0) return NULL;
 
     list* r = new_generic_list(nodes->capacity);
 
@@ -168,14 +174,14 @@ list* filter_nodes_by_attr(list* nodes, attr_selector* attr_s){
     return r;
 }
 
-list* filter_nodes_by_pseudo_filter(list* nodes, filter_selector* filter_s){
+list* filter_nodes_by_pseudo_filter(const list* nodes, filter_selector* filter_s){
     int i;
     dom_node* n;
     list* siblings;
     list* children;
 
     if(nodes == NULL) return NULL;
-    if(nodes->count == 0) return nodes;
+    if(nodes->count == 0) return NULL;
 
     list* r = new_generic_list(nodes->capacity);
 
@@ -215,13 +221,13 @@ list* filter_nodes_by_pseudo_filter(list* nodes, filter_selector* filter_s){
     return r;
 }
 
-list* filter_nodes_by_selector(list* nodes, selector* s){
-  list* r = nodes, *old;
+list* filter_nodes_by_selector(const list* nodes, selector* s){
+  list* r = duplicate_generic_list(nodes), *old;
   int i;
 
   if(s->id != NULL){
-    old = nodes;
-    r = filter_nodes_by_name(nodes, s->id);
+    old = r;
+    r = filter_nodes_by_name(r, s->id);
     destroy_generic_list(old);
   }
   
@@ -254,7 +260,7 @@ list* query(char* query_string, dom_node* node){
     add_element(all_nodes, node);
 
     selector* s;
-    list* nodes = all_nodes, *old;
+    list* nodes = duplicate_generic_list(all_nodes), *old;
     list* result = new_generic_list(1);
     tree_root* rbtree = new_simple_rbtree();
 
@@ -266,7 +272,7 @@ list* query(char* query_string, dom_node* node){
 	  holder = ((int*)dequeue(query));
 	  op = *holder;
 	  if(op == ','){
-	    //	    result = merge_lists(result, nodes);
+	    //	    result = merge_lists(result, nodes);	    
 	    generic_list_iterator* it = new_generic_list_iterator(nodes);
 	    while(generic_list_iterator_has_next(it)){
 	      void* aux = generic_list_iterator_next(it);
@@ -275,8 +281,8 @@ list* query(char* query_string, dom_node* node){
 		add_element(result, aux);
 	    }
 	    destroy_generic_list_iterator(it);
+	    destroy_generic_list(nodes);
 	    nodes = duplicate_generic_list(all_nodes);
-	    destroy_generic_list(all_nodes);
 	  }
 	  else{
 	    old = nodes;
@@ -287,7 +293,9 @@ list* query(char* query_string, dom_node* node){
 	  break;
         case LXQ_SELECTOR_TYPE:
 	  s =(selector*)dequeue(query);
+	  list* old = nodes;
 	  nodes = filter_nodes_by_selector(nodes, s);
+	  destroy_generic_list(old);
 	  destroy_selector(s);
 	  break;
         }
@@ -303,6 +311,8 @@ list* query(char* query_string, dom_node* node){
 	add_element(result, aux);
     }
     destroy_generic_list_iterator(it);
+    destroy_generic_list(nodes);
+    destroy_generic_list(all_nodes);
     destroy_rbtree(rbtree);
     return result;
 }

@@ -17,6 +17,7 @@ extern int yylex(void);
 extern int yyparse(void);
 extern int yylineno;
 extern char* yytext;
+extern FILE* yyin;
 
 doc* lxq_document;
 
@@ -36,38 +37,18 @@ int yywrap()
 
 void parse_file(char* filename){
   char* address;
-  int32_t fdin;
-  struct stat st;
+  FILE* holder;
   struct yy_buffer_state* bs;
 
-  fdin = open(filename, O_RDONLY);
-  if(fdin < 0){
+  holder = yyin = fopen(filename, "r");
+  if(yyin == NULL){
     log(F, "Unnable to open file %s for reading\n", filename);
-    exit(-1);
-  }
-
-  fstat(fdin, &st);
-  address = mmap(0, st.st_size + 2, PROT_READ | PROT_WRITE, MAP_PRIVATE, fdin, 0);
-  if(address == (caddr_t) -1){
-    log(F, "Could not map file into memory.\n");
-    exit(-1);
-  }
-
-  close(fdin);
-
-  address[st.st_size] = '\0';
-  address[st.st_size + 1] = '\0';
-
-  bs = (struct yy_buffer_state*) yy_scan_buffer(address, st.st_size + 2);
-  if(bs == NULL){
-    log(F, "flex could not allocate a new buffer to parse the file.\n");
     exit(-1);
   }
   yylineno = 1;
   yyparse();
   yylex_destroy();
-  if(munmap(address, st.st_size + 2) == -1)
-    log(W, "munmap failed.");
+  fclose(holder);
 }
 
 void parse_string(const char* str){

@@ -292,7 +292,7 @@ void* get_element_at(const list* l, int32_t pos){
   return get_element_and_type_at(l, pos, &type);
 }
 
-int get_element_pos(list* l, void* el){
+int get_element_pos(const list* l, void* el){
     int i;
     if(l == NULL) return -1;
 
@@ -451,12 +451,12 @@ list* exclude_list_from_list(const list* l1, const list* l2){
     if(l2 == NULL || l2->count == 0) return NULL;
     if(l1 == NULL || l1->count == 0) return duplicate_generic_list(l2);
 
-    int i;
+    int32_t i;
 
     list* r = new_generic_list(l2->capacity + l1->capacity);
 
-    int pos;
-    int type;
+    int32_t pos;
+    int16_t type;
     void* obj;
 
     for(i = 0; i < l2->count; i++){

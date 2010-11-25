@@ -1,9 +1,10 @@
-/* A Bison parser, made by GNU Bison 2.4.2.  */
+
+/* A Bison parser, made by GNU Bison 2.4.1.  */
 
 /* Skeleton implementation for Bison's Yacc-like parsers in C
    
-      Copyright (C) 1984, 1989-1990, 2000-2006, 2009-2010 Free Software
-   Foundation, Inc.
+      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
+   Free Software Foundation, Inc.
    
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -45,7 +46,7 @@
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "2.4.2"
+#define YYBISON_VERSION "2.4.1"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -141,7 +142,7 @@ void parse_string(const char* str){
 
 
 /* Line 189 of yacc.c  */
-#line 145 "y.tab.c"
+#line 146 "y.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -253,7 +254,7 @@ typedef union YYSTYPE
 
 
 /* Line 214 of yacc.c  */
-#line 257 "y.tab.c"
+#line 258 "y.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -265,7 +266,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 269 "y.tab.c"
+#line 270 "y.tab.c"
 
 #ifdef short
 # undef short
@@ -315,7 +316,7 @@ typedef short int yytype_int16;
 #define YYSIZE_MAXIMUM ((YYSIZE_T) -1)
 
 #ifndef YY_
-# if defined YYENABLE_NLS && YYENABLE_NLS
+# if YYENABLE_NLS
 #  if ENABLE_NLS
 #   include <libintl.h> /* INFRINGES ON USER NAME SPACE */
 #   define YY_(msgid) dgettext ("bison-runtime", msgid)
@@ -768,18 +769,9 @@ static const yytype_uint8 yystos[] =
 
 /* Like YYERROR except do call yyerror.  This remains here temporarily
    to ease the transition to the new meaning of YYERROR, for GCC.
-   Once GCC version 2 has supplanted version 1, this can go.  However,
-   YYFAIL appears to be in use.  Nevertheless, it is formally deprecated
-   in Bison 2.4.2's NEWS entry, where a plan to phase it out is
-   discussed.  */
+   Once GCC version 2 has supplanted version 1, this can go.  */
 
 #define YYFAIL		goto yyerrlab
-#if defined YYFAIL
-  /* This is here to suppress warnings from the GCC cpp's
-     -Wunused-macros.  Normally we don't worry about that warning, but
-     some users do, and we want to make it easy for users to remove
-     YYFAIL uses, which will produce warnings from Bison 2.5.  */
-#endif
 
 #define YYRECOVERING()  (!!yyerrstatus)
 
@@ -836,7 +828,7 @@ while (YYID (0))
    we won't break user code: when these are the locations we know.  */
 
 #ifndef YY_LOCATION_PRINT
-# if defined YYLTYPE_IS_TRIVIAL && YYLTYPE_IS_TRIVIAL
+# if YYLTYPE_IS_TRIVIAL
 #  define YY_LOCATION_PRINT(File, Loc)			\
      fprintf (File, "%d.%d-%d.%d",			\
 	      (Loc).first_line, (Loc).first_column,	\
@@ -1575,28 +1567,28 @@ yyreduce:
     {
         case 4:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 110 "parser.y"
     {lxq_document = new_document(NULL); set_doc_root(lxq_document, (yyvsp[(1) - (1)].dn));}
     break;
 
   case 5:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 111 "parser.y"
     {lxq_document = new_document((yyvsp[(1) - (2)].dn)); set_doc_root(lxq_document, (yyvsp[(2) - (2)].dn));}
     break;
 
   case 6:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 114 "parser.y"
     { (yyval.dn) = new_element_node((yyvsp[(1) - (1)].string));}
     break;
 
   case 7:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 115 "parser.y"
     { (yyval.dn) = new_element_node((yyvsp[(3) - (3)].string)); 
                                                               char* old = set_namespace((yyval.dn), (yyvsp[(1) - (3)].string));
@@ -1607,7 +1599,7 @@ yyreduce:
 
   case 8:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 122 "parser.y"
     {
                                                               if(strcmp(get_name((yyvsp[(3) - (6)].dn)), "xml") != 0){
@@ -1627,7 +1619,7 @@ yyreduce:
 
   case 9:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 138 "parser.y"
     {
                                                               if(strcmp(get_name((yyvsp[(1) - (3)].dn)),get_name((yyvsp[(3) - (3)].dn))) != 0)
@@ -1650,7 +1642,7 @@ yyreduce:
 
   case 10:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 155 "parser.y"
     { (yyval.dn) = (yyvsp[(3) - (5)].dn);
                                                               char* old = set_name((yyval.dn), get_name((yyvsp[(2) - (5)].dn)));
@@ -1665,14 +1657,14 @@ yyreduce:
 
   case 11:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 166 "parser.y"
     { (yyval.dn) = new_element_node("");}
     break;
 
   case 12:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 167 "parser.y"
     { (yyval.dn) = (yyvsp[(1) - (2)].dn);
                                                               append_child((yyval.dn), (yyvsp[(2) - (2)].dn));
@@ -1681,28 +1673,28 @@ yyreduce:
 
   case 13:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 172 "parser.y"
     {(yyval.dn) = new_cdata((yyvsp[(1) - (1)].string));}
     break;
 
   case 14:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 173 "parser.y"
     {(yyval.dn) = new_text_node((yyvsp[(1) - (1)].string)); }
     break;
 
   case 15:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 174 "parser.y"
     {(yyval.dn) = (yyvsp[(1) - (1)].dn);}
     break;
 
   case 16:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 178 "parser.y"
     { (yyval.dn) = (yyvsp[(3) - (4)].dn);
                                                               char* old = set_name((yyval.dn), get_name((yyvsp[(2) - (4)].dn)));
@@ -1717,21 +1709,21 @@ yyreduce:
 
   case 17:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 189 "parser.y"
     { (yyval.dn) = (yyvsp[(3) - (4)].dn);}
     break;
 
   case 18:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 192 "parser.y"
     { (yyval.dn) = new_element_node(""); }
     break;
 
   case 19:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 193 "parser.y"
     {
                                                               (yyval.dn) = (yyvsp[(1) - (2)].dn);
@@ -1741,7 +1733,7 @@ yyreduce:
 
   case 20:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 199 "parser.y"
     {(yyval.dn) = new_attribute(get_name((yyvsp[(1) - (3)].dn)), (yyvsp[(3) - (3)].string)); 
                                                              char* old = set_namespace((yyval.dn), get_namespace((yyvsp[(1) - (3)].dn))); 
@@ -1752,28 +1744,28 @@ yyreduce:
 
   case 21:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 207 "parser.y"
     {(yyval.string) = (yyvsp[(2) - (3)].string);}
     break;
 
   case 22:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 208 "parser.y"
     {(yyval.string) = "";}
     break;
 
   case 23:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 212 "parser.y"
     { lxq_selected_elements = (yyval.q) = new_queue(16); enqueue_with_type((yyval.q), (yyvsp[(1) - (1)].sel), LXQ_SELECTOR_TYPE); }
     break;
 
   case 24:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 213 "parser.y"
     { int* a = alloc(int, 1);
                                                               *a = (yyvsp[(2) - (3)].token);
@@ -1785,280 +1777,280 @@ yyreduce:
 
   case 25:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 221 "parser.y"
     { (yyval.sel) = new_selector((yyvsp[(1) - (3)].string)); (yyval.sel)->attrs = (yyvsp[(2) - (3)].q); (yyval.sel)->filters = (yyvsp[(3) - (3)].q); }
     break;
 
   case 26:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 224 "parser.y"
     { (yyval.q) = new_stack(4); }
     break;
 
   case 27:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 225 "parser.y"
     { (yyval.q) = (yyvsp[(1) - (4)].q); push_stack((yyval.q), (yyvsp[(3) - (4)].attrselector)); }
     break;
 
   case 28:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 226 "parser.y"
     { (yyval.q) = (yyvsp[(1) - (3)].q); push_stack((yyval.q), new_attr_value_selector(lxq_parser_dot_query_operator, EQUAL_OP, (yyvsp[(3) - (3)].string))); }
     break;
 
   case 29:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 227 "parser.y"
     { (yyval.q) = (yyvsp[(1) - (3)].q); push_stack((yyval.q), new_attr_value_selector(lxq_parser_pound_query_operator, EQUAL_OP, (yyvsp[(3) - (3)].string))); }
     break;
 
   case 30:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 230 "parser.y"
     { (yyval.attrselector) = (yyvsp[(2) - (2)].attrselector); (yyval.attrselector)->name = strdup((yyvsp[(1) - (2)].string)); }
     break;
 
   case 31:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 233 "parser.y"
     { (yyval.string) = NULL; }
     break;
 
   case 32:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 234 "parser.y"
     { (yyval.string) = NULL; }
     break;
 
   case 33:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 235 "parser.y"
     { (yyval.string) = (yyvsp[(1) - (1)].string);}
     break;
 
   case 34:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 238 "parser.y"
     { (yyval.q) = new_stack(4); }
     break;
 
   case 35:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 239 "parser.y"
     { push_stack((yyval.q), (yyvsp[(3) - (3)].fa)); }
     break;
 
   case 36:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 242 "parser.y"
     { (yyval.fa) = new_filter((yyvsp[(1) - (1)].token)); }
     break;
 
   case 37:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 243 "parser.y"
     { (yyval.fa) = new_filter((yyvsp[(1) - (4)].token)); (yyval.fa)->value.s = (yyvsp[(3) - (4)].s); }
     break;
 
   case 38:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 244 "parser.y"
     { (yyval.fa) = new_filter(NOT_FILTER); (yyval.fa)->value.selector = (yyvsp[(3) - (4)].q); }
     break;
 
   case 39:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 247 "parser.y"
     { (yyval.token) = NTH_CHILD_FILTER; }
     break;
 
   case 40:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 248 "parser.y"
     { (yyval.token) = NTH_LAST_CHILD_FILTER; }
     break;
 
   case 41:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 251 "parser.y"
     { (yyval.token) = FIRST_CHILD_FILTER; }
     break;
 
   case 42:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 252 "parser.y"
     { (yyval.token) = LAST_CHILD_FILTER; }
     break;
 
   case 43:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 253 "parser.y"
     { (yyval.token) = ONLY_CHILD_FILTER; }
     break;
 
   case 44:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 254 "parser.y"
     { (yyval.token) = EMPTY_FILTER; }
     break;
 
   case 45:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 257 "parser.y"
     { (yyval.s) = (yyvsp[(1) - (1)].s); }
     break;
 
   case 46:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 258 "parser.y"
     { (yyval.s) = alloc(struct step_s, 1); (yyval.s)->multiplier = 0; (yyval.s)->offset = (yyvsp[(1) - (1)].digits);}
     break;
 
   case 47:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 259 "parser.y"
     { (yyval.s) = alloc(struct step_s, 1); (yyval.s)->multiplier = 2; (yyval.s)->offset = 0; }
     break;
 
   case 48:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 260 "parser.y"
     { (yyval.s) = alloc(struct step_s, 1); (yyval.s)->multiplier = 2; (yyval.s)->offset = 1; }
     break;
 
   case 49:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 263 "parser.y"
     { (yyval.s) = alloc(struct step_s, 1); (yyval.s)->multiplier = 1; (yyval.s)->offset = 0; }
     break;
 
   case 50:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 264 "parser.y"
     { (yyval.s) = alloc(struct step_s, 1); (yyval.s)->multiplier = (yyvsp[(1) - (2)].digits); (yyval.s)->offset = 0; }
     break;
 
   case 51:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 265 "parser.y"
     { (yyval.s) = alloc(struct step_s, 1); (yyval.s)->multiplier = 1; (yyval.s)->offset = (yyvsp[(2) - (2)].digits); }
     break;
 
   case 52:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 266 "parser.y"
     { (yyval.s) = alloc(struct step_s, 1); (yyval.s)->multiplier = (yyvsp[(1) - (3)].digits); (yyval.s)->offset = (yyvsp[(3) - (3)].digits); }
     break;
 
   case 53:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 269 "parser.y"
     { (yyval.digits) = (yyvsp[(2) - (2)].digits); }
     break;
 
   case 54:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 270 "parser.y"
     { (yyval.digits) = -(yyvsp[(2) - (2)].digits); }
     break;
 
   case 55:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 271 "parser.y"
     { (yyval.digits) = (yyvsp[(1) - (1)].digits); }
     break;
 
   case 56:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 274 "parser.y"
     { (yyval.token) = '>'; }
     break;
 
   case 57:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 275 "parser.y"
     { (yyval.token) = '~'; }
     break;
 
   case 58:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 276 "parser.y"
     { (yyval.token) = '+'; }
     break;
 
   case 59:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 277 "parser.y"
     { (yyval.token) = ','; }
     break;
 
   case 60:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 278 "parser.y"
     { (yyval.token) = SPACE; }
     break;
 
   case 61:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 281 "parser.y"
     { (yyval.attrselector) = new_attr_value_selector(NULL, NO_OP, NULL); }
     break;
 
   case 62:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 282 "parser.y"
     { (yyval.attrselector) = new_attr_value_selector(NULL, (yyvsp[(1) - (4)].token), (yyvsp[(3) - (4)].string)); }
     break;
 
   case 63:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 283 "parser.y"
     { (yyval.attrselector) = new_attr_value_selector(NULL, (yyvsp[(1) - (4)].token), (yyvsp[(3) - (4)].string)); }
     break;
 
   case 64:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 284 "parser.y"
     {
                                                                 char* text = (char*)pop_stack((yyvsp[(3) - (5)].q));
@@ -2074,85 +2066,85 @@ yyreduce:
 
   case 65:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 296 "parser.y"
     { (yyval.q) = new_stack(4); push_stack((yyval.q), (yyvsp[(1) - (1)].string)); }
     break;
 
   case 66:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 297 "parser.y"
     { (yyval.q) = (yyvsp[(1) - (2)].q); push_stack((yyval.q), (yyvsp[(2) - (2)].string)); }
     break;
 
   case 67:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 300 "parser.y"
     { (yyval.token) = REGEX_OP; }
     break;
 
   case 68:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 301 "parser.y"
     { (yyval.token) = REGEXI_OP; }
     break;
 
   case 69:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 304 "parser.y"
     { (yyval.token) = EQUAL_OP; }
     break;
 
   case 70:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 305 "parser.y"
     { (yyval.token) = WSSV_OP; }
     break;
 
   case 71:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 306 "parser.y"
     { (yyval.token) = STARTSW_OP; }
     break;
 
   case 72:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 307 "parser.y"
     { (yyval.token) = ENDSW_OP; }
     break;
 
   case 73:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 308 "parser.y"
     { (yyval.token) = CONTAINS_OP; }
     break;
 
   case 74:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 309 "parser.y"
     { (yyval.token) = DSV_OP; }
     break;
 
   case 75:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 310 "parser.y"
     { (yyval.token) = NOTEQUAL_OP; }
     break;
 
 
 
-/* Line 1464 of yacc.c  */
-#line 2156 "y.tab.c"
+/* Line 1455 of yacc.c  */
+#line 2148 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);

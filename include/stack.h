@@ -49,7 +49,7 @@ extern void add_element(list* l, void* obj);
 extern void* get_element_at(const list* l, int32_t pos);
 extern void* get_element_and_type_at(const list* l, int32_t pos, int16_t* type);
 
-extern int get_element_pos(list* l, void* el);
+extern int get_element_pos(const list* l, void* el);
 
 extern int32_t remove_element(list *l, void* obj);
 extern int32_t remove_all(list *l, void* obj);

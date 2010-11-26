@@ -92,6 +92,7 @@ int lxq_parser_last_state;
 
 <REGEX_BLOCK>[^/\\]*                                        { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string);printf("regex:'%s'\n", yytext);  return REGEX; }
 <REGEX_BLOCK>\\[^/]                                         { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string);printf("escaped character:'%s'\n", yytext);  return REGEX; }
+<REGEX_BLOCK>"/i"                                           { BEGIN QUERY_INITIAL; return END_REGEXI; }
 <REGEX_BLOCK>"/"                                            { BEGIN QUERY_INITIAL; return '/'; }
 <REGEX_BLOCK>\\\/                                           { yylval.string = "/"; printf("escaped slash: '%s'\n", yytext); return REGEX; }
 

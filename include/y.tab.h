@@ -1,9 +1,10 @@
-/* A Bison parser, made by GNU Bison 2.4.2.  */
+
+/* A Bison parser, made by GNU Bison 2.4.1.  */
 
 /* Skeleton interface for Bison's Yacc-like parsers in C
    
-      Copyright (C) 1984, 1989-1990, 2000-2006, 2009-2010 Free Software
-   Foundation, Inc.
+      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
+   Free Software Foundation, Inc.
    
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -47,26 +48,27 @@
      REGEX = 264,
      ALL = 265,
      SPACE = 266,
-     NO_OP = 267,
-     EQUAL_OP = 268,
-     WSSV_OP = 269,
-     STARTSW_OP = 270,
-     ENDSW_OP = 271,
-     CONTAINS_OP = 272,
-     REGEX_OP = 273,
-     REGEXI_OP = 274,
-     DSV_OP = 275,
-     NOTEQUAL_OP = 276,
-     EVEN = 277,
-     ODD = 278,
-     NTH_CHILD_FILTER = 279,
-     NTH_LAST_CHILD_FILTER = 280,
-     FIRST_CHILD_FILTER = 281,
-     LAST_CHILD_FILTER = 282,
-     ONLY_CHILD_FILTER = 283,
-     EMPTY_FILTER = 284,
-     NOT_FILTER = 285,
-     DIGITS = 286
+     END_REGEXI = 267,
+     NO_OP = 268,
+     EQUAL_OP = 269,
+     WSSV_OP = 270,
+     STARTSW_OP = 271,
+     ENDSW_OP = 272,
+     CONTAINS_OP = 273,
+     REGEX_OP = 274,
+     REGEXI_OP = 275,
+     DSV_OP = 276,
+     NOTEQUAL_OP = 277,
+     EVEN = 278,
+     ODD = 279,
+     NTH_CHILD_FILTER = 280,
+     NTH_LAST_CHILD_FILTER = 281,
+     FIRST_CHILD_FILTER = 282,
+     LAST_CHILD_FILTER = 283,
+     ONLY_CHILD_FILTER = 284,
+     EMPTY_FILTER = 285,
+     NOT_FILTER = 286,
+     DIGITS = 287
    };
 #endif
 /* Tokens.  */
@@ -79,26 +81,27 @@
 #define REGEX 264
 #define ALL 265
 #define SPACE 266
-#define NO_OP 267
-#define EQUAL_OP 268
-#define WSSV_OP 269
-#define STARTSW_OP 270
-#define ENDSW_OP 271
-#define CONTAINS_OP 272
-#define REGEX_OP 273
-#define REGEXI_OP 274
-#define DSV_OP 275
-#define NOTEQUAL_OP 276
-#define EVEN 277
-#define ODD 278
-#define NTH_CHILD_FILTER 279
-#define NTH_LAST_CHILD_FILTER 280
-#define FIRST_CHILD_FILTER 281
-#define LAST_CHILD_FILTER 282
-#define ONLY_CHILD_FILTER 283
-#define EMPTY_FILTER 284
-#define NOT_FILTER 285
-#define DIGITS 286
+#define END_REGEXI 267
+#define NO_OP 268
+#define EQUAL_OP 269
+#define WSSV_OP 270
+#define STARTSW_OP 271
+#define ENDSW_OP 272
+#define CONTAINS_OP 273
+#define REGEX_OP 274
+#define REGEXI_OP 275
+#define DSV_OP 276
+#define NOTEQUAL_OP 277
+#define EVEN 278
+#define ODD 279
+#define NTH_CHILD_FILTER 280
+#define NTH_LAST_CHILD_FILTER 281
+#define FIRST_CHILD_FILTER 282
+#define LAST_CHILD_FILTER 283
+#define ONLY_CHILD_FILTER 284
+#define EMPTY_FILTER 285
+#define NOT_FILTER 286
+#define DIGITS 287
 
 
 
@@ -107,7 +110,7 @@
 typedef union YYSTYPE
 {
 
-/* Line 1685 of yacc.c  */
+/* Line 1676 of yacc.c  */
 #line 73 "parser.y"
 
   char * string;
@@ -122,8 +125,8 @@ typedef union YYSTYPE
  
 
 
-/* Line 1685 of yacc.c  */
-#line 127 "y.tab.h"
+/* Line 1676 of yacc.c  */
+#line 130 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

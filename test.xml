@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <domobus>
   <rooms>
-    <room name="r1" name="r21">
+    <room name="r21" class="a b c">
       <devices>
         <device type="switch" state="on"/>
         <device type="blind" state="87" />
@@ -34,3 +34,4 @@
 20101101235534::on->off]]>
   </debug_output>
 </domobus>
+

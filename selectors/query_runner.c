@@ -6,6 +6,8 @@
 #include "../include/dom_parser.h"
 #include "../include/y.tab.h"
 #include "../include/query_parser.h"
+#include "../include/eregex.h"
+#include "../include/byte_buffer.h"
 
 list* run_query(queue* query, const list* all_nodes);
 
@@ -149,7 +151,7 @@ list* filter_nodes_by_name(const list* nodes, char* name){
 
 list* filter_nodes_by_attr(const list* nodes, attr_selector* attr_s){
     int i;
-
+    byte_buffer* bb;
     if(nodes == NULL) return NULL;
     if(nodes->count == 0) return NULL;
 
@@ -165,11 +167,79 @@ list* filter_nodes_by_attr(const list* nodes, attr_selector* attr_s){
                 add_element(r, n);
             }
             break;
+        case NOTEQUAL_OP:
+            if(strcmp(attr->value, attr_s->value)){
+                add_element(r, n);
+            }
+            break;
         case NO_OP:
-	  add_element(r, n);
-	  break;
+	        add_element(r, n);
+	        break;
+        case CONTAINS_OP:
+        case REGEX_OP:
+            if(match(attr->value, attr_s->value, 0)) add_element(r, n);
+            break;
+        case REGEXI_OP:
+            if(match(attr->value, attr_s->value, 1)) add_element(r, n);
+            break;
+        case STARTSW_OP:
+            bb = new_byte_buffer(strlen(attr_s->value)+2);
+            append_string_to_buffer("^", bb);
+            append_string_to_buffer(attr_s->value, bb);
+            append_bytes_to_buffer("\0", bb, 1);
+            if(match(attr->value, bb->buffer, 0)) add_element(r, n);
+            break;
+        case ENDSW_OP:
+            bb = new_byte_buffer(strlen(attr_s->value)+2);
+            append_string_to_buffer(attr_s->value, bb);
+            append_string_to_buffer("$", bb);
+            append_bytes_to_buffer("\0", bb, 1);
+            if(match(attr->value, bb->buffer, 0)) add_element(r, n);
+            break;
+        case WSSV_OP:
+            bb = new_byte_buffer((strlen(attr_s->value)+5)*4);
+            append_string_to_buffer("(^", bb);
+            append_string_to_buffer(attr_s->value, bb);
+            append_string_to_buffer("$)|", bb);
+
+            append_string_to_buffer("(^", bb);
+            append_string_to_buffer(attr_s->value, bb);
+            append_string_to_buffer(" )|", bb);
+
+            append_string_to_buffer("( ", bb);
+            append_string_to_buffer(attr_s->value, bb);
+            append_string_to_buffer("$)|", bb);
+
+            append_string_to_buffer("( ", bb);
+            append_string_to_buffer(attr_s->value, bb);
+            append_string_to_buffer(" )", bb);
+
+            append_bytes_to_buffer("\0", bb, 1);
+            if(match(attr->value, bb->buffer, 0)) add_element(r, n);
+            break;
+        case DSV_OP:
+            bb = new_byte_buffer((strlen(attr_s->value)+5)*4);
+            append_string_to_buffer("(^", bb);
+            append_string_to_buffer(attr_s->value, bb);
+            append_string_to_buffer("$)|", bb);
+
+            append_string_to_buffer("(^", bb);
+            append_string_to_buffer(attr_s->value, bb);
+            append_string_to_buffer("-)|", bb);
+
+            append_string_to_buffer("(-", bb);
+            append_string_to_buffer(attr_s->value, bb);
+            append_string_to_buffer("$)|", bb);
+
+            append_string_to_buffer("(-", bb);
+            append_string_to_buffer(attr_s->value, bb);
+            append_string_to_buffer("-)", bb);
+
+            append_bytes_to_buffer("\0", bb, 1);
+            if(match(attr->value, bb->buffer, 0)) add_element(r, n);
+            break;
         default:
-            log(F, "Regex operators not implemented.\n");
+            log(F, "Special attribute operators not implemented.\n");
         }
     }
 

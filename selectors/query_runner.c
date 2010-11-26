@@ -249,7 +249,7 @@ list* filter_nodes_by_attr(const list* nodes, attr_selector* attr_s){
 list* filter_nodes_by_pseudo_filter(const list* nodes, filter_selector* filter_s, const list* all_nodes){
     int i, m, o, pos;
     dom_node* n;
-    list* siblings;
+    list* siblings = NULL;
     list* children;
 
     if(nodes == NULL) return NULL;
@@ -306,10 +306,10 @@ list* filter_nodes_by_pseudo_filter(const list* nodes, filter_selector* filter_s
             break;
 
         case EMPTY_FILTER:
-            children = get_children(n);
-            children = filter_nodes_by_type(children, ELEMENT);
+            children = filter_nodes_by_type(get_children(n), ELEMENT);
             if(children == NULL || children->count == 0)
                 add_element(r, n);
+	    destroy_generic_list(children);
             break;
         case NOT_FILTER:
             if(get_element_pos(not_nodes, n) < 0) add_element(r, n);
@@ -317,7 +317,11 @@ list* filter_nodes_by_pseudo_filter(const list* nodes, filter_selector* filter_s
         default:
             log(F, "Only simple pseudo filters are implemented.\n");
         }
+
+	destroy_generic_list(siblings);
+	siblings = NULL;
     }
+
 
     return r;
 }

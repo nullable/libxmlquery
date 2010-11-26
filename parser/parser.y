@@ -18,7 +18,7 @@ extern FILE* yyin;
 doc* lxq_document;
 
 char* lxq_parser_dot_query_operator = "class";
-char* lxq_parser_pound_query_operator = "type";
+char* lxq_parser_pound_query_operator = "id";
 list* lxq_selected_elements;
 
 void yyerror(const char *str)
@@ -84,7 +84,7 @@ void parse_string(const char* str){
 
 %token START_EL END_EL SLASH
 %token <string> WORD TEXT CDATA_TOK REGEX
-%token ALL SPACE NO_OP EQUAL_OP WSSV_OP STARTSW_OP ENDSW_OP CONTAINS_OP REGEX_OP REGEXI_OP DSV_OP NOTEQUAL_OP EVEN ODD
+%token ALL SPACE  END_REGEXI NO_OP EQUAL_OP WSSV_OP STARTSW_OP ENDSW_OP CONTAINS_OP REGEX_OP REGEXI_OP DSV_OP NOTEQUAL_OP EVEN ODD
 %token NTH_CHILD_FILTER NTH_LAST_CHILD_FILTER FIRST_CHILD_FILTER LAST_CHILD_FILTER ONLY_CHILD_FILTER EMPTY_FILTER NOT_FILTER
 %type <string> value
 %type <dn> attr node prop inner attrs declaration start_tag end_tag namespace
@@ -93,7 +93,7 @@ void parse_string(const char* str){
 %type <attrselector> attr_filter attrsel;
 %type <s> step parameters;
 %type <digits> offset;
-%type <token> operator pseudo_op nth_pseudo_op relation_operator rmodifier;
+%type <token> operator pseudo_op nth_pseudo_op relation_operator end_regex;
 %type <fa> pseudo_filter;
 %type <string> id;
 %type <q> selector_group pseudo_filters attrsels regex
@@ -112,7 +112,7 @@ document: node                                              {lxq_document = new_
         ;
 
 namespace: WORD                                             { $$ = new_element_node($1);}
-         | WORD ':' WORD                                    { $$ = new_element_node($3); 
+         | WORD ':' WORD                                    { $$ = new_element_node($3);
                                                               char* old = set_namespace($$, $1);
 							      if(old)
 								free(old);
@@ -155,7 +155,7 @@ node: start_tag inner end_tag                               {
     | START_EL namespace attrs SLASH END_EL                 { $$ = $3;
                                                               char* old = set_name($$, get_name($2));
 							      if(old)
-								free(old);							    
+								free(old);
                                                               old = set_namespace($$, get_namespace($2));
 							      if(old)
 								free(old);
@@ -196,8 +196,8 @@ attrs:                                                      { $$ = new_element_n
                                                             }
      ;
 
-attr:  namespace '=' value                                  {$$ = new_attribute(get_name($1), $3); 
-                                                             char* old = set_namespace($$, get_namespace($1)); 
+attr:  namespace '=' value                                  {$$ = new_attribute(get_name($1), $3);
+                                                             char* old = set_namespace($$, get_namespace($1));
 							     if(old)
 							       free(old);
 							     destroy_dom_node($1); }
@@ -223,7 +223,7 @@ selector: id attrsels pseudo_filters                        { $$ = new_selector(
 
 attrsels:                                                   { $$ = new_stack(4); }
         | attrsels '[' attrsel ']'                          { $$ = $1; push_stack($$, $3); }
-        | attrsels '.' WORD                                 { $$ = $1; push_stack($$, new_attr_value_selector(lxq_parser_dot_query_operator, EQUAL_OP, $3)); }
+        | attrsels '.' WORD                                 { $$ = $1; push_stack($$, new_attr_value_selector(lxq_parser_dot_query_operator, WSSV_OP, $3)); }
         | attrsels '#' WORD                                 { $$ = $1; push_stack($$, new_attr_value_selector(lxq_parser_pound_query_operator, EQUAL_OP, $3)); }
         ;
 
@@ -281,14 +281,14 @@ relation_operator: '>'                                      { $$ = '>'; }
 attr_filter:                                                { $$ = new_attr_value_selector(NULL, NO_OP, NULL); }
            | operator '"' TEXT '"'                          { $$ = new_attr_value_selector(NULL, $1, $3); }
            | operator '\'' TEXT '\''                        { $$ = new_attr_value_selector(NULL, $1, $3); }
-           | EQUAL_OP '/' regex '/' rmodifier               {
+           | EQUAL_OP '/' regex end_regex                   {
                                                                 char* text = (char*)pop_stack($3);
                                                                 while($3->count > 0){
                                                                     char* r = (char*)pop_stack($3);
                                                                     text = (char*)realloc(text, strlen(text) + strlen(r) + 1);
                                                                     strcat(text, r);
                                                                 }
-                                                                $$ = new_attr_value_selector(NULL, $5, text);
+                                                                $$ = new_attr_value_selector(NULL, $4, text);
                                                                 destroy_generic_list($3);
                                                             }
            ;
@@ -297,8 +297,8 @@ regex: REGEX                                                { $$ = new_stack(4);
      | regex REGEX                                          { $$ = $1; push_stack($$, $2); }
      ;
 
-rmodifier:                                                  { $$ = REGEX_OP; }
-         | 'i'                                              { $$ = REGEXI_OP; }
+end_regex: '/'                                                 { $$ = REGEX_OP; }
+         | END_REGEXI                                          { $$ = REGEXI_OP; }
          ;
 
 operator: EQUAL_OP                                          { $$ = EQUAL_OP; }

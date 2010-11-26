@@ -8,7 +8,7 @@ The parser module is currently done with the flex lib and yacc. This forced us t
 
 Be aware that the parser is not thread safe and because it uses global variables, xmls and queries have to be parsed one at a time.
 
-Our implementation is divided into 3 files - parser.l, parser.y and dom_parser.c. The parser.l file has all the lexer code. The parser.y defines the yacc grammar and a couple of functions explained in the next section. The dom_parser.c defines two functions which are front ends to the parser and through where all parsing should be done.
+Our implementation is divided into 3 files - parser.l, parser.y and lxq_parser.c. The parser.l file has all the lexer code. The parser.y defines the yacc grammar and a couple of functions explained in the next section. The lxq_parser.c defines two functions which are front ends to the parser and through where all parsing should be done.
 
 If for some reason your program exits without priting any message, you should recompile libxmlquery with ``-DDEBUG``, which may report extra error messages.
 
@@ -39,7 +39,7 @@ Function description
 
      #include <stdio.h>
      #include "serialize.h"
-     #include "dom_parser.h"
+     #include "lxq_parser.h"
 
      int main(){
        doc* document = parse_dom("xml_file.xml");
@@ -74,7 +74,7 @@ Function description
      #include <string.h>
      #include "include/node.h"
      #include "include/serialize.h"
-     #include "include/dom_parser.h"
+     #include "include/lxq_parser.h"
      #include "include/stack.h"
      #include "include/query_runner.h"
 

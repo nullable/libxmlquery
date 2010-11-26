@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include "symbol_table.h"
 #include "command.h"
-#include "../include/dom_parser.h"
+#include "../include/lxq_parser.h"
 #include "../include/node.h"
 #include "../include/serialize.h"
 #include "../include/query_runner.h"

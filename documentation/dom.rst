@@ -292,7 +292,7 @@ Function description
    This function should be used with caution. This frees the space associated with the given dom node, but it also frees all nodes below it. A simple way to clean the dom tree keeping only the document structure is to pass the root node to this function as follows::
 
      #include "node.h"
-     #include "dom_parser.h"   
+     #include "lxq_parser.h"   
    
      int main(){
        doc* document = parse_dom("xml_file.xml");
@@ -305,7 +305,7 @@ Function description
 
    .. code-block:: bash 
 
-     gcc -o test <above_source_file> -I<folder path where node.h and dom_parser.h are kept>
+     gcc -o test <above_source_file> -I<folder path where node.h and lxq_parser.h are kept>
 
 .. c:function:: void destroy_dom_tree(doc* root)
 
@@ -314,7 +314,7 @@ Function description
    This function does exactly the same thing as :c:func:`destroy_dom_node` but it also frees the space associated with the document structure. As an example consider::
 
      #include "node.h"
-     #include "dom_parser.h"   
+     #include "lxq_parser.h"   
    
      int main(){
        doc* document = parse_dom("xml_file.xml");
@@ -326,6 +326,6 @@ Function description
 
    .. code-block:: bash 
 
-     gcc -o test <above_source_file> -I<folder path where node.h and dom_parser.h are kept>
+     gcc -o test <above_source_file> -I<folder path where node.h and lxq_parser.h are kept>
 
    If you use a memory leak checker you'll notice that there are no leaks, so this actually destroys all nodes.

@@ -3,7 +3,7 @@
 #include "../include/query_runner.h"
 #include "../include/stack.h"
 #include "../include/node.h"
-#include "../include/dom_parser.h"
+#include "../include/lxq_parser.h"
 #include "../include/y.tab.h"
 #include "../include/query_parser.h"
 

@@ -2,7 +2,7 @@
 #include <string.h>
 #include "include/node.h"
 #include "include/serialize.h"
-#include "include/dom_parser.h"
+#include "include/lxq_parser.h"
 #include "include/stack.h"
 #include "include/query_runner.h"
 
@@ -25,7 +25,7 @@ int main(int argc, char** argv){
     printf("usage: %s \"xml_file\" \"query\"\n", argv[0]);
       return 0;
   }
-  doc* document = parse_dom(argv[1]);
+  doc* document = parse_xml(argv[1]);
   //bdom* b = serialize_dom_doc(document);
 
   //  dump(b->bb->buffer, 0, b->bb->size);

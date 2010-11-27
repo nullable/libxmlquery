@@ -27,7 +27,7 @@ Function description
 
    This function parses the input string and stores the result in ``lxq_selected_elements``. If you need to parse a query, we stringly recommend that you use :c:func:`parse_query` .
 
-.. c:function:: doc* parse_dom(char* filename)
+.. c:function:: doc* parse_xml(char* filename)
 
    :c:member:`filename` The name of the xml file to be parsed.
 
@@ -42,8 +42,41 @@ Function description
      #include "lxq_parser.h"
 
      int main(){
-       doc* document = parse_dom("xml_file.xml");
-       char* parsed = node_to_string(t, XML);
+       doc* document = parse_xml("xml_file.xml");
+       char* parsed = node_to_string(get_doc_root(document), XML);
+       
+       printf("%s", parsed);
+       free(parsed);
+
+       if(document != NULL)
+         destroy_dom_tree(document);
+
+       return 0;
+     }
+
+   You may compile it with
+
+   .. code-block:: bash 
+
+     gcc -o test <above_source_file> -I<folder path where our header files are kept>
+
+.. c:function:: doc* parse_xml_from_string(char* xmlstring)
+
+   :c:member:`xmlstring` The the xml string to be parsed.
+
+   This function parses an xml string, copying the result from :c:func:`parse_string` to another location so you can parse as many xml strings as possible. If an error occurs, this function returns NULL.
+
+   The following example shows how to use this function to parse an xml string.
+
+   Example::
+
+     #include <stdio.h>
+     #include "serialize.h"
+     #include "lxq_parser.h"
+
+     int main(){
+       doc* document = parse_xml_from_string("<root> <someelement with=\"someattribute\" /> </root>");
+       char* parsed = node_to_string(get_doc_root(document), XML);
        
        printf("%s", parsed);
        free(parsed);

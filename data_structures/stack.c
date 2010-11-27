@@ -140,8 +140,7 @@ void insert_element_at(list* l, void* obj, int32_t pos){
   insert_element_with_type_at(l, obj, -1, pos);
 }
 
-#include "../include/huffman.h"
-void sorted_insert_element_with_type_at(list* l, void* obj, int16_t type, int(*compare)(void* o1, int16_t type1, void* o2, int16_t type2)){
+void sorted_insert_element_with_type(list* l, void* obj, int16_t type, int(*compare)(void* o1, int16_t type1, void* o2, int16_t type2)){
     int32_t i;
     int16_t type_v;
 

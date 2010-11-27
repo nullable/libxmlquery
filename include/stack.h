@@ -28,7 +28,6 @@ extern uint8_t generic_list_is_empty(struct generic_list_s* l);
 extern int32_t generic_list_get_count(struct generic_list_s* l);
 
 extern struct generic_list_s *new_generic_list(int32_t initial);
-extern list* new_generic_list(int32_t initial);
 extern stack* new_stack(int32_t initial);
 extern queue* new_queue(int32_t initial);
 
@@ -38,7 +37,7 @@ extern void* set_element_at(list *l, void* obj, int32_t pos);
 extern void insert_element_with_type_at(list* l, void* obj, int16_t type, int32_t pos);
 extern void insert_element_at(list* l, void* obj, int32_t pos);
 
-extern void sorted_insert_element_with_type_at(list* l, void* obj, int16_t type, int(*compare)(void* o1, int16_t type1, void* o2, int16_t type2));
+extern void sorted_insert_element_with_type(list* l, void* obj, int16_t type, int(*compare)(void* o1, int16_t type1, void* o2, int16_t type2));
 
 extern void append_element(list* l, void* obj, int16_t type);
 extern void prepend_element(list* l, void* obj, int16_t type);

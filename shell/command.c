@@ -138,7 +138,7 @@ COMMAND_FUNCTION_HEADER(load){
   doc* document;
   
   filename = argp[0];
-  document = parse_dom(filename);
+  document = parse_xml(filename);
   id = argp[1];
   set_symbol(id, document, destroy_dom_symbol);
 

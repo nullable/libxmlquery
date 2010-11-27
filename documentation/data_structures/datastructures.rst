@@ -100,7 +100,7 @@ Function description
 
 .. c:function:: void insert_element_with_type_at(list* l, void* obj, int16_t type, int32_t pos)
 
-   :c:member:`l` List where to set the element.
+   :c:member:`l` List where to insert the element.
 
    :c:member:`obj` New element to store in the list.
 
@@ -112,7 +112,7 @@ Function description
 
 .. c:function:: void insert_element_at(list* l, void* obj, int32_t pos)
 
-   :c:member:`l` List where to set the element.
+   :c:member:`l` List where to insert the element.
 
    :c:member:`obj` New element to store in the list.
 
@@ -122,45 +122,265 @@ Function description
    
 .. c:function:: void sorted_insert_element_with_type(list* l, void* obj, int16_t type, int(*compare)(void* o1, int16_t type1, void* o2, int16_t type2))
 
+   :c:member:`l` List where to insert the element.
+
+   :c:member:`obj` New element to store in the list.
+
+   :c:member:`type` The type of the new element.
+
+   :c:member:`compare` A function pointer to a function that compares elements in the list.
+
+   This function inserts an element into a list in sorted order, according to the function pointer passed as an argument.
+
 .. c:function:: void append_element(list* l, void* obj, int16_t type)
+
+   :c:member:`l` List where to append the element.
+
+   :c:member:`obj` New element to store in the list.
+
+   :c:member:`type` The type of the new element.
+
+   This function inserts an element at the end of the list.
+
 .. c:function:: void prepend_element(list* l, void* obj, int16_t type)
 
+   :c:member:`l` List where to prepend the element.
+
+   :c:member:`obj` New element to store in the list.
+
+   :c:member:`type` The type of the new element.
+
+   This function inserts an element at the beginning of the list.
+
 .. c:function:: void add_element_with_type(list* l, void* obj, int16_t type)
+
+   :c:member:`l` List where to add the element.
+
+   :c:member:`obj` New element to store in the list.
+
+   :c:member:`type` The type of the new element.
+
+   This function adds an element to a list. It differs from :c:func:`prepend_element` and :c:func:`append_element` in the sense that the user doesn't need to know
+   Where the element will be added.
+
 .. c:function:: void add_element(list* l, void* obj)
 
+   :c:member:`l` List where to add the element.
+
+   :c:member:`obj` New element to store in the list.
+
+   This function is exactly the same as :c:func:`add_element_with_type`, but without the type feature.
+
 .. c:function:: void* get_element_at(const list* l, int32_t pos)
+
+   :c:member:`l` List from where to get the element.
+
+   :c:member:`pos` The element's position.
+
+   This function returns the element stored at the given position.
+
 .. c:function:: void* get_element_and_type_at(const list* l, int32_t pos, int16_t* type)
+
+   :c:member:`l` List from where to get the element.
+
+   :c:member:`pos` The element's position.
+
+   :c:member:`type` An address to store the elements type.
+
+   This function does the same as :c:func:`get_element_at`, but it also returns the element's type. This is stored in a location passed as the third argument
+   to this function.
 
 .. c:function:: int get_element_pos(const list* l, void* el)
 
+   :c:member:`l` List from where to get the element's position.
+
+   :c:member:`el` The element to look for in the list.
+
+   This function returns the position of the element passed as an argument. If no element is found, then -1 is returned.
+
 .. c:function:: int32_t remove_element(list *l, void* obj)
+
+   :c:member:`l` List from where to remove the element.
+
+   :c:member:`obj` The element to be removed.
+
+   This function removes the first occurrence of a given element from a list. If the element doesn't exist then nothing will happen.
+
 .. c:function:: int32_t remove_all(list *l, void* obj)
+
+   :c:member:`l` List from where to remove the element.
+
+   :c:member:`obj` The element to be removed.
+
+   This function removes all occurrences of a given element from a list. If no element is found then nothing will happen.
+
 .. c:function:: void* remove_element_at(list* l, int32_t pos)
 
+   :c:member:`l` List from where to remove the element.
+
+   :c:member:`pos` Position of the element to be removed.
+
+   This function removes the element at a given position from a list.
+
 .. c:function:: void enqueue_with_type(queue* q, void* obj, int16_t type)
+
+   :c:member:`q` Queue where to enqueue the element.
+
+   :c:member:`obj` Element to enqueue.
+
+   :c:member:`type` The type of the element being enqueued.
+
+   This function enqueues an element with a given type in a given queue.
+
 .. c:function:: void enqueue(queue* q, void* obj)
+
+   :c:member:`q` Queue where to enqueue the element.
+
+   :c:member:`obj` Element to enqueue.
+
+   This function is the same as :c:func:`enqueue_with_type`, but without the type feature.
+
 .. c:function:: void* dequeue(queue* q)
 
+   :c:member:`q` Queue from where to dequeue an element.
+
+   This function dequeues an element from a given queue. If no element is present, then NULL is returned.
+
 .. c:function:: void push_stack_type(stack* s, void* obj, int16_t type)
+
+   :c:member:`s` Stack where to push the element.
+
+   :c:member:`obj` Element to push onto the stack.
+
+   :c:member:`type` The type of the element being push.
+
+   This function pushes an element with a given type onto a given stack.
+
 .. c:function:: void push_stack(stack* s, void* obj)
+
+   :c:member:`s` Stack where to push the element.
+
+   :c:member:`obj` Element to push onto the stack.
+
+   This function is the same as :c:func:`push_stack_type`, but without the type feature.
+
 .. c:function:: void* pop_stack(stack* s)
 
-.. c:function:: void reverse(struct generic_list_s *s)
+   :c:member:`s` Stack from where to pop an element.
+
+   This function pops an element from a given stack. If no element is present, NULL is returned.
+
 .. c:function:: list* remove_duplicates(list* l)
 
+   :c:member:`l` List from where to remove duplicate elements.
+
+   This function removes duplicate values based on their memory address.
+
 .. c:function:: int16_t peek_element_type_at(list* l, int32_t pos)
+
+   :c:member:`l` List from where to peek an element's type.
+
+   :c:member:`pos` The element's position in the list.
+
+   This function lets you see which type the element at a given position has. If no element is in that position the program will exit.
+
 .. c:function:: int16_t peek_stack_type(stack *s)
+
+   :c:member:`s` Stack from where to peek the element's type.
+
+   This function is the same as :c:func:`peek_element_type_at`, but it applies only to stacks. This means that it will only check the element at the head of the stack.
+
 .. c:function:: int16_t peek_queue_type(queue *s)
+
+   :c:member:`s` Queue from where to peek the element's type.
+
+   This function is the same as :c:func:`peek_stack_type`. However, it applies only to queues.
 
 .. c:function:: struct generic_list_s *merge_lists(struct generic_list_s *l1, struct generic_list_s *l2)
 
+   :c:member:`l1` Any list.
+
+   :c:member:`l2` Any list.
+
+   This function merges two list onto a single one. The list l2 will be append to l1. Beware that the input lists will be destroyed. The merged list is returned. If
+   both lists are NULL, then NULL is returned.
+
 .. c:function:: struct generic_list_s *duplicate_generic_list(const struct generic_list_s*)
+
+   :c:member:`s` List to be duplicated.
+
+   This function allocates and fills a new list with the same values as the given list. Only the buckets are duplicated, the elements on the list stay exactly the same.
+
 .. c:function:: void destroy_generic_list(struct generic_list_s *s)
 
-.. c:function:: generic_list_iterator* new_generic_list_iterator(struct generic_list_s*)
+   :c:member:`s` List to be destroyed
+
+   This function destroys a given list. Only the buckets get destroyed, the elements must be detroyed by the user.
+
+   Example::
+
+     #include <stdlib.h>
+     #include <stdio.h>
+     #include "stack.h"
+
+     int main(){
+        list* l = new_generic_list(2);
+	int *a, *b;
+
+	a = (int*) malloc(sizeof(int));
+	b = (int*) malloc(sizeof(int));
+	if(!a || !b){
+	  printf("malloc failed\n");
+	  return -1;
+	}
+	
+	*a = 9;
+	*b = 7;
+
+	append_element(l, a, 0);
+	append_element(l, b, 0);
+
+	generic_list_iterator* it = new_generic_list_iterator(l);
+	while(generic_list_iterator_has_next(it)){
+	  int *c = (int*) generic_list_iterator_next(it);
+	  free(c);
+	}
+	destroy_generic_list_iterator(it);
+	
+	destroy_generic_list(l);
+
+	return 0;
+     }
+
+   You may compile it with
+
+   .. code-block:: bash 
+
+     gcc -o test <above_source_file> -I<folder path where stack.h is kept>
+
+.. c:function:: generic_list_iterator* new_generic_list_iterator(struct generic_list_s* s)
+
+   :c:member:`s` List to be iterated.
+
+   This function creates an iterator for the given list.
+
 .. c:function:: uint8_t generic_list_iterator_has_next(generic_list_iterator* i)
+
+   :c:member:`i` A list iterator.
+
+   This function checks if there are elements still to be iterated. If not 0 is returned, otherwise a value different from 0 is returned.
+
 .. c:function:: void* generic_list_iterator_next(generic_list_iterator* i)
+
+   :c:member:`i` A list iterator
+
+   This function returns an element from the list and advances the iterator to the next position.
+
 .. c:function:: void destroy_generic_list_iterator(generic_list_iterator* i)
+
+   :c:member:`i` A list iterator
+
+   This function frees a list iterator.
 
 Generic Red Black Tree
 ----------------------

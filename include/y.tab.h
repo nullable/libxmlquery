@@ -111,7 +111,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 73 "parser.y"
+#line 71 "parser.y"
 
   char * string;
   struct snode* dn;

@@ -151,7 +151,7 @@ list* filter_nodes_by_name(const list* nodes, char* name){
 
 list* filter_nodes_by_attr(const list* nodes, attr_selector* attr_s){
     int i;
-    byte_buffer* bb;
+    byte_buffer* bb = NULL;
     if(nodes == NULL) return NULL;
     if(nodes->count == 0) return NULL;
 
@@ -241,6 +241,8 @@ list* filter_nodes_by_attr(const list* nodes, attr_selector* attr_s){
         default:
             log(F, "Special attribute operators not implemented.\n");
         }
+
+	destroy_byte_buffer(bb);
     }
 
     return r;

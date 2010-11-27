@@ -35,7 +35,8 @@ parsed_line* parse_command_line(char* line){
   //find command
   start = end = line;
   for(; *end != ' ' && *end != '\n'; end++);
-  pl->command = strndup(start, end - start);
+  pl->command = alloc(char, end - start + 1);
+  strncpy(pl->command, start, end - start);
 
   //find options treating double quotes
   for(; *end != '\n';){
@@ -43,12 +44,14 @@ parsed_line* parse_command_line(char* line){
 
     if(*end == '"'){
       for(end++, start = end; *end != '"'; end++); 
-      (pl->options)[option++] = strndup(start, end - start);
+      (pl->options)[option] = alloc(char, end - start + 1);
+      strncpy((pl->options)[option++], start, end - start);
       end++; //consume double quote
       start = end;
     }else{
       for(start = end; *end != ' ' && *end != '\n'; end++); 
-      (pl->options)[option++] = strndup(start, end - start);
+      (pl->options)[option] = alloc(char, end - start + 1);
+      strncpy((pl->options)[option++], start, end - start);
       start = end;
     }
   }

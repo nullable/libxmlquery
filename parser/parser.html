@@ -1,0 +1,243 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Parser Module &mdash; libxmlquery v0.1.4 documentation</title>
+    <link rel="stylesheet" href="../lxq_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../lxq_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../lxq_static/jquery.js"></script>
+    <script type="text/javascript" src="../lxq_static/underscore.js"></script>
+    <script type="text/javascript" src="../lxq_static/doctools.js"></script>
+    <link rel="top" title="libxmlquery v0.1.4 documentation" href="../index.html" />
+    <link rel="next" title="Document Object Model" href="../dom.html" />
+    <link rel="prev" title="Tutorial" href="../tutorial.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../dom.html" title="Document Object Model"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../tutorial.html" title="Tutorial"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">libxmlquery v0.1.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="parser-module">
+<h1>Parser Module<a class="headerlink" href="#parser-module" title="Permalink to this headline">¶</a></h1>
+<p>The parser module is currently done with the flex lib and yacc. This forced us to merge the xml and query parser onto a single lexer file.</p>
+<p>Be aware that the parser is not thread safe and because it uses global variables, xmls and queries have to be parsed one at a time.</p>
+<p>Our implementation is divided into 3 files - parser.l, parser.y and lxq_parser.c. The parser.l file has all the lexer code. The parser.y defines the yacc grammar and a couple of functions explained in the next section. The lxq_parser.c defines two functions which are front ends to the parser and through where all parsing should be done.</p>
+<p>If for some reason your program exits without priting any message, you should recompile libxmlquery with <tt class="docutils literal"><span class="pre">-DDEBUG</span></tt>, which may report extra error messages.</p>
+<div class="section" id="function-description">
+<h2>Function description<a class="headerlink" href="#function-description" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="parse_file">
+void <tt class="descname">parse_file</tt><big>(</big>char*<em> filename</em><big>)</big><a class="headerlink" href="#parse_file" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">filename</span></tt> The name of the file to be parsed</p>
+<p>This function maps the file in memory and parses it. The parsed structure is accessible through <tt class="docutils literal"><span class="pre">lxq_document</span></tt>, which is a global variable declared in parser.y. If you need to parse an xml, we strongly recommend that you use <tt class="xref c c-func docutils literal"><span class="pre">parse_dom()</span></tt> .</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="parse_string">
+void <tt class="descname">parse_string</tt><big>(</big>const char*<em> str</em><big>)</big><a class="headerlink" href="#parse_string" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">str</span></tt> The string to be parsed.</p>
+<p>This function parses the input string and stores the result in <tt class="docutils literal"><span class="pre">lxq_selected_elements</span></tt>. If you need to parse a query, we stringly recommend that you use <a class="reference internal" href="#parse_query" title="parse_query"><tt class="xref c c-func docutils literal"><span class="pre">parse_query()</span></tt></a> .</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="parse_xml">
+<a class="reference internal" href="../dom.html#doc" title="doc">doc</a>* <tt class="descname">parse_xml</tt><big>(</big>char*<em> filename</em><big>)</big><a class="headerlink" href="#parse_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">filename</span></tt> The name of the xml file to be parsed.</p>
+<p>This function parses an xml file, copying the result from <a class="reference internal" href="#parse_file" title="parse_file"><tt class="xref c c-func docutils literal"><span class="pre">parse_file()</span></tt></a> to another location so you can parse as many xml files as possible. If an error occurs, this function returns NULL.</p>
+<p>The following example shows how to use this function to parse an xml.</p>
+<p>Example:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &quot;serialize.h&quot;</span>
+<span class="cp">#include &quot;lxq_parser.h&quot;</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">(){</span>
+  <span class="n">doc</span><span class="o">*</span> <span class="n">document</span> <span class="o">=</span> <span class="n">parse_xml</span><span class="p">(</span><span class="s">&quot;xml_file.xml&quot;</span><span class="p">);</span>
+  <span class="kt">char</span><span class="o">*</span> <span class="n">parsed</span> <span class="o">=</span> <span class="n">node_to_string</span><span class="p">(</span><span class="n">get_doc_root</span><span class="p">(</span><span class="n">document</span><span class="p">),</span> <span class="n">XML</span><span class="p">);</span>
+
+  <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%s&quot;</span><span class="p">,</span> <span class="n">parsed</span><span class="p">);</span>
+  <span class="n">free</span><span class="p">(</span><span class="n">parsed</span><span class="p">);</span>
+
+  <span class="k">if</span><span class="p">(</span><span class="n">document</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span>
+    <span class="n">destroy_dom_tree</span><span class="p">(</span><span class="n">document</span><span class="p">);</span>
+
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>You may compile it with</p>
+<div class="highlight-bash"><div class="highlight"><pre>gcc -o <span class="nb">test</span> &lt;above_source_file&gt; -I&lt;folder path where our header files are kept&gt;
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="parse_xml_from_string">
+<a class="reference internal" href="../dom.html#doc" title="doc">doc</a>* <tt class="descname">parse_xml_from_string</tt><big>(</big>char*<em> xmlstring</em><big>)</big><a class="headerlink" href="#parse_xml_from_string" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">xmlstring</span></tt> The the xml string to be parsed.</p>
+<p>This function parses an xml string, copying the result from <a class="reference internal" href="#parse_string" title="parse_string"><tt class="xref c c-func docutils literal"><span class="pre">parse_string()</span></tt></a> to another location so you can parse as many xml strings as possible. If an error occurs, this function returns NULL.</p>
+<p>The following example shows how to use this function to parse an xml string.</p>
+<p>Example:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &quot;serialize.h&quot;</span>
+<span class="cp">#include &quot;lxq_parser.h&quot;</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">(){</span>
+  <span class="n">doc</span><span class="o">*</span> <span class="n">document</span> <span class="o">=</span> <span class="n">parse_xml_from_string</span><span class="p">(</span><span class="s">&quot;&lt;root&gt; &lt;someelement with=</span><span class="se">\&quot;</span><span class="s">someattribute</span><span class="se">\&quot;</span><span class="s"> /&gt; &lt;/root&gt;&quot;</span><span class="p">);</span>
+  <span class="kt">char</span><span class="o">*</span> <span class="n">parsed</span> <span class="o">=</span> <span class="n">node_to_string</span><span class="p">(</span><span class="n">get_doc_root</span><span class="p">(</span><span class="n">document</span><span class="p">),</span> <span class="n">XML</span><span class="p">);</span>
+
+  <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%s&quot;</span><span class="p">,</span> <span class="n">parsed</span><span class="p">);</span>
+  <span class="n">free</span><span class="p">(</span><span class="n">parsed</span><span class="p">);</span>
+
+  <span class="k">if</span><span class="p">(</span><span class="n">document</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span>
+    <span class="n">destroy_dom_tree</span><span class="p">(</span><span class="n">document</span><span class="p">);</span>
+
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>You may compile it with</p>
+<div class="highlight-bash"><div class="highlight"><pre>gcc -o <span class="nb">test</span> &lt;above_source_file&gt; -I&lt;folder path where our header files are kept&gt;
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="parse_query">
+<a class="reference internal" href="../data_structures/datastructures.html#list" title="list">list</a>* <tt class="descname">parse_query</tt><big>(</big>const char*<em> query</em><big>)</big><a class="headerlink" href="#parse_query" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">query</span></tt> The query to be parsed.</p>
+<p>This function parses a query, copying the result from <a class="reference internal" href="#parse_string" title="parse_string"><tt class="xref c c-func docutils literal"><span class="pre">parse_string()</span></tt></a> to another location so you can parse as many queries as possible.</p>
+<p>The following example shows how to query an xml file searching for all elements with the name <tt class="docutils literal"><span class="pre">segment</span></tt>. The nodes will be printed to the standard output.</p>
+<p>Example:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;string.h&gt;</span>
+<span class="cp">#include &quot;include/node.h&quot;</span>
+<span class="cp">#include &quot;include/serialize.h&quot;</span>
+<span class="cp">#include &quot;include/lxq_parser.h&quot;</span>
+<span class="cp">#include &quot;include/stack.h&quot;</span>
+<span class="cp">#include &quot;include/query_runner.h&quot;</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">){</span>
+  <span class="n">doc</span><span class="o">*</span> <span class="n">document</span> <span class="o">=</span> <span class="n">parse_dom</span><span class="p">(</span><span class="s">&quot;xml_file.xml&quot;</span><span class="p">);</span>
+
+  <span class="n">list</span><span class="o">*</span> <span class="n">result</span> <span class="o">=</span> <span class="n">query</span><span class="p">(</span><span class="s">&quot;@segment&quot;</span><span class="p">,</span> <span class="n">get_doc_root</span><span class="p">(</span><span class="n">document</span><span class="p">));</span>
+
+  <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+  <span class="kt">char</span><span class="o">*</span> <span class="n">el</span><span class="p">;</span>
+
+  <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">get_count</span><span class="p">(</span><span class="n">result</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">){</span>
+      <span class="n">dom_node</span><span class="o">*</span> <span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="n">dom_node</span><span class="o">*</span><span class="p">)</span><span class="n">get_element_at</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
+      <span class="n">el</span> <span class="o">=</span> <span class="n">node_to_string</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">XML</span><span class="p">);</span>
+      <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%s&quot;</span><span class="p">,</span> <span class="n">el</span><span class="p">);</span>
+      <span class="n">free</span><span class="p">(</span><span class="n">el</span><span class="p">);</span>
+   <span class="p">}</span>
+   <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d results.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">get_count</span><span class="p">(</span><span class="n">result</span><span class="p">));</span>
+
+   <span class="k">if</span><span class="p">(</span><span class="n">document</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span>
+      <span class="n">destroy_dom_tree</span><span class="p">(</span><span class="n">document</span><span class="p">);</span>
+
+   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>You may compile it with</p>
+<div class="highlight-bash"><div class="highlight"><pre>gcc -o <span class="nb">test</span> &lt;above_source_file&gt; -I&lt;folder path where our header files are kept&gt;
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Parser Module</a><ul>
+<li><a class="reference internal" href="#function-description">Function description</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../tutorial.html"
+                        title="previous chapter">Tutorial</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../dom.html"
+                        title="next chapter">Document Object Model</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../lxq_sources/parser/parser.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../dom.html" title="Document Object Model"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../tutorial.html" title="Tutorial"
+             >previous</a> |</li>
+        <li><a href="../index.html">libxmlquery v0.1.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010, Frederico Gonçalves, Vasco Fernandes.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.4.
+    </div>
+  </body>
+</html>

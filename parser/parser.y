@@ -66,6 +66,7 @@ void parse_string(const char* str){
   free(internal_cpy);
 }
 
+
 %}
 
 %union{
@@ -78,13 +79,13 @@ void parse_string(const char* str){
   struct filter_selector_s* fa;
   struct generic_list_s* q;
   struct selector_s* sel;
+  struct match_value_s* mv;
  }
 
 %token START_EL END_EL SLASH
 %token <string> WORD TEXT CDATA_TOK REGEX
 %token ALL SPACE  END_REGEXI NO_OP EQUAL_OP WSSV_OP STARTSW_OP ENDSW_OP CONTAINS_OP REGEX_OP REGEXI_OP DSV_OP NOTEQUAL_OP EVEN ODD
 %token NTH_CHILD_FILTER NTH_LAST_CHILD_FILTER FIRST_CHILD_FILTER LAST_CHILD_FILTER ONLY_CHILD_FILTER EMPTY_FILTER NOT_FILTER
-%type <string> value
 %type <dn> attr node prop inner attrs declaration start_tag end_tag namespace
 %token <digits> DIGITS
 
@@ -93,8 +94,9 @@ void parse_string(const char* str){
 %type <digits> offset;
 %type <token> operator pseudo_op nth_pseudo_op relation_operator end_regex;
 %type <fa> pseudo_filter;
-%type <string> id;
-%type <q> selector_group pseudo_filters attrsels regex
+%type <string> value
+%type <q> selector_group pseudo_filters attrsels regex_stack
+%type <mv> regex id
 %type <sel> selector
 
 %start choose
@@ -112,9 +114,9 @@ document: node                                              {lxq_document = new_
 namespace: WORD                                             { $$ = new_element_node($1);}
          | WORD ':' WORD                                    { $$ = new_element_node($3);
                                                               char* old = set_namespace($$, $1);
-							      if(old)
-								free(old);
-	                                                    }
+                                                              if(old)
+                                                                free(old);
+                                                            }
          ;
 
 declaration: START_EL '?' namespace attrs '?' END_EL        {
@@ -124,39 +126,38 @@ declaration: START_EL '?' namespace attrs '?' END_EL        {
                                                               }
                                                               $$ = $4;
                                                               char* old = set_name($$, get_name($3));
-							      if(old)
-								free(old);
+                                                              if(old)
+                                                                free(old);
                                                               old = set_namespace($$, get_namespace($3));
-							      if(old)
-								free(old);
+							                                  if(old)
+								                                free(old);
                                                               destroy_dom_node($3);
                                                             }
            ;
 
 node: start_tag inner end_tag                               {
-                                                              if(strcmp(get_name($1),get_name($3)) != 0)
-                                                              {
-								char error_line[1024] = {0};
-								sprintf(error_line, "Start tag '%s' does not match end tag '%s' ", get_name($1), get_name($3));
+                                                              if(strcmp(get_name($1),get_name($3)) != 0){
+								                                char error_line[1024] = {0};
+								                                sprintf(error_line, "Start tag '%s' does not match end tag '%s' ", get_name($1), get_name($3));
                                                                 yyerror(error_line);
                                                                 exit(1);
                                                               }
                                                               append_children($1, $2->children);
-							      if($2->namespace != NULL)
-								free($2->namespace);
+                                                              if($2->namespace != NULL)
+                                                                free($2->namespace);
                                                               free($2->name);
                                                               destroy_generic_list($2->children);
                                                               free($2);
                                                               $$ = $1;
-							      destroy_dom_node($3);
+                                                              destroy_dom_node($3);
                                                             }
     | START_EL namespace attrs SLASH END_EL                 { $$ = $3;
                                                               char* old = set_name($$, get_name($2));
-							      if(old)
-								free(old);
+                                                              if(old)
+                                                                free(old);
                                                               old = set_namespace($$, get_namespace($2));
-							      if(old)
-								free(old);
+                                                              if(old)
+                                                                free(old);
                                                               destroy_dom_node($2);
                                                             }
     ;
@@ -196,9 +197,9 @@ attrs:                                                      { $$ = new_element_n
 
 attr:  namespace '=' value                                  {$$ = new_attribute(get_name($1), $3);
                                                              char* old = set_namespace($$, get_namespace($1));
-							     if(old)
-							       free(old);
-							     destroy_dom_node($1); }
+                                                               if(old)
+                                                                 free(old);
+                                                                 destroy_dom_node($1); }
     ;
 
 
@@ -221,16 +222,18 @@ selector: id attrsels pseudo_filters                        { $$ = new_selector(
 
 attrsels:                                                   { $$ = new_stack(4); }
         | attrsels '[' attrsel ']'                          { $$ = $1; push_stack($$, $3); }
-        | attrsels '.' WORD                                 { $$ = $1; push_stack($$, new_attr_value_selector(lxq_parser_dot_query_operator, WSSV_OP, $3)); }
-        | attrsels '#' WORD                                 { $$ = $1; push_stack($$, new_attr_value_selector(lxq_parser_pound_query_operator, EQUAL_OP, $3)); }
+        | attrsels '.' WORD                                 { $$ = $1; push_stack($$, new_attr_value_selector(new_match_value(lxq_parser_dot_query_operator, EQUAL_OP), new_match_value($3, WSSV_OP))); }
+        | attrsels '#' WORD                                 { $$ = $1; push_stack($$, new_attr_value_selector(new_match_value(lxq_parser_pound_query_operator, EQUAL_OP), new_match_value($3, EQUAL_OP))); }
         ;
 
-attrsel: WORD attr_filter                                   { $$ = $2; $$->name = strdup($1); }
+attrsel: WORD attr_filter                                   { $$ = $2; $$->name = new_match_value($1, EQUAL_OP); }
+       | regex attr_filter                                  { $$ = $2; $$->name = $1; }
        ;
 
 id:                                                         { $$ = NULL; }
   | ALL                                                     { $$ = NULL; }
-  | WORD                                                    { $$ = $1;}
+  | WORD                                                    { $$ = new_match_value($1, EQUAL_OP);}
+  | regex                                                   { $$ = $1; }
   ;
 
 pseudo_filters:                                             { $$ = new_stack(4); }
@@ -276,27 +279,28 @@ relation_operator: '>'                                      { $$ = '>'; }
                  | SPACE                                    { $$ = SPACE; }
                  ;
 
-attr_filter:                                                { $$ = new_attr_value_selector(NULL, NO_OP, NULL); }
-           | operator '"' TEXT '"'                          { $$ = new_attr_value_selector(NULL, $1, $3); }
-           | operator '\'' TEXT '\''                        { $$ = new_attr_value_selector(NULL, $1, $3); }
-           | EQUAL_OP '/' regex end_regex                   {
-                                                                char* text = (char*)pop_stack($3);
-                                                                while($3->count > 0){
-                                                                    char* r = (char*)pop_stack($3);
+attr_filter:                                                { $$ = new_attr_value_selector(NULL, NULL); }
+           | operator '"' TEXT '"'                          { $$ = new_attr_value_selector(NULL, make_operators($3, $1)); }
+           | operator '\'' TEXT '\''                        { $$ = new_attr_value_selector(NULL, make_operators($3, $1)); }
+           | EQUAL_OP regex                                 { $$ = new_attr_value_selector(NULL, $2); }
+           ;
+
+regex: '/' regex_stack end_regex                            {   char* text = (char*)pop_stack($2);
+                                                                while($2->count > 0){
+                                                                    char* r = (char*)pop_stack($2);
                                                                     text = (char*)realloc(text, strlen(text) + strlen(r) + 1);
                                                                     strcat(text, r);
                                                                 }
-                                                                $$ = new_attr_value_selector(NULL, $4, text);
-                                                                destroy_generic_list($3);
+                                                                $$ = new_match_value(text, $3);
+                                                                destroy_generic_list($2);
                                                             }
+
+regex_stack: REGEX                                          { $$ = new_stack(4); push_stack($$, $1); }
+           | regex_stack REGEX                              { $$ = $1; push_stack($$, $2); }
            ;
 
-regex: REGEX                                                { $$ = new_stack(4); push_stack($$, $1); }
-     | regex REGEX                                          { $$ = $1; push_stack($$, $2); }
-     ;
-
-end_regex: '/'                                                 { $$ = REGEX_OP; }
-         | END_REGEXI                                          { $$ = REGEXI_OP; }
+end_regex: '/'                                              { $$ = REGEX_OP; }
+         | END_REGEXI                                       { $$ = REGEXI_OP; }
          ;
 
 operator: EQUAL_OP                                          { $$ = EQUAL_OP; }

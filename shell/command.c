@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include "symbol_table.h"
 #include "command.h"
-#include "../include/dom_parser.h"
+#include "../include/lxq_parser.h"
 #include "../include/node.h"
 #include "../include/serialize.h"
 #include "../include/query_runner.h"
@@ -138,7 +138,7 @@ COMMAND_FUNCTION_HEADER(load){
   doc* document;
   
   filename = argp[0];
-  document = parse_dom(filename);
+  document = parse_xml(filename);
   id = argp[1];
   set_symbol(id, document, destroy_dom_symbol);
 

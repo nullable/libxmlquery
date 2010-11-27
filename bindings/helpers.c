@@ -1,5 +1,5 @@
 #include "../include/node.h"
-#include "../include/dom_parser.h"
+#include "../include/lxq_parser.h"
 #include "../include/query_runner.h"
 #include "../include/serialize.h"
 

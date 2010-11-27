@@ -4,7 +4,7 @@
 #include "../include/y.tab.h"
 #include "../include/stack.h"
 #include "../include/macros.h"
-#include "../include/dom_parser.h"
+#include "../include/lxq_parser.h"
 
 extern doc* lxq_document;
 extern list* lxq_selected_elements;
@@ -12,7 +12,7 @@ extern stack* trash_bin;
 extern void parse_file(char*);
 extern void parse_string(const char*);
 
-doc* parse_dom(char* filename){
+doc* parse_xml(char* filename){
   doc* document;
 
   trash_bin = new_stack(16);
@@ -54,5 +54,27 @@ list* parse_query(const char* query){
   free(lxq_selected_elements);
   lxq_selected_elements = NULL;
   return sles;
+}
+
+doc* parse_xml_from_string(const char* xmlstring){
+  doc* document;
+
+  trash_bin = new_stack(16);
+
+  parse_string(xmlstring);
+
+  while(trash_bin->count > 0){
+    free(pop_stack(trash_bin));
+  }
+  destroy_generic_list(trash_bin);
+
+  if(lxq_document == NULL)
+    return NULL;
+
+  document = alloc(doc, 1);
+  memcpy(document, lxq_document, sizeof(doc));
+  free(lxq_document);
+  lxq_document = NULL;
+  return document;
 }
 

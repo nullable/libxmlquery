@@ -152,7 +152,7 @@ bitbuffer* huffman_encode(char* byte_string, int size){
     for(i = 0; i < 256; i++){
         if(table[i].count == 0) continue;
 
-        sorted_insert_element_with_type_at(l, table+i, 0, &compare_bc);
+        sorted_insert_element_with_type(l, table+i, 0, &compare_bc);
     }
 
 
@@ -181,7 +181,7 @@ bitbuffer* huffman_encode(char* byte_string, int size){
         }
         else {parent->bt->right = c2->bt; }
 
-        sorted_insert_element_with_type_at(l, parent, 1, &compare_bc);
+        sorted_insert_element_with_type(l, parent, 1, &compare_bc);
     }
 
     bc* root = pop_stack(l);

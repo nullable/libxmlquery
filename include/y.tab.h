@@ -111,7 +111,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 73 "parser.y"
+#line 74 "parser.y"
 
   char * string;
   struct snode* dn;
@@ -122,11 +122,12 @@ typedef union YYSTYPE
   struct filter_selector_s* fa;
   struct generic_list_s* q;
   struct selector_s* sel;
+  struct match_value_s* mv;
  
 
 
 /* Line 1676 of yacc.c  */
-#line 130 "y.tab.h"
+#line 131 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

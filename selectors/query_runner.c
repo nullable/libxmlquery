@@ -10,6 +10,7 @@
 #include "../include/byte_buffer.h"
 
 list* run_query(queue* query, const list* all_nodes);
+int match_str(const char* str, const match_value* op);
 
 list* filter_nodes_by_type(list* nodes, enum node_type type){
     if(nodes == NULL) return NULL;
@@ -133,7 +134,7 @@ list* apply_operator(const list* nodes, int op){
     return result;
 }
 
-list* filter_nodes_by_name(const list* nodes, char* name){
+list* filter_nodes_by_name(const list* nodes, match_value* name){
     int i;
     if(nodes == NULL) return NULL;
     if(nodes->count == 0) return NULL;
@@ -141,7 +142,7 @@ list* filter_nodes_by_name(const list* nodes, char* name){
     list* r = new_generic_list(nodes->capacity);
 
     for(i = 0; i < nodes->count; i++){
-        if(!strcmp(name, ((dom_node*)get_element_at(nodes, i))->name)){
+        if(match_str(((dom_node*)get_element_at(nodes, i))->name, name)){
             add_element(r, get_element_at(nodes, i));
         }
     }
@@ -149,9 +150,59 @@ list* filter_nodes_by_name(const list* nodes, char* name){
     return r;
 }
 
+int match_str(const char* str, const match_value* op){
+    if(str == NULL || op == NULL || op->value == NULL){ return 1; }
+
+    switch(op->op){
+    case CONTAINS_OP:
+    case REGEX_OP:
+        return match(str, op->value, 0);
+        break;
+    case REGEXI_OP:
+        return match(str, op->value, 1);
+        break;
+    case EQUAL_OP:
+        return !strcmp(str, op->value);
+        break;
+    case NOTEQUAL_OP:
+        return strcmp(str, op->value);
+        break;
+    default:
+        log(F, "Unknown, (unimplemented?) operator: %d.\n", op->op);
+        exit(1);
+    }
+}
+
+list* get_matching_attr_by_name(dom_node* node, match_value* name){
+    list* r = NULL;
+    dom_node* attr;
+
+    if(name->op == EQUAL_OP){
+        attr = get_attribute_by_name(node, name->value);
+        if(attr == NULL) return NULL;
+        else{
+            r = new_generic_list(1);
+            add_element(r, attr);
+        }
+    }
+    else if(node->attributes != NULL){
+        tree_iterator* ti = new_tree_iterator(node->attributes);
+        r = new_generic_list(1);
+        while(tree_iterator_has_next(ti)){
+            dom_node* attr = (dom_node*)tree_iterator_next(ti);
+            if(match_str(attr->name, name)){
+                add_element(r, attr);
+            }
+        }
+        destroy_iterator(ti);
+    }
+
+    return r;
+}
+
+
 list* filter_nodes_by_attr(const list* nodes, attr_selector* attr_s){
     int i;
-    byte_buffer* bb;
     if(nodes == NULL) return NULL;
     if(nodes->count == 0) return NULL;
 
@@ -159,88 +210,24 @@ list* filter_nodes_by_attr(const list* nodes, attr_selector* attr_s){
 
     for(i = 0; i < nodes->count; i++){
         dom_node* n = get_element_at(nodes, i);
-        dom_node* attr = get_attribute_by_name(n, attr_s->name);
-        if(attr == NULL || strcmp(attr->name, attr_s->name)) continue;
-        switch(attr_s->op){
-        case EQUAL_OP:
-            if(!strcmp(attr->value, attr_s->value)){
+
+        stack* matching_attr = get_matching_attr_by_name(n, attr_s->name);
+        if(matching_attr && matching_attr->count > 0){
+            if(attr_s->value == NULL){
                 add_element(r, n);
             }
-            break;
-        case NOTEQUAL_OP:
-            if(strcmp(attr->value, attr_s->value)){
-                add_element(r, n);
+            else{
+                while(matching_attr->count > 0){
+                    dom_node* attr = (dom_node*)pop_stack(matching_attr);
+
+                    if(match_str(attr->value, attr_s->value)){
+                        add_element(r, n);
+                        break;
+                    }
+                }
             }
-            break;
-        case NO_OP:
-	        add_element(r, n);
-	        break;
-        case CONTAINS_OP:
-        case REGEX_OP:
-            if(match(attr->value, attr_s->value, 0)) add_element(r, n);
-            break;
-        case REGEXI_OP:
-            if(match(attr->value, attr_s->value, 1)) add_element(r, n);
-            break;
-        case STARTSW_OP:
-            bb = new_byte_buffer(strlen(attr_s->value)+2);
-            append_string_to_buffer("^", bb);
-            append_string_to_buffer(attr_s->value, bb);
-            append_bytes_to_buffer("\0", bb, 1);
-            if(match(attr->value, bb->buffer, 0)) add_element(r, n);
-            break;
-        case ENDSW_OP:
-            bb = new_byte_buffer(strlen(attr_s->value)+2);
-            append_string_to_buffer(attr_s->value, bb);
-            append_string_to_buffer("$", bb);
-            append_bytes_to_buffer("\0", bb, 1);
-            if(match(attr->value, bb->buffer, 0)) add_element(r, n);
-            break;
-        case WSSV_OP:
-            bb = new_byte_buffer((strlen(attr_s->value)+5)*4);
-            append_string_to_buffer("(^", bb);
-            append_string_to_buffer(attr_s->value, bb);
-            append_string_to_buffer("$)|", bb);
-
-            append_string_to_buffer("(^", bb);
-            append_string_to_buffer(attr_s->value, bb);
-            append_string_to_buffer(" )|", bb);
-
-            append_string_to_buffer("( ", bb);
-            append_string_to_buffer(attr_s->value, bb);
-            append_string_to_buffer("$)|", bb);
-
-            append_string_to_buffer("( ", bb);
-            append_string_to_buffer(attr_s->value, bb);
-            append_string_to_buffer(" )", bb);
-
-            append_bytes_to_buffer("\0", bb, 1);
-            if(match(attr->value, bb->buffer, 0)) add_element(r, n);
-            break;
-        case DSV_OP:
-            bb = new_byte_buffer((strlen(attr_s->value)+5)*4);
-            append_string_to_buffer("(^", bb);
-            append_string_to_buffer(attr_s->value, bb);
-            append_string_to_buffer("$)|", bb);
-
-            append_string_to_buffer("(^", bb);
-            append_string_to_buffer(attr_s->value, bb);
-            append_string_to_buffer("-)|", bb);
-
-            append_string_to_buffer("(-", bb);
-            append_string_to_buffer(attr_s->value, bb);
-            append_string_to_buffer("$)|", bb);
-
-            append_string_to_buffer("(-", bb);
-            append_string_to_buffer(attr_s->value, bb);
-            append_string_to_buffer("-)", bb);
-
-            append_bytes_to_buffer("\0", bb, 1);
-            if(match(attr->value, bb->buffer, 0)) add_element(r, n);
-            break;
-        default:
-            log(F, "Special attribute operators not implemented.\n");
         }
+        destroy_generic_list(matching_attr);
     }
 
     return r;

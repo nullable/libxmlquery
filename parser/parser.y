@@ -50,15 +50,13 @@ void parse_file(char* filename){
 void parse_string(const char* str){
   int len = strlen(str);
   char* internal_cpy = alloc(char, len + 2);
-  struct yy_buffer_state* bs;
 
   memcpy(internal_cpy, str, len);
 
   internal_cpy[len] = '\0';
   internal_cpy[len + 1] = '\0';
 
-  bs = (struct yy_buffer_state*) yy_scan_buffer(internal_cpy, len + 2);
-  if(bs == NULL){
+  if(!yy_scan_buffer(internal_cpy, len + 2)){
     log(F, "flex could not allocate a new buffer to parse the string.\n");
     exit(-1);
   }

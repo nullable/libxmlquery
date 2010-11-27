@@ -419,7 +419,7 @@ void __quicksort_generic_list_aux(struct list_bucket** arr, int start, int end) 
         int i = start;
         int j = end;
         while (i != j) {
-            if ((int)(arr[i]->element) < (int)(pivot->element)) {
+            if ((arr[i]->element) < (pivot->element)) {
                 i = i + 1;
             }
             else {

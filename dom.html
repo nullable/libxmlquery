@@ -421,18 +421,17 @@ char* <tt class="descname">node_to_string</tt><big>(</big><a class="reference in
 <span class="cp">#include &quot;include/node.h&quot;</span>
 <span class="cp">#include &quot;include/serialize.h&quot;</span>
 <span class="cp">#include &quot;include/lxq_parser.h&quot;</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">){</span>
+  <span class="n">doc</span><span class="o">*</span> <span class="n">document</span> <span class="o">=</span> <span class="n">parse_xml</span><span class="p">(</span><span class="s">&quot;some.xml&quot;</span><span class="p">);</span>
+  <span class="kt">char</span><span class="o">*</span> <span class="n">json</span><span class="p">;</span>
+  <span class="n">json</span> <span class="o">=</span> <span class="n">node_to_string</span><span class="p">(</span><span class="n">get_doc_root</span><span class="p">(</span><span class="n">document</span><span class="p">),</span> <span class="n">JSON</span><span class="p">);</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%s&quot;</span><span class="p">,</span> <span class="n">json</span><span class="p">);</span>
+  <span class="n">free</span><span class="p">(</span><span class="n">json</span><span class="p">);</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-<dl class="docutils">
-<dt>int main(int argc, char** argv){</dt>
-<dd>doc* document = parse_xml(&#8220;some.xml&#8221;);
-char* json;
-json = node_to_string(get_doc_root(document), JSON);
-printf(&#8220;%s&#8221;, json);
-free(json);
-return 0;</dd>
-</dl>
-<p>}</p>
 </dd></dl>
 
 </div>

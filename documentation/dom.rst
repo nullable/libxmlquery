@@ -358,16 +358,16 @@ The serializarion is done throw the function:
 
    The following example shows how to serialize a document onto JSON format. If another one is desired you can change the type of serialization::
 
-   #include <stdio.h>
-   #include "include/node.h"
-   #include "include/serialize.h"
-   #include "include/lxq_parser.h"
+     #include <stdio.h>
+     #include "include/node.h"
+     #include "include/serialize.h"
+     #include "include/lxq_parser.h"
 
-   int main(int argc, char** argv){
-     doc* document = parse_xml("some.xml");
-     char* json;
-     json = node_to_string(get_doc_root(document), JSON);
-     printf("%s", json);
-     free(json);
-     return 0;
-   }
+     int main(int argc, char** argv){
+       doc* document = parse_xml("some.xml");
+       char* json;
+       json = node_to_string(get_doc_root(document), JSON);
+       printf("%s", json);
+       free(json);
+       return 0;
+     }

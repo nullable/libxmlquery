@@ -1,0 +1,464 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Document Object Model &mdash; libxmlquery v0.1.4 documentation</title>
+    <link rel="stylesheet" href="lxq_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="lxq_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="lxq_static/jquery.js"></script>
+    <script type="text/javascript" src="lxq_static/underscore.js"></script>
+    <script type="text/javascript" src="lxq_static/doctools.js"></script>
+    <link rel="top" title="libxmlquery v0.1.4 documentation" href="index.html" />
+    <link rel="next" title="Querying" href="querying.html" />
+    <link rel="prev" title="Parser Module" href="parser/parser.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="querying.html" title="Querying"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="parser/parser.html" title="Parser Module"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">libxmlquery v0.1.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="document-object-model">
+<h1>Document Object Model<a class="headerlink" href="#document-object-model" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="dom">
+<h2>DOM<a class="headerlink" href="#dom" title="Permalink to this headline">¶</a></h2>
+<p>After the parsing of the xml is done, a DOM structure is created and
+can be accessed through a global variable denominated <tt class="docutils literal"><span class="pre">lxq_document</span></tt>.
+Bear in mind that this variable is dependent of the current parser.
+In other words, if the parser module changes, then the variable name
+may also change.</p>
+<p>The DOM structure is a tree, where each node is an xml element. Since
+the input xml has already been validated we know it has only one root
+, so the document variable will point to a single node in the dom
+tree, the root node (This can be accessed through document-&gt;root, but we really recommend the use of <a class="reference internal" href="#get_doc_root" title="get_doc_root"><tt class="xref c c-func docutils literal"><span class="pre">get_doc_root()</span></tt></a>).</p>
+<p>The dom structure provides flexible and extendable xml document
+handling. It has the capability to add, remove and modify elements in
+the xml.</p>
+<div class="section" id="data-types">
+<h3>Data types<a class="headerlink" href="#data-types" title="Permalink to this headline">¶</a></h3>
+<dl class="type">
+<dt id="dom_node">
+<tt class="descname">dom_node</tt><a class="headerlink" href="#dom_node" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="type">
+<dt id="snode">
+struct <tt class="descname">snode</tt><a class="headerlink" href="#snode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>The structure definition for a dom node is in the file node.h.</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="k">typedef</span> <span class="k">struct</span> <span class="n">snode</span><span class="p">{</span>
+  <span class="k">enum</span> <span class="n">node_type</span> <span class="n">type</span><span class="p">;</span>
+
+  <span class="kt">char</span><span class="o">*</span> <span class="n">namespace</span><span class="p">;</span>
+  <span class="kt">char</span><span class="o">*</span> <span class="n">name</span><span class="p">;</span>
+  <span class="kt">char</span><span class="o">*</span> <span class="n">value</span><span class="p">;</span>
+
+  <span class="k">struct</span> <span class="n">sroot</span><span class="o">*</span> <span class="n">attributes</span><span class="p">;</span>
+
+  <span class="k">struct</span> <span class="n">snode</span><span class="o">*</span> <span class="n">parent</span><span class="p">;</span>
+
+  <span class="k">struct</span> <span class="n">generic_list_s</span><span class="o">*</span> <span class="n">children</span><span class="p">;</span>
+<span class="p">}</span><span class="n">dom_node</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>This structure is used to store any kind of entity in an xml file. It can be an element, attribute, cdata or text node. In order to control these different kind of entities, the <a class="reference internal" href="#dom_node" title="dom_node"><tt class="xref c c-type docutils literal"><span class="pre">dom_node</span></tt></a> has an enumerate field. This field is called <a class="reference internal" href="#node_type" title="node_type"><tt class="xref c c-type docutils literal"><span class="pre">node_type</span></tt></a> .</p>
+<dl class="type">
+<dt id="node_type">
+<tt class="descname">node_type</tt><a class="headerlink" href="#node_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>This enum is defined as:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="k">enum</span> <span class="n">node_type</span> <span class="p">{</span>
+  <span class="n">ATTRIBUTE</span><span class="p">,</span>
+  <span class="n">ELEMENT</span><span class="p">,</span>
+  <span class="n">TEXT_NODE</span><span class="p">,</span>
+  <span class="n">CDATA</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>Each enum represents a different kind of xml entity.</p>
+<dl class="type">
+<dt id="doc">
+<tt class="descname">doc</tt><a class="headerlink" href="#doc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="type">
+<dt id="sdoc">
+struct <tt class="descname">sdoc</tt><a class="headerlink" href="#sdoc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Finally, a document is a structure that points to two dom nodes - The root of the dom tree and the root of the xml declaration tree. Lets look at its definition.</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="k">typedef</span> <span class="k">struct</span> <span class="n">sdoc</span><span class="p">{</span>
+  <span class="k">struct</span> <span class="n">snode</span><span class="o">*</span> <span class="n">root</span><span class="p">;</span>
+  <span class="k">struct</span> <span class="n">snode</span><span class="o">*</span> <span class="n">xml_declaration</span><span class="p">;</span>
+<span class="p">}</span><span class="n">doc</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Suppose we have the following xml file</p>
+<div class="highlight-xml"><div class="highlight"><pre><span class="cp">&lt;?xml version=&quot;1.0&quot; ?&gt;</span>
+<span class="nt">&lt;x&gt;</span>
+  ...
+<span class="nt">&lt;/x&gt;</span>
+</pre></div>
+</div>
+<p>When this xml is parsed, a <a class="reference internal" href="#doc" title="doc"><tt class="xref c c-type docutils literal"><span class="pre">doc</span></tt></a> is created with the field <tt class="docutils literal"><span class="pre">xml_declaration</span></tt> pointing to a tree that parsed &#8216;&lt;?xml version=&#8221;1.0&#8221; ?&gt;&#8217; and the <tt class="docutils literal"><span class="pre">root</span></tt> field pointing to a tree that parsed the rest of the document.</p>
+</div>
+<div class="section" id="function-description">
+<h3>Function description<a class="headerlink" href="#function-description" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="set_namespace">
+char* <tt class="descname">set_namespace</tt><big>(</big><a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>*<em> node</em>, char*<em> namespace</em><big>)</big><a class="headerlink" href="#set_namespace" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">node</span></tt> The node whose namespace will be set.</p>
+<p><tt class="xref c c-member docutils literal"><span class="pre">namespace</span></tt> The namespace to set.</p>
+<p>This function sets the namespace of the given node. If the node already contained a namespace, a pointer to it will be returned. Otherwise, NULL is returned.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="set_name">
+char* <tt class="descname">set_name</tt><big>(</big><a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>*<em> node</em>, char*<em> name</em><big>)</big><a class="headerlink" href="#set_name" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">node</span></tt> The node whose name will be set.</p>
+<p><tt class="xref c c-member docutils literal"><span class="pre">name</span></tt> The name to set.</p>
+<p>This function sets the name of the given node. If the node already contained a name, a pointer to it will be returned. Otherwise, NULL is returned.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="set_value">
+char* <tt class="descname">set_value</tt><big>(</big><a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>*<em> node</em>, char*<em> value</em><big>)</big><a class="headerlink" href="#set_value" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">node</span></tt> The node whose value will be set.</p>
+<p><tt class="xref c c-member docutils literal"><span class="pre">value</span></tt> The value to set.</p>
+<p>This function sets the value of the given node. If the node already contained a value, a pointer to it will be returned. Otherwise, NULL is returned.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="set_doc_root">
+<a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>* <tt class="descname">set_doc_root</tt><big>(</big><a class="reference internal" href="#doc" title="doc">doc</a>*<em> document</em>, struct <a class="reference internal" href="#snode" title="snode">snode</a>*<em> root</em><big>)</big><a class="headerlink" href="#set_doc_root" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="#doc" title="doc"><tt class="xref c c-member docutils literal"><span class="pre">doc</span></tt></a> The document whose root will be set.</p>
+<p><tt class="xref c c-member docutils literal"><span class="pre">root</span></tt> The root to set.</p>
+<p>This function sets the root of the given document. If the document already contained a root, a pointer to it will be returned. Otherwise, NULL is returned.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="set_xml_declaration">
+<a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>* <tt class="descname">set_xml_declaration</tt><big>(</big><a class="reference internal" href="#doc" title="doc">doc</a>*<em> document</em>, struct <a class="reference internal" href="#snode" title="snode">snode</a>*<em> vers</em><big>)</big><a class="headerlink" href="#set_xml_declaration" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="#doc" title="doc"><tt class="xref c c-member docutils literal"><span class="pre">doc</span></tt></a> The document whose xml declaration will be set.</p>
+<p><tt class="xref c c-member docutils literal"><span class="pre">vers</span></tt> The xml declaration to set.</p>
+<p>This function sets the xml declaration of the given document. If the document already contained an xml declaration, a pointer to it will be returned. Otherwise, NULL is returned.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="set_parent">
+void <tt class="descname">set_parent</tt><big>(</big><a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>*<em> node</em>, <a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>*<em> parent</em><big>)</big><a class="headerlink" href="#set_parent" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">node</span></tt> The node whose parent will be set.</p>
+<p><tt class="xref c c-member docutils literal"><span class="pre">parent</span></tt> The parent to set.</p>
+<p>This function sets the parent of the given node. If the node already contained a parent, a pointer to it will be returned. Otherwise, NULL is returned.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="get_namespace">
+char* <tt class="descname">get_namespace</tt><big>(</big><a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>*<em> node</em><big>)</big><a class="headerlink" href="#get_namespace" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">node</span></tt> The node from which the namespace will be returned.</p>
+<p>This functions returns the namespace of the given node, or NULL if the node doesn&#8217;t contain any.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="get_name">
+char* <tt class="descname">get_name</tt><big>(</big><a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>*<em> node</em><big>)</big><a class="headerlink" href="#get_name" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">node</span></tt> The node from which the names will be returned.</p>
+<p>This functions returns the names of the given node, or NULL if the node doesn&#8217;t contain any.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="get_value">
+char* <tt class="descname">get_value</tt><big>(</big><a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>*<em> node</em><big>)</big><a class="headerlink" href="#get_value" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">node</span></tt> The node from which the value will be returned.</p>
+<p>This functions returns the value of the given node, or NULL if the node doesn&#8217;t contain any.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="get_xml_declaration">
+<a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>* <tt class="descname">get_xml_declaration</tt><big>(</big><a class="reference internal" href="#doc" title="doc">doc</a>*<em> document</em><big>)</big><a class="headerlink" href="#get_xml_declaration" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">document</span></tt> The document from which the xml declaration tree will be returned.</p>
+<p>This functions returns the dom node at the root of the xml declaration tree, or NULL if there isn&#8217;t any.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="get_doc_root">
+<a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>* <tt class="descname">get_doc_root</tt><big>(</big><a class="reference internal" href="#doc" title="doc">doc</a>*<em> document</em><big>)</big><a class="headerlink" href="#get_doc_root" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">document</span></tt> The document from which the dom tree will be returned.</p>
+<p>This functions returns the dom node at the root of the dom tree, or NULL if there isn&#8217;t any.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="prepend_child">
+void <tt class="descname">prepend_child</tt><big>(</big><a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>*<em> parent</em>, <a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>*<em> child</em><big>)</big><a class="headerlink" href="#prepend_child" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">parent</span></tt> The parent node to whom the child will be prepended.</p>
+<p><tt class="xref c c-member docutils literal"><span class="pre">child</span></tt> The child to be prepended.</p>
+<p>This function inserts a dom node at the head of the children&#8217;s list of the dom node given as first argument.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="append_child">
+void <tt class="descname">append_child</tt><big>(</big><a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>*<em> parent</em>, <a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>*<em> child</em><big>)</big><a class="headerlink" href="#append_child" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">parent</span></tt> The parent node to whom the child will be appended.</p>
+<p><tt class="xref c c-member docutils literal"><span class="pre">child</span></tt> The child to be appended.</p>
+<p>This function inserts a dom node at the end of the children&#8217;s list of the dom node given as first argument.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="append_children">
+void <tt class="descname">append_children</tt><big>(</big><a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>*<em> parent</em>, struct <a class="reference internal" href="data_structures/datastructures.html#generic_list_s" title="generic_list_s">generic_list_s</a>*<em> children</em><big>)</big><a class="headerlink" href="#append_children" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">parent</span></tt> The parent node to whom the children list will be appended.</p>
+<p><tt class="xref c c-member docutils literal"><span class="pre">children</span></tt> The children list to be appended.</p>
+<p>This functions calls <a class="reference internal" href="#append_child" title="append_child"><tt class="xref c c-func docutils literal"><span class="pre">append_child()</span></tt></a> for each node in the children&#8217;s list, passed as the second argument.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="add_attribute">
+void <tt class="descname">add_attribute</tt><big>(</big><a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>*<em> node</em>, <a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>*<em> attribute</em><big>)</big><a class="headerlink" href="#add_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">node</span></tt> The node to whom the attribute will be added.</p>
+<p><tt class="xref c c-member docutils literal"><span class="pre">attribute</span></tt> The attribute to add to the node.</p>
+<p>This function adds an attribute to the node given as the first argument.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="new_document">
+<a class="reference internal" href="#doc" title="doc">doc</a>* <tt class="descname">new_document</tt><big>(</big>struct <a class="reference internal" href="#snode" title="snode">snode</a>*<em> xml_declaration</em><big>)</big><a class="headerlink" href="#new_document" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">xml_declaration</span></tt> The declaration tree of the document. Can be NULL.</p>
+<p>This function creates a new document with the given xml declaration.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="new_element_node">
+<a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>* <tt class="descname">new_element_node</tt><big>(</big>char*<em> name</em><big>)</big><a class="headerlink" href="#new_element_node" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">name</span></tt> The name of the new element node.</p>
+<p>This function creates a new element node with the given name. The name should correspond to an xml tag.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="new_text_node">
+<a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>* <tt class="descname">new_text_node</tt><big>(</big>char*<em> text</em><big>)</big><a class="headerlink" href="#new_text_node" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">text</span></tt> The text in the xml document.</p>
+<p>This function creates a new text node and stores the given text in the value field of the dom node.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="new_attribute">
+<a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>* <tt class="descname">new_attribute</tt><big>(</big>char*<em> name</em>, char*<em> value</em><big>)</big><a class="headerlink" href="#new_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">name</span></tt> The name of the attribute.</p>
+<p><tt class="xref c c-member docutils literal"><span class="pre">value</span></tt> The value of the attribute.</p>
+<p>This function creates a new attribute with the given name and value.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="new_cdata">
+<a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>* <tt class="descname">new_cdata</tt><big>(</big>char*<em> cdata_text</em><big>)</big><a class="headerlink" href="#new_cdata" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">cdata_text</span></tt> The cdata text in the xml document.</p>
+<p>This function creates a new cdata node and stores the text in the value field.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="get_child_at">
+<a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>* <tt class="descname">get_child_at</tt><big>(</big><a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>*<em> parent</em>, int<em> index</em><big>)</big><a class="headerlink" href="#get_child_at" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">parent</span></tt> The node from which the child will be returned.</p>
+<p><tt class="xref c c-member docutils literal"><span class="pre">index</span></tt> The index of the child beggining at 0.</p>
+<p>This function returns the nth child of the parent node. If no child is found, NULL will be returned.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="get_children">
+struct <a class="reference internal" href="data_structures/datastructures.html#generic_list_s" title="generic_list_s">generic_list_s</a>* <tt class="descname">get_children</tt><big>(</big><a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>*<em> node</em><big>)</big><a class="headerlink" href="#get_children" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">node</span></tt> The node from which the children will be returned.</p>
+<p>This function returns a pointer to the node&#8217;s children. Be aware that this function only returns nodes directly below the given argument. If you want the other ones too, consider using <tt class="xref c c-func docutils literal"><span class="pre">get_descedants()</span></tt>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="get_descendants">
+struct <a class="reference internal" href="data_structures/datastructures.html#generic_list_s" title="generic_list_s">generic_list_s</a>* <tt class="descname">get_descendants</tt><big>(</big><a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>*<em> node</em><big>)</big><a class="headerlink" href="#get_descendants" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">node</span></tt> The node from which the descedants will be returned.</p>
+<p>This function returns the descendants of the node. This differs from <a class="reference internal" href="#get_children" title="get_children"><tt class="xref c c-func docutils literal"><span class="pre">get_children()</span></tt></a> because it returns all nodes below the given argument.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="get_text_nodes">
+struct <a class="reference internal" href="data_structures/datastructures.html#generic_list_s" title="generic_list_s">generic_list_s</a>* <tt class="descname">get_text_nodes</tt><big>(</big><a class="reference internal" href="#doc" title="doc">doc</a>*<em> root</em><big>)</big><a class="headerlink" href="#get_text_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">root</span></tt> The document root of the xml.</p>
+<p>This function traverses the entire dom tree and returns all text nodes in it.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="get_attribute_by_name">
+<a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>* <tt class="descname">get_attribute_by_name</tt><big>(</big><a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>*<em> node</em>, char*<em> attr_name</em><big>)</big><a class="headerlink" href="#get_attribute_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">node</span></tt> The node from whom the attribute will be returned.</p>
+<p><tt class="xref c c-member docutils literal"><span class="pre">attr_name</span></tt> The name of the attribute.</p>
+<p>This function returns the attribute with the given name, or NULL if there isn&#8217;t any.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="get_elements_by_name">
+struct <a class="reference internal" href="data_structures/datastructures.html#generic_list_s" title="generic_list_s">generic_list_s</a>* <tt class="descname">get_elements_by_name</tt><big>(</big><a class="reference internal" href="#doc" title="doc">doc</a>*<em> root</em>, char*<em> name</em><big>)</big><a class="headerlink" href="#get_elements_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">root</span></tt> The document root of the xml.</p>
+<p><tt class="xref c c-member docutils literal"><span class="pre">name</span></tt> The name of the elements to search.</p>
+<p>This function traverses the entire dom tree and returns all element with the given name.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="delete_attribute">
+<a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>* <tt class="descname">delete_attribute</tt><big>(</big><a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>*<em> node</em>, char*<em> name</em><big>)</big><a class="headerlink" href="#delete_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">node</span></tt> The node from whom the attribute will be removed.</p>
+<p><tt class="xref c c-member docutils literal"><span class="pre">name</span></tt> The name of the attribute to remove.</p>
+<p>This function deletes the attribute with the given name from the given node. If the node doesn&#8217;t contain an attribute with the given name, then nothing will happen.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="remove_node">
+void <tt class="descname">remove_node</tt><big>(</big><a class="reference internal" href="#doc" title="doc">doc</a>*<em> root</em>, <a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>*<em> node</em><big>)</big><a class="headerlink" href="#remove_node" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">root</span></tt> The root of the xml document.</p>
+<p><tt class="xref c c-member docutils literal"><span class="pre">node</span></tt> The node to remove from the dom tree.</p>
+<p>This function removes the given node from the given dom tree. Be carefull because it also removes all nodes below the given node. This doesn&#8217;t free the given node, so you should keep the pointer to it and free it yourself.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="destroy_dom_node">
+void <tt class="descname">destroy_dom_node</tt><big>(</big><a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>*<em> n</em><big>)</big><a class="headerlink" href="#destroy_dom_node" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">n</span></tt> The dom node to be destroyed.</p>
+<p>This function should be used with caution. This frees the space associated with the given dom node, but it also frees all nodes below it. A simple way to clean the dom tree keeping only the document structure is to pass the root node to this function as follows:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include &quot;node.h&quot;</span>
+<span class="cp">#include &quot;lxq_parser.h&quot;</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">(){</span>
+  <span class="n">doc</span><span class="o">*</span> <span class="n">document</span> <span class="o">=</span> <span class="n">parse_dom</span><span class="p">(</span><span class="s">&quot;xml_file.xml&quot;</span><span class="p">);</span>
+  <span class="c1">//clean the tree but keep my doc structure and xml declaration intact.</span>
+  <span class="n">destroy_dom_node</span><span class="p">(</span><span class="n">get_doc_root</span><span class="p">(</span><span class="n">document</span><span class="p">));</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>You may compile it with</p>
+<div class="highlight-bash"><div class="highlight"><pre>gcc -o <span class="nb">test</span> &lt;above_source_file&gt; -I&lt;folder path where node.h and lxq_parser.h are kept&gt;
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="destroy_dom_tree">
+void <tt class="descname">destroy_dom_tree</tt><big>(</big><a class="reference internal" href="#doc" title="doc">doc</a>*<em> root</em><big>)</big><a class="headerlink" href="#destroy_dom_tree" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">root</span></tt> The document to be destroyed.</p>
+<p>This function does exactly the same thing as <a class="reference internal" href="#destroy_dom_node" title="destroy_dom_node"><tt class="xref c c-func docutils literal"><span class="pre">destroy_dom_node()</span></tt></a> but it also frees the space associated with the document structure. As an example consider:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include &quot;node.h&quot;</span>
+<span class="cp">#include &quot;lxq_parser.h&quot;</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">(){</span>
+  <span class="n">doc</span><span class="o">*</span> <span class="n">document</span> <span class="o">=</span> <span class="n">parse_dom</span><span class="p">(</span><span class="s">&quot;xml_file.xml&quot;</span><span class="p">);</span>
+  <span class="n">destroy_dom_tree</span><span class="p">(</span><span class="n">document</span><span class="p">);</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>You may compile it with</p>
+<div class="highlight-bash"><div class="highlight"><pre>gcc -o <span class="nb">test</span> &lt;above_source_file&gt; -I&lt;folder path where node.h and lxq_parser.h are kept&gt;
+</pre></div>
+</div>
+<p>If you use a memory leak checker you&#8217;ll notice that there are no leaks, so this actually destroys all nodes.</p>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Document Object Model</a><ul>
+<li><a class="reference internal" href="#dom">DOM</a><ul>
+<li><a class="reference internal" href="#data-types">Data types</a></li>
+<li><a class="reference internal" href="#function-description">Function description</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="parser/parser.html"
+                        title="previous chapter">Parser Module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="querying.html"
+                        title="next chapter">Querying</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="lxq_sources/dom.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="querying.html" title="Querying"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="parser/parser.html" title="Parser Module"
+             >previous</a> |</li>
+        <li><a href="index.html">libxmlquery v0.1.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010, Frederico Gonçalves, Vasco Fernandes.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.4.
+    </div>
+  </body>
+</html>

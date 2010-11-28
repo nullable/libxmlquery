@@ -1,0 +1,198 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Special Macros &mdash; libxmlquery v0.1.4 documentation</title>
+    <link rel="stylesheet" href="lxq_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="lxq_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="lxq_static/jquery.js"></script>
+    <script type="text/javascript" src="lxq_static/underscore.js"></script>
+    <script type="text/javascript" src="lxq_static/doctools.js"></script>
+    <link rel="top" title="libxmlquery v0.1.4 documentation" href="index.html" />
+    <link rel="prev" title="Data Structures" href="data_structures/datastructures.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="data_structures/datastructures.html" title="Data Structures"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">libxmlquery v0.1.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="special-macros">
+<h1>Special Macros<a class="headerlink" href="#special-macros" title="Permalink to this headline">¶</a></h1>
+<p>The file macros.h contains macros used all over our project. These macros were made to ease our pain in coding some things. This page describes and shows how to use them</p>
+<div class="section" id="alloc">
+<h2>alloc<a class="headerlink" href="#alloc" title="Permalink to this headline">¶</a></h2>
+<p>This section describes the macro</p>
+<dl class="macro">
+<dt>
+<tt class="descname">alloc</tt></dt>
+<dd></dd></dl>
+
+<p>Ever get tired of calling malloc and check if the return address is a valid address, and if not print an error message and exit? The <tt class="xref c c-macro docutils literal"><span class="pre">alloc</span></tt> macro can do all of this for you. It depends on the function <a class="reference internal" href="#__alloc" title="__alloc"><tt class="xref c c-func docutils literal"><span class="pre">__alloc()</span></tt></a>:</p>
+<dl class="function">
+<dt id="__alloc">
+static inline void* <tt class="descname">__alloc</tt><big>(</big>void*<em> x</em><big>)</big><a class="headerlink" href="#__alloc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>It is defined as:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="cp">#define alloc(type, how_many)                           \</span>
+<span class="cp">   (type *) __alloc(malloc(how_many * sizeof(type)));</span>
+
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span><span class="o">*</span> <span class="n">__alloc</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">x</span><span class="p">){</span>
+   <span class="k">if</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+     <span class="k">return</span> <span class="n">x</span><span class="p">;</span>
+   <span class="n">log</span><span class="p">(</span><span class="n">F</span><span class="p">,</span><span class="s">&quot;malloc failed.&quot;</span><span class="p">);</span>
+   <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The key to this macro resides in the <a class="reference internal" href="#__alloc" title="__alloc"><tt class="xref c c-func docutils literal"><span class="pre">__alloc()</span></tt></a> function. It receives the address returned by <tt class="xref c c-func docutils literal"><span class="pre">malloc()</span></tt> and checks if it is valid. If not, then a <tt class="xref c c-macro docutils literal"><span class="pre">log</span></tt> message is printed and <tt class="xref c c-func docutils literal"><span class="pre">exit()</span></tt> function is called. The following example shows how to use this function to allocate an array of 100 characters:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &quot;macros.h&quot;</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">(){</span>
+  <span class="kt">char</span><span class="o">*</span> <span class="n">buffer</span> <span class="o">=</span> <span class="n">alloc</span><span class="p">(</span><span class="kt">char</span><span class="p">,</span> <span class="mi">100</span><span class="p">);</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>You may compile it with</p>
+<blockquote>
+<div class="highlight-bash"><div class="highlight"><pre>gcc -o <span class="nb">test</span> &lt;above_source_file&gt; -I&lt;folder path where macros.h is kept&gt;
+</pre></div>
+</div>
+</blockquote>
+<p>Notice that you won&#8217;t even have to bother with casting it to the right type.</p>
+</div>
+<div class="section" id="log">
+<h2>log<a class="headerlink" href="#log" title="Permalink to this headline">¶</a></h2>
+<p>This section describes the macro</p>
+<dl class="macro">
+<dt>
+<tt class="descname">log</tt></dt>
+<dd></dd></dl>
+
+<p>Ever filled your code with <tt class="xref c c-func docutils literal"><span class="pre">printf()</span></tt> functions to debug it? And when you&#8217;re done with it needed to erase them? The <tt class="xref c c-macro docutils literal"><span class="pre">log</span></tt> adds proper debug messages and doesn&#8217;t need to be removed when the code is functional. Let&#8217;s look at its definition:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="cp">#ifdef DEBUG</span>
+<span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#define log(level, format, ...)                                 \</span>
+<span class="cp">  do{                                                           \</span>
+<span class="cp">    fprintf(stderr, &quot;%s  %s:%d: &quot;, level, __FILE__, __LINE__);  \</span>
+<span class="cp">    fprintf(stderr, format, ## __VA_ARGS__);                    \</span>
+<span class="cp">    fprintf(stderr, &quot;\n&quot;);                                      \</span>
+<span class="cp">  }while(0)</span>
+<span class="cp">#else</span>
+<span class="cp">#define log(level, str, ...)</span>
+<span class="cp">#endif</span>
+
+<span class="cp">#define I &quot;INFO&quot;</span>
+<span class="cp">#define W &quot;WARNNING&quot;</span>
+<span class="cp">#define E &quot;ERROR&quot;</span>
+<span class="cp">#define F &quot;FATAL ERROR&quot;</span>
+</pre></div>
+</div>
+<p>First note the macros for I, W, E, F at the bottom. These are merely alias for the level of severity, you may use any other. The <tt class="xref c c-macro docutils literal"><span class="pre">log</span></tt> macro prints messages to the <tt class="docutils literal"><span class="pre">stderr</span></tt> and is able to format strings according to <tt class="xref c c-func docutils literal"><span class="pre">printf()</span></tt> format options. Consider this example:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include &quot;macros.h&quot;</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">(){</span>
+ <span class="n">log</span><span class="p">(</span><span class="n">I</span><span class="p">,</span> <span class="s">&quot;Printing info</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+ <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If we compile and run this example with the option <strong class="command">-DDEBUG</strong> we&#8217;ll get the following output</p>
+<blockquote>
+<div class="highlight-bash"><div class="highlight"><pre>Printing info
+</pre></div>
+</div>
+</blockquote>
+<p>If such option is not passed to the compiler, them no output will be shown. This happens because the macro is not created. What this means is that you can actually fill the code with logging messages and debug it, and when you&#8217;re done just compile it without <strong class="command">-DDEBUG</strong> . The result is a binary file that doesn&#8217;t contain code related to debug messages, thus is smaller than the debug version. However, if you need to debug it again, you can always recompile it with the debug flag.</p>
+<p>Notice that file name and line number are printed as well, which helps you pin-point the location of the print and check what may have been the cause of the problem.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Special Macros</a><ul>
+<li><a class="reference internal" href="#alloc">alloc</a></li>
+<li><a class="reference internal" href="#log">log</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="data_structures/datastructures.html"
+                        title="previous chapter">Data Structures</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="lxq_sources/macros.h.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="data_structures/datastructures.html" title="Data Structures"
+             >previous</a> |</li>
+        <li><a href="index.html">libxmlquery v0.1.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010, Frederico Gonçalves, Vasco Fernandes.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.4.
+    </div>
+  </body>
+</html>

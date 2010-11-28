@@ -42,66 +42,70 @@
      START_EL = 258,
      END_EL = 259,
      SLASH = 260,
-     WORD = 261,
-     TEXT = 262,
-     CDATA_TOK = 263,
-     REGEX = 264,
-     ALL = 265,
-     SPACE = 266,
-     END_REGEXI = 267,
-     NO_OP = 268,
-     EQUAL_OP = 269,
-     WSSV_OP = 270,
-     STARTSW_OP = 271,
-     ENDSW_OP = 272,
-     CONTAINS_OP = 273,
-     REGEX_OP = 274,
-     REGEXI_OP = 275,
-     DSV_OP = 276,
-     NOTEQUAL_OP = 277,
-     EVEN = 278,
-     ODD = 279,
-     NTH_CHILD_FILTER = 280,
-     NTH_LAST_CHILD_FILTER = 281,
-     FIRST_CHILD_FILTER = 282,
-     LAST_CHILD_FILTER = 283,
-     ONLY_CHILD_FILTER = 284,
-     EMPTY_FILTER = 285,
-     NOT_FILTER = 286,
-     DIGITS = 287
+     SCUSTOM_FILTER = 261,
+     WORD = 262,
+     TEXT = 263,
+     CDATA_TOK = 264,
+     REGEX = 265,
+     CUSTOM_FILTER = 266,
+     ALL = 267,
+     SPACE = 268,
+     END_REGEXI = 269,
+     NO_OP = 270,
+     EQUAL_OP = 271,
+     WSSV_OP = 272,
+     STARTSW_OP = 273,
+     ENDSW_OP = 274,
+     CONTAINS_OP = 275,
+     REGEX_OP = 276,
+     REGEXI_OP = 277,
+     DSV_OP = 278,
+     NOTEQUAL_OP = 279,
+     EVEN = 280,
+     ODD = 281,
+     NTH_CHILD_FILTER = 282,
+     NTH_LAST_CHILD_FILTER = 283,
+     FIRST_CHILD_FILTER = 284,
+     LAST_CHILD_FILTER = 285,
+     ONLY_CHILD_FILTER = 286,
+     EMPTY_FILTER = 287,
+     NOT_FILTER = 288,
+     DIGITS = 289
    };
 #endif
 /* Tokens.  */
 #define START_EL 258
 #define END_EL 259
 #define SLASH 260
-#define WORD 261
-#define TEXT 262
-#define CDATA_TOK 263
-#define REGEX 264
-#define ALL 265
-#define SPACE 266
-#define END_REGEXI 267
-#define NO_OP 268
-#define EQUAL_OP 269
-#define WSSV_OP 270
-#define STARTSW_OP 271
-#define ENDSW_OP 272
-#define CONTAINS_OP 273
-#define REGEX_OP 274
-#define REGEXI_OP 275
-#define DSV_OP 276
-#define NOTEQUAL_OP 277
-#define EVEN 278
-#define ODD 279
-#define NTH_CHILD_FILTER 280
-#define NTH_LAST_CHILD_FILTER 281
-#define FIRST_CHILD_FILTER 282
-#define LAST_CHILD_FILTER 283
-#define ONLY_CHILD_FILTER 284
-#define EMPTY_FILTER 285
-#define NOT_FILTER 286
-#define DIGITS 287
+#define SCUSTOM_FILTER 261
+#define WORD 262
+#define TEXT 263
+#define CDATA_TOK 264
+#define REGEX 265
+#define CUSTOM_FILTER 266
+#define ALL 267
+#define SPACE 268
+#define END_REGEXI 269
+#define NO_OP 270
+#define EQUAL_OP 271
+#define WSSV_OP 272
+#define STARTSW_OP 273
+#define ENDSW_OP 274
+#define CONTAINS_OP 275
+#define REGEX_OP 276
+#define REGEXI_OP 277
+#define DSV_OP 278
+#define NOTEQUAL_OP 279
+#define EVEN 280
+#define ODD 281
+#define NTH_CHILD_FILTER 282
+#define NTH_LAST_CHILD_FILTER 283
+#define FIRST_CHILD_FILTER 284
+#define LAST_CHILD_FILTER 285
+#define ONLY_CHILD_FILTER 286
+#define EMPTY_FILTER 287
+#define NOT_FILTER 288
+#define DIGITS 289
 
 
 
@@ -127,7 +131,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 131 "y.tab.h"
+#line 135 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

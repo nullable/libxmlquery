@@ -22,7 +22,9 @@ typedef struct step_s{ int multiplier; int offset; } step;
 
 typedef struct filter_selector_s{
   int op;
-  union {
+  char* name;
+  list* args;
+  struct {
     step* s;
     struct generic_list_s* selector;
   } value;

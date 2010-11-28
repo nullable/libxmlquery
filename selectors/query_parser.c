@@ -32,6 +32,8 @@ attr_selector* new_attr_value_selector(match_value* name, match_value* value){
 filter_selector* new_filter(int filter){
   filter_selector* r = alloc(filter_selector, 1);
   r->op = filter;
+  r->name = NULL;
+  r->args = NULL;
   return r;
 }
 
@@ -61,8 +63,8 @@ void destroy_attr_selector(attr_selector* as){
 }
 
 void destroy_selector(selector* s){
-  free(s->id->value);
-  free(s->id);
+  if(s->id && s->id->value) free(s->id->value);
+  if(s->id) free(s->id);
 
   int i;
   for(i = 0; i < s->attrs->count; i++)

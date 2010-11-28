@@ -91,7 +91,7 @@ To create a *custom pseudo-filter* you just need to define a function with the o
 
 The first one creates a filter that doesn't take any arguments. If you want to design a filter that takes arguments, you must use the second signature.
 
-After defining your filter you need to register them. You do this by calling::
+After defining your filter you need to register them. You do this by calling:
 
 .. c:function:: void register_simple_custom_filter(const char* name, int (*filter)(dom_node* node))
 

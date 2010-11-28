@@ -274,11 +274,11 @@ list* query_result = query("@room", get_doc_root(document));
 									       \textbf{f}.\\
 			\end{enumerate}
 			
-		The implemented selectors also support  the CSS3 \emph{pseudo-filters} relative to document navigation. The only \emph{pseudo-filters} that  we didn't implement are relative to HTML specific markup language. 
-		These filters do not make sense for XML handling. Nevertheless, we added the possibility for the user to create its own \emph{pseudo-filters}.
+		The implemented selectors also support  the CSS3 \emph{filters} relative to document navigation. The only \emph{filters} that  we didn't implement are relative to HTML specific markup language. 
+		These \emph{filters} do not make sense for XML handling. Nevertheless, we added the possibility for the user to create its own \emph{filters}.
 		
-		Custom \emph{pseudo-filters} are very easy to implement. The user defines a function which represents a filter, which means it will receive all XML nodes and should return true for nodes that match the filter.
-		Then, registers that function as a custom \emph{pseudo-filter} and that's it. Custom \emph{pseudo-filters} can receive 0 or more arguments. Check appendix \ref{chap:doc} for more information on these filters.
+		Custom \emph{filters} are very easy to implement. The user defines a function which represents a filter, which means it will receive all XML nodes and should return true for nodes that match the filter.
+		Then, registers that function as a custom \emph{pseudo-filter} and that's it. Custom \emph{filters} can receive 0 or more arguments. Check appendix \ref{chap:doc} for more information on these filters.
 			
 \section{Data structures and macros}\label{sec:helpers}
 

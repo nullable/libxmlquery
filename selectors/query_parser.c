@@ -63,8 +63,8 @@ void destroy_attr_selector(attr_selector* as){
 }
 
 void destroy_selector(selector* s){
-  free(s->id->value);
-  free(s->id);
+  if(s->id && s->id->value) free(s->id->value);
+  if(s->id) free(s->id);
 
   int i;
   for(i = 0; i < s->attrs->count; i++)

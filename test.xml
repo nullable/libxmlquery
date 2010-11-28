@@ -1,37 +1,27 @@
-<?xml version="1.0" ?>
-<domobus>
-  <rooms>
-    <room name="r21" class="a b c">
-      <devices>
-        <device type="switch" state="on"/>
-        <device type="blind" state="87" />
-        <device type="lights" state="94">
-          <coord>
-            <x>205</x>
-            <y>97</y>
-            <z>256</z>
-          </coord>
-        </device>
-      </devices>
-    </room>
-    <room name="r2">
-      <description>
-        Empty    room!!!!
-      </description>
-    </room>
-    <room name="r3" />
-    <room name="r4" />
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+  
+  <channel>
+    <title>RSS Example</title>
+    <description>This is an example of an RSS feed</description>
+    <link>http://www.domain.com/link.htm</link>
+    <lastBuildDate>Mon, 28 Aug 2006 11:12:55 -0400 </lastBuildDate>
+    <pubDate>Tue, 29 Aug 2006 09:00:00 -0400</pubDate>
+    
+    <item>
+      <title>Item Example</title>
+      <description>This is an example of an Item</description>
+      <link>http://www.domain.com/link.htm</link>
+      <guid isPermaLink="false"> 1102345</guid>
+      <pubDate>Tue, 29 Aug 2006 09:00:00 -0400</pubDate>
+    </item>
+    
 
-    <room name="r5" />
-    <room name="r6" />
-  </rooms>
-  <properties>
-    <prop value="xxx" />
-  </properties>
-  <debug_output>
-    <![CDATA[20101101234918::on->off
-20101101235257::off->on
-20101101235534::on->off]]>
-  </debug_output>
-</domobus>
+    <room> a 
+adknfns
+dkfgsng
 
+
+ </room>
+  </channel>
+</rss>

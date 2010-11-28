@@ -14,8 +14,7 @@ void dump(char* array, int offset, int size){
 }
 
 int alberto(dom_node* alberto, list* l){
-    char* name = (char*)get_element_at(l, 0);
-    return !strcmp(get_attribute_by_name(alberto, "name")->value, name);
+    return 1;
 }
 
 int main(int argc, char** argv){

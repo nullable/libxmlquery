@@ -46,6 +46,7 @@ gh_pages: html
 	mv $(BUILDDIR)/html/_sources $(BUILDDIR)/html/lxq_sources
 	find $(BUILDDIR)/html -type f | xargs sed -ri 's/"(\.\.\/)*_static/"\1lxq_static/'
 	find $(BUILDDIR)/html -type f | xargs sed -ri 's/"(\.\.\/)*_sources/"\1lxq_sources/'
+	./commit.sh
 
 dirhtml:
 	$(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) $(BUILDDIR)/dirhtml

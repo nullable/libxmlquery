@@ -11,13 +11,13 @@ libxmlquery documentation
 **libxmlquery** is a colection of C functions to help **parse**, **create** and
 **query** xml documents.
 
-If you're new to **libxmlquery** start by reading the
+If you are new to **libxmlquery** start by reading the
 :doc:`Tutorial <tutorial>`.
 
 .. toctree::
    :maxdepth: 2
 
-   tutorial
+   tutorial/tutorial
    parser/parser
    dom
    querying

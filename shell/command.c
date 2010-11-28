@@ -61,7 +61,7 @@ void init_command_table(){
   c = COMMAND(query, "Query an existing xml document\n\tUsage:query <variable_name> \"<query_expression>\"\n", 2);
   rb_tree_insert(command_table, c);
 
-  c = COMMAND(gdb, "Call gdb for a given program\n", 1);
+  c = COMMAND(gdb, "Call gdb for a given program\n\tUsage:gdb <binary_file>", 1);
   rb_tree_insert(command_table, c);
 }
 

@@ -18,6 +18,7 @@ If you are new to **libxmlquery** start by reading the
    :maxdepth: 2
 
    tutorial/tutorial
+   applications/shell
    parser/parser
    dom
    querying

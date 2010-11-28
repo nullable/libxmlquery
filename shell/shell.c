@@ -28,14 +28,17 @@ typedef struct parsed_line_s{
 }parsed_line;
 
 parsed_line* parse_command_line(char* line){
-  parsed_line* pl = alloc(parsed_line, 1);
   char *start, *end;
   int option = 0;
+  parsed_line* pl = alloc(parsed_line, 1);
+  
+  memset(pl, 0, sizeof(parsed_line));
 
   //find command
   start = end = line;
   for(; *end != ' ' && *end != '\n'; end++);
   pl->command = alloc(char, end - start + 1);
+  memset(pl->command, 0, end - start + 1);
   strncpy(pl->command, start, end - start);
 
   //find options treating double quotes
@@ -45,12 +48,14 @@ parsed_line* parse_command_line(char* line){
     if(*end == '"'){
       for(end++, start = end; *end != '"'; end++); 
       (pl->options)[option] = alloc(char, end - start + 1);
+      memset((pl->options)[option], 0, end - start + 1);
       strncpy((pl->options)[option++], start, end - start);
       end++; //consume double quote
       start = end;
     }else{
       for(start = end; *end != ' ' && *end != '\n'; end++); 
       (pl->options)[option] = alloc(char, end - start + 1);
+      memset((pl->options)[option], 0, end - start + 1);
       strncpy((pl->options)[option++], start, end - start);
       start = end;
     }

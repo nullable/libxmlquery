@@ -5,6 +5,7 @@
 \usepackage{amsmath}
 \usepackage{listings}
 \usepackage{framed}
+\usepackage[pdfborder={0 0 0}]{hyperref}
 %============ End Packages =============
 
 %============ Title ================
@@ -116,7 +117,7 @@ frederico.goncalves@ist.utl.pt\\
 	The next sections detail each module's implementation.
 
 \section{The Document Object Model Module}\label{sec:dom}
-	This section describes how our implementation of DOM works. Although DOM is a standard from W3C\footnote{http://www.w3.org/ - Official site of the World Wide Web consortium} we did our own implementation in order 
+	This section describes how our implementation of DOM works. Although DOM is a standard from W3C\footnote{\url{http://www.w3.org/} - Official site of the World Wide Web consortium} we did our own implementation in order 
 	to keep it simple and smaller enough for embedded systems. The goal of our DOM implementation is to keep in memory the information stored in the XML file. The idea is to keep the same semantics offered by the XML. In
 	order to do this, the DOM creates a tree where every node is either an XML element, attribute, normal text, or CDATA element. Each time an XML document is parsed, the DOM module returns a pointer to its corresponding
 	tree root.
@@ -188,9 +189,9 @@ append_child(root, new_element_node("b"));
 		Freeing up memory space is crucial in an embedded system, but can have a great impact in the systems performance. We leave it to the user to decide where to call these functions.
 
 \section{The Parser Module}\label{sec:parser}
-	The parser module implements both the XML parser and the query parser. We've done this because the current implementation is using flex lexical analyzer\footnote{http://flex.sourceforge.net/ - Flex home page.} and 
-	bison\footnote{http://dinosaur.compilertools.net/bison/index.html - Bison site} parser generator. One of the biggest disadvantages of flex and bison is that they only support one lexical analyzer per program, which means 
-	we may only have one parser built with flex and bison in our library.
+	The parser module implements both the XML parser and the query parser. We've done this because the current implementation is using flex lexical analyzer\footnote{\url{http://flex.sourceforge.net/} - Flex home page.} and 
+	bison\footnote{\url{http://dinosaur.compilertools.net/bison/index.html} - Bison site} parser generator. One of the biggest disadvantages of flex and bison is that they only support one lexical analyzer per program, which 
+	means we may only have one parser built with flex and bison in our library.
 	
 	Another disadvantage is the fact that we need global variables to store temporally what is parsed with bison. In order to avoid name clashes, each parser global variable has the prefix \textbf{lxq\_} and shouldn't be used 
 	directly. Since the parser isn't thread safe, concurrent parsing isn't possible, unless the user ensures that.
@@ -210,7 +211,7 @@ append_child(root, new_element_node("b"));
 		In order to build the DOM tree the parser needs to interact with it. For this reason, if the DOM module interface changes the parser will have to be modified as well.
 	
 	\subsection{Query parsing}	
-		The query parser implements a parser built for queries compliant to most of the CSS3\footnote{http://www.w3.org/TR/css3-selectors/\#selectors - CSS3 selector list.} standard selectors. We didn't implement every
+		The query parser implements a parser built for queries compliant to most of the CSS3\footnote{\url{http://www.w3.org/TR/css3-selectors/\#selectors} - CSS3 selector list.} standard selectors. We didn't implement every
 		selector because they're HTML (\textbf{H}yper\textbf{T}ext \textbf{M}arkup \textbf{L}anguage) specific. For instance, the selector \emph{E:link} selects an element based on the fact that it is a source anchor, which can 
 		only happen in HTML files. 
 	
@@ -460,6 +461,6 @@ exiting...
 		The shell application comes with a Makefile, so it's easy to compile it. To compile in other systems see appendix \ref{chap:gcc}.
 		
 \chapter{Documentation}\label{chap:doc}
-	This section provides all the documentation for the libxmlquery. The most recent version of the documentation is at http://nullable.github.com/libxmlquery/
+	This section provides all the documentation for the libxmlquery. The most recent version of the documentation is at \url{http://nullable.github.com/libxmlquery/}.
 	
 \end{document}

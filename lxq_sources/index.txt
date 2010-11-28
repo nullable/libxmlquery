@@ -12,20 +12,19 @@ libxmlquery documentation
 **query** xml documents.
 
 If you are new to **libxmlquery** start by reading the
-:doc:`Tutorial <tutorial>`.
+:doc:`Tutorial <tutorial/tutorial>`.
 
 .. toctree::
    :maxdepth: 2
 
    tutorial/tutorial
-   applications/shell
    parser/parser
    dom
    querying
    data_structures/datastructures
    macros.h
-   shell
    bindings
+   applications/shell
 
 You may also find specific object documentation in the :ref:`genindex`.
 

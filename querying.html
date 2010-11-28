@@ -119,9 +119,11 @@ chained with other query operators.</p>
 </div>
 <p>The first one creates a filter that doesn&#8217;t take any arguments. If you want to design a filter that takes arguments, you must use the second signature.</p>
 <p>After defining your filter you need to register them. You do this by calling:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="p">..</span> <span class="n">c</span><span class="o">:</span><span class="n">function</span><span class="o">::</span> <span class="kt">void</span> <span class="n">register_simple_custom_filter</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">name</span><span class="p">,</span> <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">filter</span><span class="p">)(</span><span class="n">dom_node</span><span class="o">*</span> <span class="n">node</span><span class="p">))</span>
-</pre></div>
-</div>
+<dl class="function">
+<dt id="register_simple_custom_filter">
+void <tt class="descname">register_simple_custom_filter</tt><big>(</big>const char*<em> name</em>, int (*filter)(<a class="reference internal" href="dom.html#dom_node" title="dom_node">dom_node</a>*<em> node)</em><big>)</big><a class="headerlink" href="#register_simple_custom_filter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="function">
 <dt id="register_custom_filter">
 void <tt class="descname">register_custom_filter</tt><big>(</big>const char*<em> name</em>, int (*filter)(<a class="reference internal" href="dom.html#dom_node" title="dom_node">dom_node</a>*<em> node</em>, <a class="reference internal" href="data_structures/datastructures.html#list" title="list">list</a>*<em> args)</em><big>)</big><a class="headerlink" href="#register_custom_filter" title="Permalink to this definition">¶</a></dt>

@@ -39,18 +39,11 @@ The function `xmlquery_query` is defined to help filter and match nodes in the
 
 .. c:function:: generic_list* xmlquery_query(const char* pattern, dom_node* root)
 
+   :c:member:`pattern` Query pattern to apply to XML document.
 
-.. c:function:: dom_node* xmlquery_query_one(const char* pattern, dom_node* root)
+   :c:member:`root` A root of a DOM tree where to begin the query.
 
-    This is a helper function designed to facilitate selection of single nodes.
-    Selects the first node returned by a given query, it is equivalent to the
-    following code::
-
-        dom_node* single = NULL;
-        generic_list* l = xmlquery_query(patterm, root)
-        if((l != NULL && l->count > 0)
-            single = (dom_node*) get_element_at(l, 0);
-
+   This function applies a query to a given DOM tree and returns a list of elements.
 
 Introduction
 ^^^^^^^^^^^^
@@ -83,3 +76,27 @@ A more complex selector, this selector will match nodes with the name *foo*,
 with an attribute named *attr* with the value *bar*, and the node must also be
 the *only child* of its parent node.
 
+
+Custom pseudo-filters
+^^^^^^^^^^^^^^^^^^^^^
+
+We've created some new features. We added the possibility of making *custom pseudo-filters*.
+*Custom pseudo-filters* provide a way for the user to define their own filters, which can be
+chained with other query operators.
+
+To create a *custom pseudo-filter* you just need to define a function with the one of the following signatures::
+
+   int simple_filter(dom_node* node);
+   int complex_filter(dom_node* node, list* args);
+
+The first one creates a filter that doesn't take any arguments. If you want to design a filter that takes arguments, you must use the second signature.
+
+After defining your filter you need to register them. You do this by calling:
+
+.. c:function:: void register_simple_custom_filter(const char* name, int (*filter)(dom_node* node))
+
+.. c:function:: void register_custom_filter(const char* name, int (*filter)(dom_node* node, list* args))
+
+The first function registers a simple filter, while the second registers a complex one.
+
+When you're done with this you can call your filters just like a CSS3 *pseudo-filter*.

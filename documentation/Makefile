@@ -41,6 +41,12 @@ html:
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 
+gh_pages: html
+	mv $(BUILDDIR)/html/_static $(BUILDDIR)/html/lxq_static
+	mv $(BUILDDIR)/html/_sources $(BUILDDIR)/html/lxq_sources
+	find $(BUILDDIR)/html -type f | xargs sed -ri 's/"(\.\.\/)*_static/"\1lxq_static/'
+	find $(BUILDDIR)/html -type f | xargs sed -ri 's/"(\.\.\/)*_sources/"\1lxq_sources/'
+
 dirhtml:
 	$(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) $(BUILDDIR)/dirhtml
 	@echo
@@ -128,3 +134,4 @@ doctest:
 	$(SPHINXBUILD) -b doctest $(ALLSPHINXOPTS) $(BUILDDIR)/doctest
 	@echo "Testing of doctests in the sources finished, look at the " \
 	      "results in $(BUILDDIR)/doctest/output.txt."
+

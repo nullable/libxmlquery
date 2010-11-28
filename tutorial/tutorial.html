@@ -1,0 +1,295 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Tutorial &mdash; libxmlquery v0.1.4 documentation</title>
+    <link rel="stylesheet" href="../lxq_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../lxq_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../lxq_static/jquery.js"></script>
+    <script type="text/javascript" src="../lxq_static/underscore.js"></script>
+    <script type="text/javascript" src="../lxq_static/doctools.js"></script>
+    <link rel="top" title="libxmlquery v0.1.4 documentation" href="../index.html" />
+    <link rel="next" title="Parser Module" href="../parser/parser.html" />
+    <link rel="prev" title="libxmlquery documentation" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../parser/parser.html" title="Parser Module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../index.html" title="libxmlquery documentation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">libxmlquery v0.1.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="tutorial">
+<h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
+<p>In this tutorial you&#8217;ll learn how to parse, query and manipulate XML files. We&#8217;re going to use the test.xml document, which is an RSS Feed and has the content:</p>
+<div class="highlight-xml"><div class="highlight"><pre><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;</span>
+<span class="nt">&lt;rss</span> <span class="na">version=</span><span class="s">&quot;2.0&quot;</span><span class="nt">&gt;</span>
+
+  <span class="nt">&lt;channel&gt;</span>
+   <span class="nt">&lt;title&gt;</span>RSS Example<span class="nt">&lt;/title&gt;</span>
+   <span class="nt">&lt;description&gt;</span>This is an example of an RSS feed<span class="nt">&lt;/description&gt;</span>
+   <span class="nt">&lt;link&gt;</span>http://www.domain.com/link.htm<span class="nt">&lt;/link&gt;</span>
+   <span class="nt">&lt;lastBuildDate&gt;</span>Mon, 28 Aug 2006 11:12:55 -0400 <span class="nt">&lt;/lastBuildDate&gt;</span>
+   <span class="nt">&lt;pubDate&gt;</span>Tue, 29 Aug 2006 09:00:00 -0400<span class="nt">&lt;/pubDate&gt;</span>
+
+   <span class="nt">&lt;item&gt;</span>
+     <span class="nt">&lt;title&gt;</span>Item Example<span class="nt">&lt;/title&gt;</span>
+     <span class="nt">&lt;description&gt;</span>This is an example of an Item<span class="nt">&lt;/description&gt;</span>
+     <span class="nt">&lt;link&gt;</span>http://www.domain.com/link.htm<span class="nt">&lt;/link&gt;</span>
+     <span class="nt">&lt;guid</span> <span class="na">isPermaLink=</span><span class="s">&quot;false&quot;</span><span class="nt">&gt;</span> 1102345<span class="nt">&lt;/guid&gt;</span>
+     <span class="nt">&lt;pubDate&gt;</span>Tue, 29 Aug 2006 09:00:00 -0400<span class="nt">&lt;/pubDate&gt;</span>
+   <span class="nt">&lt;/item&gt;</span>
+
+  <span class="nt">&lt;/channel&gt;</span>
+<span class="nt">&lt;/rss&gt;</span>
+</pre></div>
+</div>
+<p>Every example in this tutorial must be compile as:</p>
+<blockquote>
+<div class="highlight-bash"><div class="highlight"><pre>gcc -I&lt;path to our header files&gt; ./libxmlquery.so &lt;source_file&gt;
+</pre></div>
+</div>
+</blockquote>
+<p>Lets begin with parsing. The below code shows how to parse the above XML:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include &quot;node.h&quot;</span>
+<span class="cp">#include &quot;lxq_parser.h&quot;</span>
+
+<span class="n">doc</span><span class="o">*</span> <span class="n">global_document</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+
+<span class="kt">void</span> <span class="n">read_file</span><span class="p">(){</span>
+  <span class="n">global_document</span> <span class="o">=</span> <span class="n">parse_xml</span><span class="p">(</span><span class="s">&quot;test.xml&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">cleanup</span><span class="p">(){</span>
+  <span class="k">if</span><span class="p">(</span><span class="n">global_document</span><span class="p">)</span>
+    <span class="n">destroy_dom_tree</span><span class="p">(</span><span class="n">global_document</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">){</span>
+  <span class="n">read_file</span><span class="p">();</span>
+  <span class="n">cleanup</span><span class="p">();</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Ok so this is a pretty simple file. We&#8217;re creating a DOM tree of the above XML document and then cleaning it up. However, this is not a really helpfull example. Lets try to add
+the capability of querying the document through the program arguments:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &quot;node.h&quot;</span>
+<span class="cp">#include &quot;lxq_parser.h&quot;</span>
+<span class="cp">#include &quot;query_runner.h&quot;</span>
+
+<span class="n">doc</span><span class="o">*</span> <span class="n">global_document</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+
+<span class="kt">void</span> <span class="n">read_file</span><span class="p">(){</span>
+  <span class="n">global_document</span> <span class="o">=</span> <span class="n">parse_xml</span><span class="p">(</span><span class="s">&quot;test.xml&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">cleanup</span><span class="p">(){</span>
+  <span class="k">if</span><span class="p">(</span><span class="n">global_document</span><span class="p">)</span>
+    <span class="n">destroy_dom_tree</span><span class="p">(</span><span class="n">global_document</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">){</span>
+  <span class="c1">//check if we have exactly 1 argument</span>
+  <span class="k">if</span><span class="p">(</span><span class="n">argc</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">){</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Usage: %s </span><span class="se">\&quot;</span><span class="s">query</span><span class="se">\&quot;\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="n">read_file</span><span class="p">();</span>
+
+  <span class="n">query</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">get_doc_root</span><span class="p">(</span><span class="n">global_document</span><span class="p">));</span>
+
+  <span class="n">cleanup</span><span class="p">();</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Go ahead and run it with</p>
+<blockquote>
+<div class="highlight-bash"><div class="highlight"><pre>./a.out <span class="s2">&quot;@/ti..e/&quot;</span>
+</pre></div>
+</div>
+</blockquote>
+<p>It will search the document for all elements that begin with &#8220;ti&#8221;, have any two characters following it and end with &#8220;e&#8221;.</p>
+<p>However, we&#8217;re able to see the output. Lets add that feature:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &quot;node.h&quot;</span>
+<span class="cp">#include &quot;lxq_parser.h&quot;</span>
+<span class="cp">#include &quot;query_runner.h&quot;</span>
+<span class="cp">#include &quot;stack.h&quot;</span>
+<span class="cp">#include &quot;serialize.h&quot;</span>
+
+<span class="n">doc</span><span class="o">*</span> <span class="n">global_document</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+
+<span class="kt">void</span> <span class="n">read_file</span><span class="p">(){</span>
+  <span class="n">global_document</span> <span class="o">=</span> <span class="n">parse_xml</span><span class="p">(</span><span class="s">&quot;test.xml&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">cleanup</span><span class="p">(){</span>
+  <span class="k">if</span><span class="p">(</span><span class="n">global_document</span><span class="p">)</span>
+    <span class="n">destroy_dom_tree</span><span class="p">(</span><span class="n">global_document</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">){</span>
+  <span class="c1">//check if we have exactly 1 argument</span>
+  <span class="k">if</span><span class="p">(</span><span class="n">argc</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">){</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Usage: %s </span><span class="se">\&quot;</span><span class="s">query</span><span class="se">\&quot;\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="n">read_file</span><span class="p">();</span>
+
+  <span class="n">list</span> <span class="o">*</span><span class="n">result</span> <span class="o">=</span> <span class="n">query</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">get_doc_root</span><span class="p">(</span><span class="n">global_document</span><span class="p">));</span>
+
+  <span class="n">generic_list_iterator</span><span class="o">*</span> <span class="n">i</span> <span class="o">=</span> <span class="n">new_generic_list_iterator</span><span class="p">(</span><span class="n">result</span><span class="p">);</span>
+  <span class="k">while</span><span class="p">(</span><span class="n">generic_list_iterator_has_next</span><span class="p">(</span><span class="n">i</span><span class="p">)){</span>
+    <span class="n">dom_node</span><span class="o">*</span> <span class="n">el</span> <span class="o">=</span> <span class="p">(</span><span class="n">dom_node</span><span class="o">*</span><span class="p">)</span> <span class="n">generic_list_iterator_next</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+    <span class="kt">char</span><span class="o">*</span> <span class="n">output</span> <span class="o">=</span> <span class="n">node_to_string</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="n">XML</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">output</span><span class="p">);</span>
+    <span class="n">free</span><span class="p">(</span><span class="n">output</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="n">destroy_generic_list_iterator</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+
+  <span class="n">cleanup</span><span class="p">();</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Try it with the same query as before and then try to retrieve the element &#8220;title&#8221; for the &#8220;item&#8221; title with:</p>
+<blockquote>
+<div class="highlight-bash"><div class="highlight"><pre>./a.out <span class="s2">&quot;@/i.../&gt;/ti..e/&quot;</span>
+</pre></div>
+</div>
+</blockquote>
+<p>Ok we&#8217;re able to retrieve any thing from our RSS Feed. But now, we want to change the title of the element &#8220;item&#8221; to &#8220;no-title&#8221;. Let&#8217;s do it:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &quot;node.h&quot;</span>
+<span class="cp">#include &quot;lxq_parser.h&quot;</span>
+<span class="cp">#include &quot;query_runner.h&quot;</span>
+<span class="cp">#include &quot;stack.h&quot;</span>
+<span class="cp">#include &quot;serialize.h&quot;</span>
+
+<span class="n">doc</span><span class="o">*</span> <span class="n">global_document</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+
+<span class="kt">void</span> <span class="n">read_file</span><span class="p">(){</span>
+  <span class="n">global_document</span> <span class="o">=</span> <span class="n">parse_xml</span><span class="p">(</span><span class="s">&quot;test.xml&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">cleanup</span><span class="p">(){</span>
+  <span class="k">if</span><span class="p">(</span><span class="n">global_document</span><span class="p">)</span>
+    <span class="n">destroy_dom_tree</span><span class="p">(</span><span class="n">global_document</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">){</span>
+  <span class="n">read_file</span><span class="p">();</span>
+
+  <span class="n">list</span> <span class="o">*</span><span class="n">result</span> <span class="o">=</span> <span class="n">query</span><span class="p">(</span><span class="s">&quot;@item&gt;title&quot;</span><span class="p">,</span> <span class="n">get_doc_root</span><span class="p">(</span><span class="n">global_document</span><span class="p">));</span>
+
+  <span class="n">generic_list_iterator</span><span class="o">*</span> <span class="n">i</span> <span class="o">=</span> <span class="n">new_generic_list_iterator</span><span class="p">(</span><span class="n">result</span><span class="p">);</span>
+  <span class="k">while</span><span class="p">(</span><span class="n">generic_list_iterator_has_next</span><span class="p">(</span><span class="n">i</span><span class="p">)){</span>
+    <span class="n">dom_node</span><span class="o">*</span> <span class="n">el</span> <span class="o">=</span> <span class="p">(</span><span class="n">dom_node</span><span class="o">*</span><span class="p">)</span> <span class="n">generic_list_iterator_next</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+    <span class="c1">//get the node which has the title</span>
+    <span class="n">dom_node</span><span class="o">*</span> <span class="n">text_node</span> <span class="o">=</span> <span class="n">get_child_at</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="kt">char</span><span class="o">*</span> <span class="n">old</span> <span class="o">=</span> <span class="n">set_value</span><span class="p">(</span><span class="n">text_node</span><span class="p">,</span> <span class="s">&quot;no-title&quot;</span><span class="p">);</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">old</span><span class="p">)</span>
+      <span class="n">free</span><span class="p">(</span><span class="n">old</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="n">destroy_generic_list_iterator</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+
+  <span class="kt">char</span><span class="o">*</span> <span class="n">output</span> <span class="o">=</span> <span class="n">node_to_string</span><span class="p">(</span><span class="n">get_doc_root</span><span class="p">(</span><span class="n">global_document</span><span class="p">),</span> <span class="n">XML</span><span class="p">);</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">output</span><span class="p">);</span>
+  <span class="n">free</span><span class="p">(</span><span class="n">output</span><span class="p">);</span>
+
+  <span class="n">cleanup</span><span class="p">();</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This concludes the tutorial. We&#8217;ve shown how to parse, query and manipulate XML documents.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../index.html"
+                        title="previous chapter">libxmlquery documentation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../parser/parser.html"
+                        title="next chapter">Parser Module</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../lxq_sources/tutorial/tutorial.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../parser/parser.html" title="Parser Module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../index.html" title="libxmlquery documentation"
+             >previous</a> |</li>
+        <li><a href="../index.html">libxmlquery v0.1.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010, Frederico Gonçalves, Vasco Fernandes.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.4.
+    </div>
+  </body>
+</html>

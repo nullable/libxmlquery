@@ -17,7 +17,7 @@ If you're new to **libxmlquery** start by reading the
 .. toctree::
    :maxdepth: 2
 
-   tutorial
+   tutorial/tutorial
    parser/parser
    dom
    querying

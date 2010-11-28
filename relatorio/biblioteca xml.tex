@@ -215,7 +215,8 @@ append_child(root, new_element_node("b"));
 		only happen in HTML files. 
 	
 		Since querying and XML parsing had to be merge onto a single parser, we had to come up with some kind of distinction between a query and an XML file. We've chosen the character \textbf{@} to indicate that it is a 
-		query we're parsing. This means that each query has to be preceded by the character \textbf{@}. As an example consider the following code, which retrieves every element named \textbf{room}.
+		query we're parsing. This means that each query has to be preceded by the character \textbf{@}, if it isn't our library will prepend it. As an example consider the following code, which retrieves every element named 
+		\textbf{room}.
 		
 \begin{center}
 	\lstset{language=C,numbers=left, captionpos=b, caption=Sample query to a DOM tree.}
@@ -229,7 +230,8 @@ list* query_result = query("@room", get_doc_root(document));
 	\end{tabular}
 	\end{center}
 	
-		Line 1 parses an XML document from the given string and line 2 queries that document. The result will be an empty element with the tag \textbf{room}. Notice how the query was preceded by \textbf{@}.
+		Line 1 parses an XML document from the given string and line 2 queries that document. The result will be an empty element with the tag \textbf{room}. Notice how the query was preceded by \textbf{@}. However,
+		we could simply write \textbf{"room"} as a query, and it would be preceded by an \textbf{@}.
 			
 		Like in XML parsing, the query parser must know the interface of the querying engine module in order to construct the query plan. A query plan is just a sequence of filters that the query engine will apply to the XML
 		nodes.
@@ -458,6 +460,6 @@ exiting...
 		The shell application comes with a Makefile, so it's easy to compile it. To compile in other systems see appendix \ref{chap:gcc}.
 		
 \chapter{Documentation}\label{chap:doc}
-	- Docs \\
+	This section provides all the documentation for the libxmlquery. The most recent version of the documentation is at http://nullable.github.com/libxmlquery/
 	
 \end{document}

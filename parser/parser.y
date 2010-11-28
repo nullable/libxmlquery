@@ -146,11 +146,14 @@ node: start_tag inner end_tag                               {
                                                               }
                                                               //append_children($1, $2->children);
                                                               $1->children = $2->children;
-                                                              if($2->namespace != NULL)
-                                                                free($2->namespace);
-                                                              free($2->name);
+                                                              //if($2->namespace != NULL)
+                                                              //  free($2->namespace);
+                                                              //free($2->name);
+                                                              $2->children = NULL;
+                                                              destroy_dom_node($2);
+
                                                               //destroy_generic_list($2->children);
-                                                              free($2);
+                                                              //free($2);
                                                               $$ = $1;
                                                               destroy_dom_node($3);
                                                             }
@@ -165,7 +168,7 @@ node: start_tag inner end_tag                               {
                                                             }
     ;
 
-inner:                                                      { $$ = new_element_node("");}
+inner:                                                      { $$ = new_element_node(NULL);}
      | inner prop                                           { $$ = $1;
                                                               append_child($$, $2);
                                                             }
@@ -191,7 +194,7 @@ start_tag: START_EL namespace attrs END_EL                  { $$ = $3;
 end_tag: START_EL SLASH namespace END_EL                    { $$ = $3;}
        ;
 
-attrs:                                                      { $$ = new_element_node(""); }
+attrs:                                                      { $$ = new_element_node(NULL); }
      | attrs attr                                           {
                                                               $$ = $1;
                                                               add_attribute($$, $2);

@@ -4,15 +4,49 @@
 #include "../include/macros.h"
 #include "../include/node.h"
 
+#define USE_DICT 1
+
+void* ident(struct stree_node* o){
+    return o->node;
+}
+
+int64_t compare(void* keyA, void* keyB){
+  return strcmp((char*) keyA, (char*) keyB);
+}
+
+struct sroot* dictionary = NULL;
+
+void initialize_dictionary(){
+    dictionary = new_rbtree(&ident, &compare);
+}
+
+char* get_string_pointer(const char* string){
+    char* value = NULL;
+    if(string == NULL){ return NULL; }
+    if(USE_DICT){
+        if(!dictionary){ initialize_dictionary(); }
+        value = search_rbtree(*dictionary, (void*)string);
+        if(value == NULL){
+            value = strdup(string);
+            rb_tree_insert(dictionary, value);
+        }
+    }
+    else{
+        value = strdup(string);
+    }
+
+    //log(I, "%p: '%s' | '%s'", value, value, string);
+    return value;
+}
+
 char* set_namespace(dom_node* node, const char* namespace){
   char* old;
 
   if(!namespace)
     return NULL;
-
   old = node->namespace;
+  node->namespace = get_string_pointer(namespace);
 
-  node->namespace = strdup(namespace);
   return old;
 }
 
@@ -23,8 +57,8 @@ char* set_name(dom_node* node, char* name){
     return NULL;
 
   old = node->name;
-  node->name = strdup(name);
-  return old;
+  node->name = get_string_pointer(name);
+  return (USE_DICT)? NULL: old;
 }
 
 char* set_value(dom_node* node, char* value){
@@ -33,9 +67,11 @@ char* set_value(dom_node* node, char* value){
   if(!value)
     return NULL;
 
+  if(node->type == ELEMENT){ log(F, "Element node does not support the value attribute."); exit(1); }
+
   old = node->value;
-  node->value = strdup(value);
-  return old;
+  node->value = get_string_pointer(value);
+  return (USE_DICT)? NULL: old;
 }
 
 dom_node* set_doc_root(doc* document, struct snode* root){
@@ -117,10 +153,6 @@ void* key(struct stree_node* node){
   return ((dom_node*) node->node)->name;
 }
 
-int64_t compare(void* keyA, void* keyB){
-  return strcmp((char*) keyA, (char*) keyB);
-}
-
 void add_attribute(dom_node* node, dom_node* attribute){
   if(attribute == NULL) {
     log(W, "Trying to add a NULL attrubute.\n");
@@ -169,7 +201,7 @@ dom_node* new_element_node(const char* name){
   node->children = NULL;
 
   node->type = ELEMENT;
-  node->name = strdup(name);
+  node->name = get_string_pointer(name);
   return node;
 }
 
@@ -196,8 +228,8 @@ dom_node* new_attribute(char* name, char* value){
   node->children = NULL;
 
   node->type = ATTRIBUTE;
-  node->name = strdup(name);
-  node->value = strdup(value);
+  node->name = get_string_pointer(name);
+  node->value = get_string_pointer(value);
   return node;
 }
 
@@ -299,9 +331,9 @@ void destroy_dom_node(dom_node* n){
 
   if( n == NULL) return;
   if((n->type == ELEMENT || n->type == ATTRIBUTE) && n->namespace != NULL)
-    free(n->namespace);
+    if(!USE_DICT) free(n->namespace);
   if((n->type == ELEMENT || n->type == ATTRIBUTE) && n->name != NULL)
-    free(n->name);
+    if(!USE_DICT) free(n->name);
   if((n->type == TEXT_NODE || n->type == CDATA || n->type == ATTRIBUTE) && n->value != NULL)
     free(n->value);
   if(n->type == ELEMENT && n->attributes != NULL){

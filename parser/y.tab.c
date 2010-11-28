@@ -587,14 +587,14 @@ static const yytype_int8 yyrhs[] =
 static const yytype_uint16 yyrline[] =
 {
        0,   106,   106,   107,   110,   111,   114,   115,   124,   140,
-     157,   168,   169,   174,   175,   176,   180,   191,   194,   195,
-     201,   210,   211,   215,   216,   224,   227,   228,   229,   234,
-     241,   242,   245,   246,   247,   248,   251,   252,   255,   256,
-     257,   258,   259,   262,   263,   264,   266,   267,   270,   271,
-     272,   273,   276,   277,   278,   279,   282,   283,   284,   285,
-     288,   289,   290,   293,   294,   295,   296,   297,   300,   301,
-     302,   303,   306,   317,   318,   321,   322,   325,   326,   327,
-     328,   329,   330,   331
+     160,   171,   172,   177,   178,   179,   183,   194,   197,   198,
+     204,   213,   214,   218,   219,   227,   230,   231,   232,   237,
+     244,   245,   248,   249,   250,   251,   254,   255,   258,   259,
+     260,   261,   262,   265,   266,   267,   269,   270,   273,   274,
+     275,   276,   279,   280,   281,   282,   285,   286,   287,   288,
+     291,   292,   293,   296,   297,   298,   299,   300,   303,   304,
+     305,   306,   309,   320,   321,   324,   325,   328,   329,   330,
+     331,   332,   333,   334
 };
 #endif
 
@@ -1652,11 +1652,14 @@ yyreduce:
                                                               }
                                                               //append_children($1, $2->children);
                                                               (yyvsp[(1) - (3)].dn)->children = (yyvsp[(2) - (3)].dn)->children;
-                                                              if((yyvsp[(2) - (3)].dn)->namespace != NULL)
-                                                                free((yyvsp[(2) - (3)].dn)->namespace);
-                                                              free((yyvsp[(2) - (3)].dn)->name);
+                                                              //if($2->namespace != NULL)
+                                                              //  free($2->namespace);
+                                                              //free($2->name);
+                                                              (yyvsp[(2) - (3)].dn)->children = NULL;
+                                                              destroy_dom_node((yyvsp[(2) - (3)].dn));
+
                                                               //destroy_generic_list($2->children);
-                                                              free((yyvsp[(2) - (3)].dn));
+                                                              //free($2);
                                                               (yyval.dn) = (yyvsp[(1) - (3)].dn);
                                                               destroy_dom_node((yyvsp[(3) - (3)].dn));
                                                             }
@@ -1665,7 +1668,7 @@ yyreduce:
   case 10:
 
 /* Line 1455 of yacc.c  */
-#line 157 "parser.y"
+#line 160 "parser.y"
     { (yyval.dn) = (yyvsp[(3) - (5)].dn);
                                                               char* old = set_name((yyval.dn), get_name((yyvsp[(2) - (5)].dn)));
                                                               if(old)
@@ -1680,14 +1683,14 @@ yyreduce:
   case 11:
 
 /* Line 1455 of yacc.c  */
-#line 168 "parser.y"
-    { (yyval.dn) = new_element_node("");}
+#line 171 "parser.y"
+    { (yyval.dn) = new_element_node(NULL);}
     break;
 
   case 12:
 
 /* Line 1455 of yacc.c  */
-#line 169 "parser.y"
+#line 172 "parser.y"
     { (yyval.dn) = (yyvsp[(1) - (2)].dn);
                                                               append_child((yyval.dn), (yyvsp[(2) - (2)].dn));
                                                             }
@@ -1696,28 +1699,28 @@ yyreduce:
   case 13:
 
 /* Line 1455 of yacc.c  */
-#line 174 "parser.y"
+#line 177 "parser.y"
     {(yyval.dn) = new_cdata((yyvsp[(1) - (1)].string)); free((yyvsp[(1) - (1)].string));}
     break;
 
   case 14:
 
 /* Line 1455 of yacc.c  */
-#line 175 "parser.y"
+#line 178 "parser.y"
     {(yyval.dn) = new_text_node((yyvsp[(1) - (1)].string)); free((yyvsp[(1) - (1)].string));}
     break;
 
   case 15:
 
 /* Line 1455 of yacc.c  */
-#line 176 "parser.y"
+#line 179 "parser.y"
     {(yyval.dn) = (yyvsp[(1) - (1)].dn);}
     break;
 
   case 16:
 
 /* Line 1455 of yacc.c  */
-#line 180 "parser.y"
+#line 183 "parser.y"
     { (yyval.dn) = (yyvsp[(3) - (4)].dn);
                                                               char* old = set_name((yyval.dn), get_name((yyvsp[(2) - (4)].dn)));
 							      if(old)
@@ -1732,21 +1735,21 @@ yyreduce:
   case 17:
 
 /* Line 1455 of yacc.c  */
-#line 191 "parser.y"
+#line 194 "parser.y"
     { (yyval.dn) = (yyvsp[(3) - (4)].dn);}
     break;
 
   case 18:
 
 /* Line 1455 of yacc.c  */
-#line 194 "parser.y"
-    { (yyval.dn) = new_element_node(""); }
+#line 197 "parser.y"
+    { (yyval.dn) = new_element_node(NULL); }
     break;
 
   case 19:
 
 /* Line 1455 of yacc.c  */
-#line 195 "parser.y"
+#line 198 "parser.y"
     {
                                                               (yyval.dn) = (yyvsp[(1) - (2)].dn);
                                                               add_attribute((yyval.dn), (yyvsp[(2) - (2)].dn));
@@ -1756,7 +1759,7 @@ yyreduce:
   case 20:
 
 /* Line 1455 of yacc.c  */
-#line 201 "parser.y"
+#line 204 "parser.y"
     {(yyval.dn) = new_attribute(get_name((yyvsp[(1) - (3)].dn)), (yyvsp[(3) - (3)].string));
                                                              free((yyvsp[(3) - (3)].string));
                                                              char* old = set_namespace((yyval.dn), get_namespace((yyvsp[(1) - (3)].dn)));
@@ -1768,28 +1771,28 @@ yyreduce:
   case 21:
 
 /* Line 1455 of yacc.c  */
-#line 210 "parser.y"
+#line 213 "parser.y"
     {(yyval.string) = (yyvsp[(2) - (3)].string);}
     break;
 
   case 22:
 
 /* Line 1455 of yacc.c  */
-#line 211 "parser.y"
+#line 214 "parser.y"
     {(yyval.string) = "";}
     break;
 
   case 23:
 
 /* Line 1455 of yacc.c  */
-#line 215 "parser.y"
+#line 218 "parser.y"
     { lxq_selected_elements = (yyval.q) = new_generic_list_with_type(4); enqueue_with_type((yyval.q), (yyvsp[(1) - (1)].sel), LXQ_SELECTOR_TYPE); }
     break;
 
   case 24:
 
 /* Line 1455 of yacc.c  */
-#line 216 "parser.y"
+#line 219 "parser.y"
     { int* a = alloc(int, 1);
                                                               *a = (yyvsp[(2) - (3)].token);
                                                               (yyval.q) = (yyvsp[(1) - (3)].q);
@@ -1801,28 +1804,28 @@ yyreduce:
   case 25:
 
 /* Line 1455 of yacc.c  */
-#line 224 "parser.y"
+#line 227 "parser.y"
     { (yyval.sel) = new_selector((yyvsp[(1) - (3)].mv)); (yyval.sel)->attrs = (yyvsp[(2) - (3)].q); (yyval.sel)->filters = (yyvsp[(3) - (3)].q); }
     break;
 
   case 26:
 
 /* Line 1455 of yacc.c  */
-#line 227 "parser.y"
+#line 230 "parser.y"
     { (yyval.q) = new_stack(4); }
     break;
 
   case 27:
 
 /* Line 1455 of yacc.c  */
-#line 228 "parser.y"
+#line 231 "parser.y"
     { (yyval.q) = (yyvsp[(1) - (4)].q); push_stack((yyval.q), (yyvsp[(3) - (4)].attrselector)); }
     break;
 
   case 28:
 
 /* Line 1455 of yacc.c  */
-#line 229 "parser.y"
+#line 232 "parser.y"
     { (yyval.q) = (yyvsp[(1) - (3)].q);
                                                               push_stack((yyval.q), new_attr_value_selector(
                                                                                  new_match_value(lxq_parser_dot_query_operator, EQUAL_OP),
@@ -1833,7 +1836,7 @@ yyreduce:
   case 29:
 
 /* Line 1455 of yacc.c  */
-#line 234 "parser.y"
+#line 237 "parser.y"
     { (yyval.q) = (yyvsp[(1) - (3)].q);
                                                               push_stack((yyval.q), new_attr_value_selector(
                                                                                  new_match_value(lxq_parser_pound_query_operator, EQUAL_OP),
@@ -1844,301 +1847,301 @@ yyreduce:
   case 30:
 
 /* Line 1455 of yacc.c  */
-#line 241 "parser.y"
+#line 244 "parser.y"
     { (yyval.attrselector) = (yyvsp[(2) - (2)].attrselector); (yyval.attrselector)->name = new_match_value((yyvsp[(1) - (2)].string), EQUAL_OP); free((yyvsp[(1) - (2)].string)); }
     break;
 
   case 31:
 
 /* Line 1455 of yacc.c  */
-#line 242 "parser.y"
+#line 245 "parser.y"
     { (yyval.attrselector) = (yyvsp[(2) - (2)].attrselector); (yyval.attrselector)->name = (yyvsp[(1) - (2)].mv); }
     break;
 
   case 32:
 
 /* Line 1455 of yacc.c  */
-#line 245 "parser.y"
+#line 248 "parser.y"
     { (yyval.mv) = NULL; }
     break;
 
   case 33:
 
 /* Line 1455 of yacc.c  */
-#line 246 "parser.y"
+#line 249 "parser.y"
     { (yyval.mv) = NULL; }
     break;
 
   case 34:
 
 /* Line 1455 of yacc.c  */
-#line 247 "parser.y"
+#line 250 "parser.y"
     { (yyval.mv) = new_match_value_no_strdup((yyvsp[(1) - (1)].string), EQUAL_OP);}
     break;
 
   case 35:
 
 /* Line 1455 of yacc.c  */
-#line 248 "parser.y"
+#line 251 "parser.y"
     { (yyval.mv) = (yyvsp[(1) - (1)].mv); }
     break;
 
   case 36:
 
 /* Line 1455 of yacc.c  */
-#line 251 "parser.y"
+#line 254 "parser.y"
     { (yyval.q) = new_stack(4); }
     break;
 
   case 37:
 
 /* Line 1455 of yacc.c  */
-#line 252 "parser.y"
+#line 255 "parser.y"
     { push_stack((yyval.q), (yyvsp[(3) - (3)].fa)); }
     break;
 
   case 38:
 
 /* Line 1455 of yacc.c  */
-#line 255 "parser.y"
+#line 258 "parser.y"
     { (yyval.fa) = new_filter((yyvsp[(1) - (1)].token)); }
     break;
 
   case 39:
 
 /* Line 1455 of yacc.c  */
-#line 256 "parser.y"
+#line 259 "parser.y"
     { (yyval.fa) = new_filter(SCUSTOM_FILTER); (yyval.fa)->name = (yyvsp[(1) - (1)].string); }
     break;
 
   case 40:
 
 /* Line 1455 of yacc.c  */
-#line 257 "parser.y"
+#line 260 "parser.y"
     { (yyval.fa) = new_filter(CUSTOM_FILTER); (yyval.fa)->name = (yyvsp[(1) - (4)].string); (yyval.fa)->args = (yyvsp[(3) - (4)].q); }
     break;
 
   case 41:
 
 /* Line 1455 of yacc.c  */
-#line 258 "parser.y"
+#line 261 "parser.y"
     { (yyval.fa) = new_filter((yyvsp[(1) - (4)].token)); (yyval.fa)->value.s = (yyvsp[(3) - (4)].s); }
     break;
 
   case 42:
 
 /* Line 1455 of yacc.c  */
-#line 259 "parser.y"
+#line 262 "parser.y"
     { (yyval.fa) = new_filter(NOT_FILTER); (yyval.fa)->value.selector = (yyvsp[(3) - (4)].q); }
     break;
 
   case 43:
 
 /* Line 1455 of yacc.c  */
-#line 262 "parser.y"
+#line 265 "parser.y"
     { (yyval.q) = new_stack(2); }
     break;
 
   case 44:
 
 /* Line 1455 of yacc.c  */
-#line 263 "parser.y"
+#line 266 "parser.y"
     { int* i = alloc(int, 1); *i = (yyvsp[(2) - (2)].digits); push_stack((yyvsp[(1) - (2)].q), i); (yyval.q) = (yyvsp[(1) - (2)].q);}
     break;
 
   case 45:
 
 /* Line 1455 of yacc.c  */
-#line 264 "parser.y"
+#line 267 "parser.y"
     { push_stack((yyvsp[(1) - (2)].q), (yyvsp[(2) - (2)].string)); (yyval.q) = (yyvsp[(1) - (2)].q);}
     break;
 
   case 46:
 
 /* Line 1455 of yacc.c  */
-#line 266 "parser.y"
+#line 269 "parser.y"
     { (yyval.token) = NTH_CHILD_FILTER; }
     break;
 
   case 47:
 
 /* Line 1455 of yacc.c  */
-#line 267 "parser.y"
+#line 270 "parser.y"
     { (yyval.token) = NTH_LAST_CHILD_FILTER; }
     break;
 
   case 48:
 
 /* Line 1455 of yacc.c  */
-#line 270 "parser.y"
+#line 273 "parser.y"
     { (yyval.token) = FIRST_CHILD_FILTER; }
     break;
 
   case 49:
 
 /* Line 1455 of yacc.c  */
-#line 271 "parser.y"
+#line 274 "parser.y"
     { (yyval.token) = LAST_CHILD_FILTER; }
     break;
 
   case 50:
 
 /* Line 1455 of yacc.c  */
-#line 272 "parser.y"
+#line 275 "parser.y"
     { (yyval.token) = ONLY_CHILD_FILTER; }
     break;
 
   case 51:
 
 /* Line 1455 of yacc.c  */
-#line 273 "parser.y"
+#line 276 "parser.y"
     { (yyval.token) = EMPTY_FILTER; }
     break;
 
   case 52:
 
 /* Line 1455 of yacc.c  */
-#line 276 "parser.y"
+#line 279 "parser.y"
     { (yyval.s) = (yyvsp[(1) - (1)].s); }
     break;
 
   case 53:
 
 /* Line 1455 of yacc.c  */
-#line 277 "parser.y"
+#line 280 "parser.y"
     { (yyval.s) = alloc(struct step_s, 1); (yyval.s)->multiplier = 0; (yyval.s)->offset = (yyvsp[(1) - (1)].digits);}
     break;
 
   case 54:
 
 /* Line 1455 of yacc.c  */
-#line 278 "parser.y"
+#line 281 "parser.y"
     { (yyval.s) = alloc(struct step_s, 1); (yyval.s)->multiplier = 2; (yyval.s)->offset = 0; }
     break;
 
   case 55:
 
 /* Line 1455 of yacc.c  */
-#line 279 "parser.y"
+#line 282 "parser.y"
     { (yyval.s) = alloc(struct step_s, 1); (yyval.s)->multiplier = 2; (yyval.s)->offset = 1; }
     break;
 
   case 56:
 
 /* Line 1455 of yacc.c  */
-#line 282 "parser.y"
+#line 285 "parser.y"
     { (yyval.s) = alloc(struct step_s, 1); (yyval.s)->multiplier = 1; (yyval.s)->offset = 0; }
     break;
 
   case 57:
 
 /* Line 1455 of yacc.c  */
-#line 283 "parser.y"
+#line 286 "parser.y"
     { (yyval.s) = alloc(struct step_s, 1); (yyval.s)->multiplier = (yyvsp[(1) - (2)].digits); (yyval.s)->offset = 0; }
     break;
 
   case 58:
 
 /* Line 1455 of yacc.c  */
-#line 284 "parser.y"
+#line 287 "parser.y"
     { (yyval.s) = alloc(struct step_s, 1); (yyval.s)->multiplier = 1; (yyval.s)->offset = (yyvsp[(2) - (2)].digits); }
     break;
 
   case 59:
 
 /* Line 1455 of yacc.c  */
-#line 285 "parser.y"
+#line 288 "parser.y"
     { (yyval.s) = alloc(struct step_s, 1); (yyval.s)->multiplier = (yyvsp[(1) - (3)].digits); (yyval.s)->offset = (yyvsp[(3) - (3)].digits); }
     break;
 
   case 60:
 
 /* Line 1455 of yacc.c  */
-#line 288 "parser.y"
+#line 291 "parser.y"
     { (yyval.digits) = (yyvsp[(2) - (2)].digits); }
     break;
 
   case 61:
 
 /* Line 1455 of yacc.c  */
-#line 289 "parser.y"
+#line 292 "parser.y"
     { (yyval.digits) = -(yyvsp[(2) - (2)].digits); }
     break;
 
   case 62:
 
 /* Line 1455 of yacc.c  */
-#line 290 "parser.y"
+#line 293 "parser.y"
     { (yyval.digits) = (yyvsp[(1) - (1)].digits); }
     break;
 
   case 63:
 
 /* Line 1455 of yacc.c  */
-#line 293 "parser.y"
+#line 296 "parser.y"
     { (yyval.token) = '>'; }
     break;
 
   case 64:
 
 /* Line 1455 of yacc.c  */
-#line 294 "parser.y"
+#line 297 "parser.y"
     { (yyval.token) = '~'; }
     break;
 
   case 65:
 
 /* Line 1455 of yacc.c  */
-#line 295 "parser.y"
+#line 298 "parser.y"
     { (yyval.token) = '+'; }
     break;
 
   case 66:
 
 /* Line 1455 of yacc.c  */
-#line 296 "parser.y"
+#line 299 "parser.y"
     { (yyval.token) = ','; }
     break;
 
   case 67:
 
 /* Line 1455 of yacc.c  */
-#line 297 "parser.y"
+#line 300 "parser.y"
     { (yyval.token) = SPACE; }
     break;
 
   case 68:
 
 /* Line 1455 of yacc.c  */
-#line 300 "parser.y"
+#line 303 "parser.y"
     { (yyval.attrselector) = new_attr_value_selector(NULL, NULL); }
     break;
 
   case 69:
 
 /* Line 1455 of yacc.c  */
-#line 301 "parser.y"
+#line 304 "parser.y"
     { (yyval.attrselector) = new_attr_value_selector(NULL, make_operators((yyvsp[(3) - (4)].string), (yyvsp[(1) - (4)].token))); free((yyvsp[(3) - (4)].string));}
     break;
 
   case 70:
 
 /* Line 1455 of yacc.c  */
-#line 302 "parser.y"
+#line 305 "parser.y"
     { (yyval.attrselector) = new_attr_value_selector(NULL, make_operators((yyvsp[(3) - (4)].string), (yyvsp[(1) - (4)].token))); free((yyvsp[(3) - (4)].string)); }
     break;
 
   case 71:
 
 /* Line 1455 of yacc.c  */
-#line 303 "parser.y"
+#line 306 "parser.y"
     { (yyval.attrselector) = new_attr_value_selector(NULL, (yyvsp[(2) - (2)].mv)); }
     break;
 
   case 72:
 
 /* Line 1455 of yacc.c  */
-#line 306 "parser.y"
+#line 309 "parser.y"
     {   char* text = (char*)pop_stack((yyvsp[(2) - (3)].q));
                                                                 while((yyvsp[(2) - (3)].q)->count > 0){
                                                                     char* r = (char*)pop_stack((yyvsp[(2) - (3)].q));
@@ -2154,84 +2157,84 @@ yyreduce:
   case 73:
 
 /* Line 1455 of yacc.c  */
-#line 317 "parser.y"
+#line 320 "parser.y"
     { (yyval.q) = new_stack(4); push_stack((yyval.q), (yyvsp[(1) - (1)].string)); }
     break;
 
   case 74:
 
 /* Line 1455 of yacc.c  */
-#line 318 "parser.y"
+#line 321 "parser.y"
     { (yyval.q) = (yyvsp[(1) - (2)].q); push_stack((yyval.q), (yyvsp[(2) - (2)].string)); }
     break;
 
   case 75:
 
 /* Line 1455 of yacc.c  */
-#line 321 "parser.y"
+#line 324 "parser.y"
     { (yyval.token) = REGEX_OP; }
     break;
 
   case 76:
 
 /* Line 1455 of yacc.c  */
-#line 322 "parser.y"
+#line 325 "parser.y"
     { (yyval.token) = REGEXI_OP; }
     break;
 
   case 77:
 
 /* Line 1455 of yacc.c  */
-#line 325 "parser.y"
+#line 328 "parser.y"
     { (yyval.token) = EQUAL_OP; }
     break;
 
   case 78:
 
 /* Line 1455 of yacc.c  */
-#line 326 "parser.y"
+#line 329 "parser.y"
     { (yyval.token) = WSSV_OP; }
     break;
 
   case 79:
 
 /* Line 1455 of yacc.c  */
-#line 327 "parser.y"
+#line 330 "parser.y"
     { (yyval.token) = STARTSW_OP; }
     break;
 
   case 80:
 
 /* Line 1455 of yacc.c  */
-#line 328 "parser.y"
+#line 331 "parser.y"
     { (yyval.token) = ENDSW_OP; }
     break;
 
   case 81:
 
 /* Line 1455 of yacc.c  */
-#line 329 "parser.y"
+#line 332 "parser.y"
     { (yyval.token) = CONTAINS_OP; }
     break;
 
   case 82:
 
 /* Line 1455 of yacc.c  */
-#line 330 "parser.y"
+#line 333 "parser.y"
     { (yyval.token) = DSV_OP; }
     break;
 
   case 83:
 
 /* Line 1455 of yacc.c  */
-#line 331 "parser.y"
+#line 334 "parser.y"
     { (yyval.token) = NOTEQUAL_OP; }
     break;
 
 
 
 /* Line 1455 of yacc.c  */
-#line 2235 "y.tab.c"
+#line 2238 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);

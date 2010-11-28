@@ -13,7 +13,7 @@ tree_node RBNIL = {
 
 static tree_node* new_rbtree_node(void* node){
   tree_node *z = alloc(tree_node, 1);
-  
+
   z->node = node;
   z->parent = &RBNIL;
   z->left = &RBNIL;
@@ -31,7 +31,7 @@ static int64_t __compare_by_pointer(void* keyA, void* keyB){
 }
 
 tree_root* new_simple_rbtree(){
-  return new_rbtree(NULL, NULL);  
+  return new_rbtree(NULL, NULL);
 }
 
 tree_root* new_rbtree(void* (*key_function_pointer)(struct stree_node* node),
@@ -55,9 +55,9 @@ static void left_rbrotate(tree_root* root, tree_node* rbrotate_on){
 
   if(y->left != &RBNIL)
     y->left->parent = rbrotate_on;
-  
+
   y->parent = rbrotate_on->parent;
- 
+
   if(rbrotate_on->parent == &RBNIL)
     root->root = y;
   else
@@ -65,7 +65,7 @@ static void left_rbrotate(tree_root* root, tree_node* rbrotate_on){
       rbrotate_on->parent->left = y;
     else
       rbrotate_on->parent->right = y;
- 
+
   y->left = rbrotate_on;
   rbrotate_on->parent = y;
   return;
@@ -78,9 +78,9 @@ static void right_rbrotate(tree_root* root, tree_node* rbrotate_on){
 
   if(y->right != &RBNIL)
     y->right->parent = rbrotate_on;
-  
+
   y->parent = rbrotate_on->parent;
- 
+
   if(rbrotate_on->parent == &RBNIL)
     root->root = y;
   else
@@ -88,7 +88,7 @@ static void right_rbrotate(tree_root* root, tree_node* rbrotate_on){
       rbrotate_on->parent->right = y;
     else
       rbrotate_on->parent->left = y;
- 
+
   y->right = rbrotate_on;
   rbrotate_on->parent = y;
   return;
@@ -98,10 +98,10 @@ static void rb_tree_insert_fixup(tree_root* root, tree_node* z){
   tree_node* y;
 
   while(z->parent->color == RED){
-    
+
     if(z->parent == z->parent->parent->left){
       y = z->parent->parent->right;
-      
+
       if(y->color == RED){
 	z->parent->color = BLACK;
 	y->color = BLACK;
@@ -116,10 +116,10 @@ static void rb_tree_insert_fixup(tree_root* root, tree_node* z){
 	z->parent->parent->color = RED;
 	right_rbrotate(root, z->parent->parent);
       }
-      
+
     }else{
       y = z->parent->parent->left;
-      
+
       if(y->color == RED){
 	z->parent->color = BLACK;
 	y->color = BLACK;
@@ -153,14 +153,14 @@ void* rb_tree_insert(tree_root* root, void* node){
       free(z);
       x->node = node;
       return holder;
-    }      
+    }
 
     if(root->compare(root->key(z), root->key(x)) < 0)
       x = x->left;
     else
       x = x->right;
   }
-  
+
   z->parent = y;
 
   if(y == &RBNIL)
@@ -346,10 +346,10 @@ tree_iterator* new_tree_iterator(tree_root* root){
   tree_node* aux = root->root;
   tree_iterator* it = alloc(tree_iterator, 1);
 
-  while(aux->left != &RBNIL || aux->right != &RBNIL){ 
+  while(aux->left != &RBNIL || aux->right != &RBNIL){
     while(aux->left != &RBNIL)
       aux = aux->left;
-    
+
     if(aux->right != &RBNIL)
       aux = aux->right;
   }
@@ -367,17 +367,17 @@ void* tree_iterator_next(tree_iterator* it){
   tree_node* aux;
   tree_node* tn = it->current;
 
-  if(tn->parent != &RBNIL && 
-     tn->parent->right != &RBNIL && 
+  if(tn->parent != &RBNIL &&
+     tn->parent->right != &RBNIL &&
      tn->parent->right != tn){
     aux = tn->parent->right;
-    while(aux->left != &RBNIL || aux->right != &RBNIL){ 
+    while(aux->left != &RBNIL || aux->right != &RBNIL){
       while(aux->left != &RBNIL)
 	aux = aux->left;
-    
+
       if(aux->right != &RBNIL)
 	aux = aux->right;
-    }   
+    }
     it->current = aux;
   }
   else
@@ -388,3 +388,4 @@ void* tree_iterator_next(tree_iterator* it){
 void destroy_iterator(tree_iterator* it){
   free(it);
 }
+

@@ -40,6 +40,7 @@ extern selector* new_selector(match_value* id);
 extern attr_selector* new_attr_value_selector(match_value* name, match_value* value);
 extern filter_selector* new_filter(int filter);
 extern match_value* new_match_value(const char* value, int op);
+extern match_value* new_match_value_no_strdup(char* value, int op);
 
 extern void destroy_selector(selector* s);
 extern void destroy_filter_selector(filter_selector* fs);

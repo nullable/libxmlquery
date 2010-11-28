@@ -1019,7 +1019,7 @@ YY_RULE_SETUP
 case 3:
 YY_RULE_SETUP
 #line 15 "parser.l"
-{ yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); BEGIN CDATA; }
+{ yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; BEGIN CDATA; }
 	YY_BREAK
 case 4:
 /* rule 4 can match eol */
@@ -1030,7 +1030,7 @@ YY_RULE_SETUP
 case 5:
 YY_RULE_SETUP
 #line 17 "parser.l"
-{ yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); BEGIN XML_INITIAL; return TEXT; }
+{ yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; BEGIN XML_INITIAL; return TEXT; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
@@ -1045,7 +1045,7 @@ YY_RULE_SETUP
 case 8:
 YY_RULE_SETUP
 #line 21 "parser.l"
-{ yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); BEGIN CDATA; }
+{ BEGIN CDATA; }
 	YY_BREAK
 case 9:
 /* rule 9 can match eol */
@@ -1061,12 +1061,12 @@ YY_RULE_SETUP
 case 11:
 YY_RULE_SETUP
 #line 24 "parser.l"
-{ yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return TEXT; }
+{ yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return TEXT; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
 #line 25 "parser.l"
-{ yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return TEXT; }
+{ yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return TEXT; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
@@ -1101,7 +1101,7 @@ YY_RULE_SETUP
 case 19:
 YY_RULE_SETUP
 #line 33 "parser.l"
-{ yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return WORD; }
+{ yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return WORD; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
@@ -1123,7 +1123,7 @@ case 23:
 /* rule 23 can match eol */
 YY_RULE_SETUP
 #line 38 "parser.l"
-{ yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return TEXT; }
+{ yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return TEXT; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
@@ -1137,7 +1137,7 @@ case 25:
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
 #line 41 "parser.l"
-{ yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return CDATA_TOK; }
+{ yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return CDATA_TOK; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
@@ -1169,7 +1169,7 @@ YY_RULE_SETUP
 case 31:
 YY_RULE_SETUP
 #line 49 "parser.l"
-{ yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return WORD; }
+{ yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return WORD; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
@@ -1324,7 +1324,7 @@ YY_RULE_SETUP
 case 62:
 YY_RULE_SETUP
 #line 81 "parser.l"
-{ yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); BEGIN QUERY_INITIAL; return CUSTOM_FILTER; }
+{ yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; BEGIN QUERY_INITIAL; return CUSTOM_FILTER; }
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
@@ -1370,7 +1370,7 @@ YY_RULE_SETUP
 case 71:
 YY_RULE_SETUP
 #line 94 "parser.l"
-{ yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return WORD; }
+{ yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return WORD; }
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
@@ -1381,13 +1381,13 @@ case 73:
 /* rule 73 can match eol */
 YY_RULE_SETUP
 #line 97 "parser.l"
-{ yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return REGEX; }
+{ yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return REGEX; }
 	YY_BREAK
 case 74:
 /* rule 74 can match eol */
 YY_RULE_SETUP
 #line 98 "parser.l"
-{ yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return REGEX; }
+{ yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return REGEX; }
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
@@ -1408,7 +1408,7 @@ case 78:
 /* rule 78 can match eol */
 YY_RULE_SETUP
 #line 103 "parser.l"
-{ yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return TEXT; }
+{ yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return TEXT; }
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
@@ -1419,7 +1419,7 @@ case 80:
 /* rule 80 can match eol */
 YY_RULE_SETUP
 #line 106 "parser.l"
-{ yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return TEXT; }
+{ yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return TEXT; }
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
@@ -1429,7 +1429,7 @@ YY_RULE_SETUP
 case 82:
 YY_RULE_SETUP
 #line 109 "parser.l"
-{ yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return TEXT; }
+{ yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return TEXT; }
 	YY_BREAK
 case 83:
 YY_RULE_SETUP

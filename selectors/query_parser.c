@@ -22,6 +22,13 @@ match_value* new_match_value(const char* value, int op){
     return r;
 }
 
+match_value* new_match_value_no_strdup(char* value, int op){
+    match_value* r = alloc(match_value, 1);
+    r->value = value;
+    r->op = op;
+    return r;
+}
+
 attr_selector* new_attr_value_selector(match_value* name, match_value* value){
   attr_selector* r = alloc(attr_selector, 1);
   r->name = name;
@@ -87,14 +94,14 @@ match_value* make_operators(const char* str, int op){
             append_string_to_buffer("^", bb);
             append_string_to_buffer(str, bb);
             append_bytes_to_buffer("\0", bb, 1);
-            r = new_match_value(bb->buffer, REGEX_OP);
+            r = new_match_value_no_strdup(bb->buffer, REGEX_OP);
             break;
         case ENDSW_OP:
             bb = new_byte_buffer(strlen(str)+2);
             append_string_to_buffer(str, bb);
             append_string_to_buffer("$", bb);
             append_bytes_to_buffer("\0", bb, 1);
-            r = new_match_value(bb->buffer, REGEX_OP);
+            r = new_match_value_no_strdup(bb->buffer, REGEX_OP);
             break;
         case WSSV_OP:
             bb = new_byte_buffer((strlen(str)+5)*4);
@@ -115,7 +122,7 @@ match_value* make_operators(const char* str, int op){
             append_string_to_buffer(" )", bb);
 
             append_bytes_to_buffer("\0", bb, 1);
-            r = new_match_value(bb->buffer, REGEX_OP);
+            r = new_match_value_no_strdup(bb->buffer, REGEX_OP);
             break;
         case DSV_OP:
             bb = new_byte_buffer((strlen(str)+5)*4);
@@ -136,15 +143,15 @@ match_value* make_operators(const char* str, int op){
             append_string_to_buffer("-)", bb);
 
             append_bytes_to_buffer("\0", bb, 1);
-            r = new_match_value(bb->buffer, REGEX_OP);
+            r = new_match_value_no_strdup(bb->buffer, REGEX_OP);
             break;
         case NO_OP:
             r = NULL;
             break;
         default:
-            r = new_match_value(str, op);
+            r = new_match_value_no_strdup(str, op);
     }
-    destroy_byte_buffer(bb);
+    free(bb);
     return r;
 }
 

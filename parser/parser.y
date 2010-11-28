@@ -111,9 +111,11 @@ document: node                                              {lxq_document = new_
         | declaration node                                  {lxq_document = new_document($1); set_doc_root(lxq_document, $2);}
         ;
 
-namespace: WORD                                             { $$ = new_element_node($1);}
+namespace: WORD                                             { $$ = new_element_node($1); free($1);}
          | WORD ':' WORD                                    { $$ = new_element_node($3);
-                                                              char* old = set_namespace($$, $1);
+                                                              free($3);
+                                                              char* old = $$->namespace;
+                                                              $$->namespace = $1;
                                                               if(old)
                                                                 free(old);
                                                             }
@@ -142,11 +144,12 @@ node: start_tag inner end_tag                               {
                                                                 yyerror(error_line);
                                                                 exit(1);
                                                               }
-                                                              append_children($1, $2->children);
+                                                              //append_children($1, $2->children);
+                                                              $1->children = $2->children;
                                                               if($2->namespace != NULL)
                                                                 free($2->namespace);
                                                               free($2->name);
-                                                              destroy_generic_list($2->children);
+                                                              //destroy_generic_list($2->children);
                                                               free($2);
                                                               $$ = $1;
                                                               destroy_dom_node($3);
@@ -168,8 +171,8 @@ inner:                                                      { $$ = new_element_n
                                                             }
      ;
 
-prop: CDATA_TOK                                             {$$ = new_cdata($1);}
-    | TEXT                                                  {$$ = new_text_node($1); }
+prop: CDATA_TOK                                             {$$ = new_cdata($1); free($1);}
+    | TEXT                                                  {$$ = new_text_node($1); free($1);}
     | node                                                  {$$ = $1;}
     ;
 
@@ -196,6 +199,7 @@ attrs:                                                      { $$ = new_element_n
      ;
 
 attr:  namespace '=' value                                  {$$ = new_attribute(get_name($1), $3);
+                                                             free($3);
                                                              char* old = set_namespace($$, get_namespace($1));
                                                                if(old)
                                                                  free(old);
@@ -222,17 +226,25 @@ selector: id attrsels pseudo_filters                        { $$ = new_selector(
 
 attrsels:                                                   { $$ = new_stack(4); }
         | attrsels '[' attrsel ']'                          { $$ = $1; push_stack($$, $3); }
-        | attrsels '.' WORD                                 { $$ = $1; push_stack($$, new_attr_value_selector(new_match_value(lxq_parser_dot_query_operator, EQUAL_OP), new_match_value($3, WSSV_OP))); }
-        | attrsels '#' WORD                                 { $$ = $1; push_stack($$, new_attr_value_selector(new_match_value(lxq_parser_pound_query_operator, EQUAL_OP), new_match_value($3, EQUAL_OP))); }
+        | attrsels '.' WORD                                 { $$ = $1;
+                                                              push_stack($$, new_attr_value_selector(
+                                                                                 new_match_value(lxq_parser_dot_query_operator, EQUAL_OP),
+                                                                                 new_match_value_no_strdup($3, WSSV_OP)));
+                                                            }
+        | attrsels '#' WORD                                 { $$ = $1;
+                                                              push_stack($$, new_attr_value_selector(
+                                                                                 new_match_value(lxq_parser_pound_query_operator, EQUAL_OP),
+                                                                                 new_match_value_no_strdup($3, EQUAL_OP)));
+                                                            }
         ;
 
-attrsel: WORD attr_filter                                   { $$ = $2; $$->name = new_match_value($1, EQUAL_OP); }
+attrsel: WORD attr_filter                                   { $$ = $2; $$->name = new_match_value($1, EQUAL_OP); free($1); }
        | regex attr_filter                                  { $$ = $2; $$->name = $1; }
        ;
 
 id:                                                         { $$ = NULL; }
   | ALL                                                     { $$ = NULL; }
-  | WORD                                                    { $$ = new_match_value($1, EQUAL_OP);}
+  | WORD                                                    { $$ = new_match_value_no_strdup($1, EQUAL_OP);}
   | regex                                                   { $$ = $1; }
   ;
 
@@ -241,15 +253,15 @@ pseudo_filters:                                             { $$ = new_stack(4);
               ;
 
 pseudo_filter: pseudo_op                                    { $$ = new_filter($1); }
-             | CUSTOM_FILTER                                { $$ = new_filter(SCUSTOM_FILTER); $$->name = strdup($1); }
-             | CUSTOM_FILTER '(' words ')'                  { $$ = new_filter(CUSTOM_FILTER); $$->name = strdup($1); $$->args = $3; }
+             | CUSTOM_FILTER                                { $$ = new_filter(SCUSTOM_FILTER); $$->name = $1; }
+             | CUSTOM_FILTER '(' words ')'                  { $$ = new_filter(CUSTOM_FILTER); $$->name = $1; $$->args = $3; }
              | nth_pseudo_op '(' parameters ')'             { $$ = new_filter($1); $$->value.s = $3; }
              | NOT_FILTER '(' selector_group ')'            { $$ = new_filter(NOT_FILTER); $$->value.selector = $3; }
              ;
 
 words:                                                      { $$ = new_stack(2); }
      | words DIGITS                                         { int* i = alloc(int, 1); *i = $2; push_stack($1, i); $$ = $1;}
-     | words WORD                                           { push_stack($1, strdup($2)); $$ = $1;}
+     | words WORD                                           { push_stack($1, $2); $$ = $1;}
 
 nth_pseudo_op: NTH_CHILD_FILTER                             { $$ = NTH_CHILD_FILTER; }
              | NTH_LAST_CHILD_FILTER                        { $$ = NTH_LAST_CHILD_FILTER; }
@@ -286,8 +298,8 @@ relation_operator: '>'                                      { $$ = '>'; }
                  ;
 
 attr_filter:                                                { $$ = new_attr_value_selector(NULL, NULL); }
-           | operator '"' TEXT '"'                          { $$ = new_attr_value_selector(NULL, make_operators($3, $1)); }
-           | operator '\'' TEXT '\''                        { $$ = new_attr_value_selector(NULL, make_operators($3, $1)); }
+           | operator '"' TEXT '"'                          { $$ = new_attr_value_selector(NULL, make_operators($3, $1)); free($3);}
+           | operator '\'' TEXT '\''                        { $$ = new_attr_value_selector(NULL, make_operators($3, $1)); free($3); }
            | EQUAL_OP regex                                 { $$ = new_attr_value_selector(NULL, $2); }
            ;
 
@@ -296,6 +308,7 @@ regex: '/' regex_stack end_regex                            {   char* text = (ch
                                                                     char* r = (char*)pop_stack($2);
                                                                     text = (char*)realloc(text, strlen(text) + strlen(r) + 1);
                                                                     strcat(text, r);
+                                                                    free(r);
                                                                 }
                                                                 $$ = new_match_value(text, $3);
                                                                 destroy_generic_list($2);

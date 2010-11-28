@@ -4,7 +4,7 @@
 #include "../include/macros.h"
 #include "../include/node.h"
 
-char* set_namespace(dom_node* node, char* namespace){
+char* set_namespace(dom_node* node, const char* namespace){
   char* old;
 
   if(!namespace)
@@ -18,7 +18,7 @@ char* set_namespace(dom_node* node, char* namespace){
 
 char* set_name(dom_node* node, char* name){
   char* old;
-  
+
   if(!name)
     return NULL;
 
@@ -108,7 +108,7 @@ void append_child(dom_node* parent, dom_node* child){
     return;
   }
   if(parent->children == NULL)
-    parent->children = new_generic_list(16);
+    parent->children = new_generic_list(2);
   append_element(parent->children, child, 0);
   child->parent = parent;
 }
@@ -160,7 +160,7 @@ doc* new_document(dom_node* xml_declaration){
   return document;
 }
 
-dom_node* new_element_node(char* name){
+dom_node* new_element_node(const char* name){
   dom_node* node = alloc(dom_node, 1);
 
   node->type = ELEMENT;

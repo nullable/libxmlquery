@@ -12,17 +12,17 @@ int lxq_parser_last_state;
 %%
 \@                                                          {BEGIN QUERY_INITIAL; return '@';}
 "<!--"                                                      { BEGIN COMMENT; lxq_parser_last_state = XML_INITIAL;}
-"<![CDATA["                                                 { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); BEGIN CDATA; }
+"<![CDATA["                                                 { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; BEGIN CDATA; }
 \r?\n                                                       {BEGIN XML_INITIAL;}
-[^@<\n\r]*                                                  { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); BEGIN XML_INITIAL; return TEXT; }
+[^@<\n\r]*                                                  { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; BEGIN XML_INITIAL; return TEXT; }
 \<                                                          { BEGIN IN_STATE; return START_EL; }
 
 <XML_INITIAL>"<!--"                                         { BEGIN COMMENT; lxq_parser_last_state = XML_INITIAL;}
-<XML_INITIAL>"<![CDATA["                                    { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); BEGIN CDATA; }
+<XML_INITIAL>"<![CDATA["                                    { BEGIN CDATA; }
 <XML_INITIAL>\r?\n                                          ;
 <XML_INITIAL>[ \t]*                                         ;
-<XML_INITIAL>[^<\r\n\t ]                                    { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return TEXT; }
-<XML_INITIAL>[^<\r\n\t ][^<\r\n]*[^<\r\n\t ]                { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return TEXT; }
+<XML_INITIAL>[^<\r\n\t ]                                    { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return TEXT; }
+<XML_INITIAL>[^<\r\n\t ][^<\r\n]*[^<\r\n\t ]                { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return TEXT; }
 <XML_INITIAL>\<                                             { BEGIN IN_STATE; return START_EL; }
 
 <IN_STATE>"<!--"                                            { BEGIN COMMENT; lxq_parser_last_state = IN_STATE;}
@@ -30,15 +30,15 @@ int lxq_parser_last_state;
 <IN_STATE>\?                                                { return '?'; }
 <IN_STATE>\/                                                { return SLASH; }
 <IN_STATE>\=                                                { return '='; }
-<IN_STATE>[-_a-zA-Z][-_a-zA-Z0-9]*                          { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return WORD; }
+<IN_STATE>[-_a-zA-Z][-_a-zA-Z0-9]*                          { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return WORD; }
 <IN_STATE>\:                                                { return ':'; }
 <IN_STATE>\"                                                { BEGIN TEXT_BLOCK; return '"'; }
 <IN_STATE>[\r\n \t]+                                        ;
 
-<TEXT_BLOCK>[^"]*                                           { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return TEXT; }
+<TEXT_BLOCK>[^"]*                                           { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return TEXT; }
 <TEXT_BLOCK>\"                                              { BEGIN IN_STATE; return '"'; }
 
-<CDATA>("\n"|.|"\r")+/"]]>"                                      { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return CDATA_TOK; }
+<CDATA>("\n"|.|"\r")+/"]]>"                                      { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return CDATA_TOK; }
 <CDATA>"]]>"                                                { BEGIN XML_INITIAL; }
 
 <COMMENT>("\n"|.|"\r")                                           {;}
@@ -46,7 +46,7 @@ int lxq_parser_last_state;
 
 <QUERY_INITIAL>\*                                           { return ALL; }
 <QUERY_INITIAL>[\n\r]+                                      ;
-<QUERY_INITIAL>[_a-zA-Z][-_a-zA-Z0-9]*                      { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return WORD; }
+<QUERY_INITIAL>[_a-zA-Z][-_a-zA-Z0-9]*                      { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return WORD; }
 <QUERY_INITIAL>\[                                           { return '['; }
 <QUERY_INITIAL>\]                                           { return ']'; }
 <QUERY_INITIAL>[ ]*                                         { return SPACE; }
@@ -78,7 +78,7 @@ int lxq_parser_last_state;
 <FUNC>"only-child"                                          { BEGIN QUERY_INITIAL; return ONLY_CHILD_FILTER; }
 <FUNC>"empty"                                               { BEGIN QUERY_INITIAL; return EMPTY_FILTER; }
 <FUNC>"not"                                                 { BEGIN NOT_STATE; return NOT_FILTER; }
-<FUNC>[_a-zA-Z][-_a-zA-Z0-9]*                               { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); BEGIN QUERY_INITIAL; return CUSTOM_FILTER; }
+<FUNC>[_a-zA-Z][-_a-zA-Z0-9]*                               { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; BEGIN QUERY_INITIAL; return CUSTOM_FILTER; }
 
 
 
@@ -91,21 +91,21 @@ int lxq_parser_last_state;
 <PARAMS>\-                                                  { return '-'; }
 <PARAMS>"even"                                              { return EVEN; }
 <PARAMS>"odd"                                               { return ODD; }
-<PARAMS>[_a-zA-Z][-_a-zA-Z0-9]*                             { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return WORD; }
+<PARAMS>[_a-zA-Z][-_a-zA-Z0-9]*                             { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return WORD; }
 <PARAMS>\)                                                  { BEGIN QUERY_INITIAL; return ')'; }
 
-<REGEX_BLOCK>[^/\\]*                                        { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return REGEX; }
-<REGEX_BLOCK>\\[^/]                                         { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return REGEX; }
+<REGEX_BLOCK>[^/\\]*                                        { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return REGEX; }
+<REGEX_BLOCK>\\[^/]                                         { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return REGEX; }
 <REGEX_BLOCK>"/i"                                           { BEGIN QUERY_INITIAL; return END_REGEXI; }
 <REGEX_BLOCK>"/"                                            { BEGIN QUERY_INITIAL; return '/'; }
 <REGEX_BLOCK>\\\/                                           { yylval.string = "/"; return REGEX; }
 
-<TEXT_BLOCK_SQ_QUERY>[^']*                                  { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return TEXT; }
+<TEXT_BLOCK_SQ_QUERY>[^']*                                  { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return TEXT; }
 <TEXT_BLOCK_SQ_QUERY>\'                                     { BEGIN QUERY_INITIAL; return '\''; }
 
-<TEXT_BLOCK_DQ_QUERY>[^"]*                                  { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return TEXT; }
+<TEXT_BLOCK_DQ_QUERY>[^"]*                                  { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return TEXT; }
 <TEXT_BLOCK_DQ_QUERY>\"                                     { BEGIN QUERY_INITIAL; return '"'; }
 
-<ESCAPE>.                                                   { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return TEXT; }
+<ESCAPE>.                                                   { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return TEXT; }
 %%
 

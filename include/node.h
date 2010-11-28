@@ -30,7 +30,7 @@ typedef struct sdoc{
   struct snode* xml_declaration;
 }doc;
 
-extern char* set_namespace(dom_node* node, char* namespace);
+extern char* set_namespace(dom_node* node, const char* namespace);
 extern char* set_name(dom_node* node, char* name);
 extern char* set_value(dom_node* node, char* value);
 extern dom_node* set_doc_root(doc* document, struct snode* root);
@@ -49,7 +49,7 @@ extern void append_children(dom_node* parent, struct generic_list_s* children);
 extern void add_attribute(dom_node* node, dom_node* attribute);
 
 extern doc* new_document(struct snode* xml_declaration);
-extern dom_node* new_element_node(char* name);
+extern dom_node* new_element_node(const char* name);
 extern dom_node* new_text_node(char* text);
 extern dom_node* new_attribute(char* name, char* value);
 extern dom_node* new_cdata(char* cdata_text);

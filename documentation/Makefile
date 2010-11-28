@@ -46,15 +46,7 @@ gh_pages: html
 	mv $(BUILDDIR)/html/_sources $(BUILDDIR)/html/lxq_sources
 	find $(BUILDDIR)/html -type f | xargs sed -ri 's/"(\.\.\/)*_static/"\1lxq_static/'
 	find $(BUILDDIR)/html -type f | xargs sed -ri 's/"(\.\.\/)*_sources/"\1lxq_sources/'
-	git clone -b gh-pages git@github.com:nullable/libxmlquery.git /tmp/gh_pages
-	cp -r $(BUILDDIR)/html/* /tmp/gh_pages/
-	export OLDDIR=`pwd`
-	cd /tmp/gh_pages
-	git add .
-	git commit -m 'Auto-commit by make gh_pages target'
-	git push origin gh-pages:gh-pages
-	cd $OLDDIR
-	rm -rf /tmp/gh_pages
+	./commit.sh
 
 dirhtml:
 	$(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) $(BUILDDIR)/dirhtml

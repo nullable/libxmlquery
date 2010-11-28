@@ -13,13 +13,13 @@ int lxq_parser_last_state;
 \@                                                          {BEGIN QUERY_INITIAL; return '@';}
 "<!--"                                                      { BEGIN COMMENT; lxq_parser_last_state = XML_INITIAL;}
 "<![CDATA["                                                 { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); BEGIN CDATA; }
-\r?\n                                                          {BEGIN XML_INITIAL;}
-[^@<\n\r]*                                                     { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); BEGIN XML_INITIAL; return TEXT; }
+\r?\n                                                       {BEGIN XML_INITIAL;}
+[^@<\n\r]*                                                  { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); BEGIN XML_INITIAL; return TEXT; }
 \<                                                          { BEGIN IN_STATE; return START_EL; }
 
 <XML_INITIAL>"<!--"                                         { BEGIN COMMENT; lxq_parser_last_state = XML_INITIAL;}
 <XML_INITIAL>"<![CDATA["                                    { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); BEGIN CDATA; }
-<XML_INITIAL>\r?\n                                             ;
+<XML_INITIAL>\r?\n                                          ;
 <XML_INITIAL>[ \t]*                                         ;
 <XML_INITIAL>[^<\r\n \t]*                                     { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return TEXT; }
 <XML_INITIAL>\<                                             { BEGIN IN_STATE; return START_EL; }
@@ -32,7 +32,7 @@ int lxq_parser_last_state;
 <IN_STATE>[-_a-zA-Z][-_a-zA-Z0-9]*                          { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return WORD; }
 <IN_STATE>\:                                                { return ':'; }
 <IN_STATE>\"                                                { BEGIN TEXT_BLOCK; return '"'; }
-<IN_STATE>[\r\n \t]+                                         ;
+<IN_STATE>[\r\n \t]+                                        ;
 
 <TEXT_BLOCK>[^"]*                                           { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return TEXT; }
 <TEXT_BLOCK>\"                                              { BEGIN IN_STATE; return '"'; }
@@ -45,7 +45,7 @@ int lxq_parser_last_state;
 
 <QUERY_INITIAL>\*                                           { return ALL; }
 <QUERY_INITIAL>[\n\r]+                                      ;
-<QUERY_INITIAL>[-_a-zA-Z][-_a-zA-Z0-9]*                     { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return WORD; }
+<QUERY_INITIAL>[_a-zA-Z][-_a-zA-Z0-9]*                      { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return WORD; }
 <QUERY_INITIAL>\[                                           { return '['; }
 <QUERY_INITIAL>\]                                           { return ']'; }
 <QUERY_INITIAL>[ ]*                                         { return SPACE; }
@@ -77,6 +77,8 @@ int lxq_parser_last_state;
 <FUNC>"only-child"                                          { BEGIN QUERY_INITIAL; return ONLY_CHILD_FILTER; }
 <FUNC>"empty"                                               { BEGIN QUERY_INITIAL; return EMPTY_FILTER; }
 <FUNC>"not"                                                 { BEGIN NOT_STATE; return NOT_FILTER; }
+<FUNC>[_a-zA-Z][-_a-zA-Z0-9]*                               { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); BEGIN QUERY_INITIAL; return CUSTOM_FILTER; }
+
 
 
 <NOT_STATE>\(                                               { BEGIN QUERY_INITIAL; return '('; }
@@ -88,13 +90,14 @@ int lxq_parser_last_state;
 <PARAMS>\-                                                  { return '-'; }
 <PARAMS>"even"                                              { return EVEN; }
 <PARAMS>"odd"                                               { return ODD; }
+<PARAMS>[_a-zA-Z][-_a-zA-Z0-9]*                             { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return WORD; }
 <PARAMS>\)                                                  { BEGIN QUERY_INITIAL; return ')'; }
 
-<REGEX_BLOCK>[^/\\]*                                        { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string);printf("regex:'%s'\n", yytext);  return REGEX; }
-<REGEX_BLOCK>\\[^/]                                         { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string);printf("escaped character:'%s'\n", yytext);  return REGEX; }
+<REGEX_BLOCK>[^/\\]*                                        { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return REGEX; }
+<REGEX_BLOCK>\\[^/]                                         { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return REGEX; }
 <REGEX_BLOCK>"/i"                                           { BEGIN QUERY_INITIAL; return END_REGEXI; }
 <REGEX_BLOCK>"/"                                            { BEGIN QUERY_INITIAL; return '/'; }
-<REGEX_BLOCK>\\\/                                           { yylval.string = "/"; printf("escaped slash: '%s'\n", yytext); return REGEX; }
+<REGEX_BLOCK>\\\/                                           { yylval.string = "/"; return REGEX; }
 
 <TEXT_BLOCK_SQ_QUERY>[^']*                                  { yylval.string = strdup(yytext); push_stack(trash_bin, yylval.string); return TEXT; }
 <TEXT_BLOCK_SQ_QUERY>\'                                     { BEGIN QUERY_INITIAL; return '\''; }

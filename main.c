@@ -5,6 +5,7 @@
 #include "include/lxq_parser.h"
 #include "include/stack.h"
 #include "include/query_runner.h"
+#include "include/node.h"
 
 void dump(char* array, int offset, int size){
   for(; offset < size; offset++)
@@ -12,10 +13,15 @@ void dump(char* array, int offset, int size){
   putchar('\n');
 }
 
+int alberto(dom_node* alberto, list* l){
+    char* name = (char*)get_element_at(l, 0);
+    return !strcmp(get_attribute_by_name(alberto, "name")->value, name);
+}
+
 int main(int argc, char** argv){
 
   //  char* cha = node_to_string(document->root, JSON);
-  
+
   //output_xml(document);
   //printf("%s", cha);
 
@@ -25,6 +31,7 @@ int main(int argc, char** argv){
     printf("usage: %s \"xml_file\" \"query\"\n", argv[0]);
       return 0;
   }
+  register_custom_filter("alberto", &alberto);
   doc* document = parse_xml(argv[1]);
   //bdom* b = serialize_dom_doc(document);
 

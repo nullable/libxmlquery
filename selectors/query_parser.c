@@ -32,6 +32,8 @@ attr_selector* new_attr_value_selector(match_value* name, match_value* value){
 filter_selector* new_filter(int filter){
   filter_selector* r = alloc(filter_selector, 1);
   r->op = filter;
+  r->name = NULL;
+  r->args = NULL;
   return r;
 }
 

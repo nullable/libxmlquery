@@ -82,8 +82,8 @@ void parse_string(const char* str){
   struct match_value_s* mv;
  }
 
-%token START_EL END_EL SLASH
-%token <string> WORD TEXT CDATA_TOK REGEX
+%token START_EL END_EL SLASH SCUSTOM_FILTER
+%token <string> WORD TEXT CDATA_TOK REGEX CUSTOM_FILTER
 %token ALL SPACE  END_REGEXI NO_OP EQUAL_OP WSSV_OP STARTSW_OP ENDSW_OP CONTAINS_OP REGEX_OP REGEXI_OP DSV_OP NOTEQUAL_OP EVEN ODD
 %token NTH_CHILD_FILTER NTH_LAST_CHILD_FILTER FIRST_CHILD_FILTER LAST_CHILD_FILTER ONLY_CHILD_FILTER EMPTY_FILTER NOT_FILTER
 %type <dn> attr node prop inner attrs declaration start_tag end_tag namespace
@@ -95,7 +95,7 @@ void parse_string(const char* str){
 %type <token> operator pseudo_op nth_pseudo_op relation_operator end_regex;
 %type <fa> pseudo_filter;
 %type <string> value
-%type <q> selector_group pseudo_filters attrsels regex_stack
+%type <q> selector_group pseudo_filters attrsels regex_stack words
 %type <mv> regex id
 %type <sel> selector
 
@@ -241,9 +241,15 @@ pseudo_filters:                                             { $$ = new_stack(4);
               ;
 
 pseudo_filter: pseudo_op                                    { $$ = new_filter($1); }
+             | CUSTOM_FILTER                                { $$ = new_filter(SCUSTOM_FILTER); $$->name = strdup($1); }
+             | CUSTOM_FILTER '(' words ')'                  { $$ = new_filter(CUSTOM_FILTER); $$->name = strdup($1); $$->args = $3; }
              | nth_pseudo_op '(' parameters ')'             { $$ = new_filter($1); $$->value.s = $3; }
              | NOT_FILTER '(' selector_group ')'            { $$ = new_filter(NOT_FILTER); $$->value.selector = $3; }
              ;
+
+words:                                                      { $$ = new_stack(2); }
+     | words DIGITS                                         { int* i = alloc(int, 1); *i = $2; push_stack($1, i); $$ = $1;}
+     | words WORD                                           { push_stack($1, strdup($2)); $$ = $1;}
 
 nth_pseudo_op: NTH_CHILD_FILTER                             { $$ = NTH_CHILD_FILTER; }
              | NTH_LAST_CHILD_FILTER                        { $$ = NTH_LAST_CHILD_FILTER; }

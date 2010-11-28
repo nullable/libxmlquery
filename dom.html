@@ -394,6 +394,48 @@ void <tt class="descname">destroy_dom_tree</tt><big>(</big><a class="reference i
 </div>
 </div>
 </div>
+<div class="section" id="serialize-dom">
+<h1>Serialize DOM<a class="headerlink" href="#serialize-dom" title="Permalink to this headline">¶</a></h1>
+<p>This section explains how to serialize a DOM tree into a string. Currently we support three different types of output format:</p>
+<ul class="simple">
+<li>XML - print the DOM tree as XML format.</li>
+<li>JSON - print the DOM tree as JavaScript Object Notation format.</li>
+<li>YAML - print the DOM tree as YAML Ain&#8217;t Markup Language format.</li>
+</ul>
+<p>To do this we&#8217;ve defined an enumerate as:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="k">typedef</span> <span class="k">enum</span><span class="p">{</span>
+  <span class="n">XML</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+  <span class="n">JSON</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+  <span class="n">YAML</span><span class="o">=</span><span class="mi">2</span>
+<span class="p">}</span> <span class="n">serialization_type</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The serializarion is done throw the function:</p>
+<dl class="function">
+<dt id="node_to_string">
+char* <tt class="descname">node_to_string</tt><big>(</big><a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>*<em> root</em>, serialization_type<em> t</em><big>)</big><a class="headerlink" href="#node_to_string" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">root</span></tt> The root of the tree to serialize onto a string. Can be any part of the DOM tree.</p>
+<p><tt class="xref c c-member docutils literal"><span class="pre">t</span></tt> The type of serialization to do. Must be one of XML, JSON, YAML.</p>
+<p>The following example shows how to serialize a document onto JSON format. If another one is desired you can change the type of serialization:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &quot;include/node.h&quot;</span>
+<span class="cp">#include &quot;include/serialize.h&quot;</span>
+<span class="cp">#include &quot;include/lxq_parser.h&quot;</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>int main(int argc, char** argv){</dt>
+<dd>doc* document = parse_xml(&#8220;some.xml&#8221;);
+char* json;
+json = node_to_string(get_doc_root(document), JSON);
+printf(&#8220;%s&#8221;, json);
+free(json);
+return 0;</dd>
+</dl>
+<p>}</p>
+</dd></dl>
+
+</div>
 
 
           </div>
@@ -411,6 +453,7 @@ void <tt class="descname">destroy_dom_tree</tt><big>(</big><a class="reference i
 </li>
 </ul>
 </li>
+<li><a class="reference internal" href="#serialize-dom">Serialize DOM</a></li>
 </ul>
 
   <h4>Previous topic</h4>

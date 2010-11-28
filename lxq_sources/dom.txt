@@ -329,3 +329,45 @@ Function description
      gcc -o test <above_source_file> -I<folder path where node.h and lxq_parser.h are kept>
 
    If you use a memory leak checker you'll notice that there are no leaks, so this actually destroys all nodes.
+
+=============
+Serialize DOM
+=============
+
+This section explains how to serialize a DOM tree into a string. Currently we support three different types of output format:
+
+- XML - print the DOM tree as XML format.
+- JSON - print the DOM tree as JavaScript Object Notation format.
+- YAML - print the DOM tree as YAML Ain't Markup Language format.
+
+To do this we've defined an enumerate as::
+
+  typedef enum{
+    XML=0,
+    JSON=1,
+    YAML=2
+  } serialization_type;
+
+The serializarion is done throw the function:
+
+.. c:function:: char* node_to_string(dom_node* root, serialization_type t)
+
+   :c:member:`root` The root of the tree to serialize onto a string. Can be any part of the DOM tree.
+
+   :c:member:`t` The type of serialization to do. Must be one of XML, JSON, YAML.
+
+   The following example shows how to serialize a document onto JSON format. If another one is desired you can change the type of serialization::
+
+   #include <stdio.h>
+   #include "include/node.h"
+   #include "include/serialize.h"
+   #include "include/lxq_parser.h"
+
+   int main(int argc, char** argv){
+     doc* document = parse_xml("some.xml");
+     char* json;
+     json = node_to_string(get_doc_root(document), JSON);
+     printf("%s", json);
+     free(json);
+     return 0;
+   }

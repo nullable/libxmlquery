@@ -32,6 +32,9 @@ int main(int argc, char** argv){
   }
   register_custom_filter("alberto", &alberto);
   doc* document = parse_xml(argv[1]);
+
+  printf("%s", node_to_string(document->root, XML));
+
   //bdom* b = serialize_dom_doc(document);
 
   //  dump(b->bb->buffer, 0, b->bb->size);

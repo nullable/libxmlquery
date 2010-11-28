@@ -105,7 +105,6 @@ void print_simple_btree(btree* bt, int depth){
 
 char* huffman_decode(bitbuffer* bit_string){
     int* offset = alloc(int, 1);
-    int j;
     *offset = 0;
     btree* ut = unpack_huffman_tree(bit_string, offset);
 
@@ -192,9 +191,6 @@ bitbuffer* huffman_encode(char* byte_string, int size){
 
     for(i = 0; i < size; i++){
         append_bitbuffer_to_bitbuffer(table[(int)byte_string[i]].bb, packed_data);
-
-        int j;
-        bitbuffer* bib = table[(int)byte_string[i]].bb;
     }
 
 

@@ -1783,7 +1783,7 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 215 "parser.y"
-    { lxq_selected_elements = (yyval.q) = new_queue(16); enqueue_with_type((yyval.q), (yyvsp[(1) - (1)].sel), LXQ_SELECTOR_TYPE); }
+    { lxq_selected_elements = (yyval.q) = new_generic_list_with_type(4); enqueue_with_type((yyval.q), (yyvsp[(1) - (1)].sel), LXQ_SELECTOR_TYPE); }
     break;
 
   case 24:

@@ -85,7 +85,7 @@ void destroy_selector(selector* s){
   free(s);
 }
 
-match_value* make_operators(const char* str, int op){
+match_value* make_operators(char* str, int op){
     byte_buffer* bb = NULL;
     match_value* r = NULL;
     switch(op){

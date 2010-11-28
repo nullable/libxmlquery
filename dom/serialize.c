@@ -336,3 +336,4 @@ char* node_to_string(dom_node* root, serialization_type t){
   free(b);
   return buff;
 }
+

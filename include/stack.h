@@ -10,7 +10,8 @@ struct list_bucket
 };
 
 typedef struct generic_list_s{
-  struct list_bucket** array;
+  void** array;
+  int8_t with_type;
   int32_t start;
   int32_t count;
   int32_t capacity;
@@ -28,6 +29,7 @@ extern uint8_t generic_list_is_empty(struct generic_list_s* l);
 extern int32_t generic_list_get_count(struct generic_list_s* l);
 
 extern struct generic_list_s *new_generic_list(int32_t initial);
+extern struct generic_list_s *new_generic_list_with_type(int32_t initial);
 extern stack* new_stack(int32_t initial);
 extern queue* new_queue(int32_t initial);
 
@@ -39,14 +41,14 @@ extern void insert_element_at(list* l, void* obj, int32_t pos);
 
 extern void sorted_insert_element_with_type(list* l, void* obj, int16_t type, int(*compare)(void* o1, int16_t type1, void* o2, int16_t type2));
 
-extern void append_element(list* l, void* obj, int16_t type);
-extern void prepend_element(list* l, void* obj, int16_t type);
+extern void append_element_with_type(list* l, void* obj, int16_t type);
+extern void prepend_element_with_type(list* l, void* obj, int16_t type);
 
 extern void add_element_with_type(list* l, void* obj, int16_t type);
 extern void add_element(list* l, void* obj);
 
 extern void* get_element_at(const list* l, int32_t pos);
-extern void* get_element_and_type_at(const list* l, int32_t pos, int16_t* type);
+extern void* get_element_with_type_at(const list* l, int32_t pos, int16_t* type);
 
 extern int get_element_pos(const list* l, void* el);
 

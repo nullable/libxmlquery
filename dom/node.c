@@ -94,7 +94,7 @@ void prepend_child(dom_node* parent, dom_node* child){
 
   log(W, "prepend_child needs to be implemented.\n");
 
-  prepend_element(parent->children, child, 0);
+  prepend_element_with_type(parent->children, child, 0);
   child->parent = parent;
 }
 
@@ -108,8 +108,8 @@ void append_child(dom_node* parent, dom_node* child){
     return;
   }
   if(parent->children == NULL)
-    parent->children = new_generic_list(2);
-  append_element(parent->children, child, 0);
+    parent->children = new_generic_list(1);
+  add_element(parent->children, child);
   child->parent = parent;
 }
 
@@ -163,48 +163,54 @@ doc* new_document(dom_node* xml_declaration){
 dom_node* new_element_node(const char* name){
   dom_node* node = alloc(dom_node, 1);
 
-  node->type = ELEMENT;
-  node->name = strdup(name);
   node->value = NULL;
   node->namespace = NULL;
   node->attributes = NULL;
   node->children = NULL;
+
+  node->type = ELEMENT;
+  node->name = strdup(name);
   return node;
 }
 
 dom_node* new_text_node(char* text){
-  dom_node* node = alloc(dom_node, 1);
+  //dangerous memory optimization
+  textnode_dom_node* node = alloc(textnode_dom_node, 1);
 
+  //node->namespace = NULL;
+  //node->attributes = NULL;
+  //node->children = NULL;
+  //node->name = NULL;
+
+  node->parent = NULL;
   node->type = TEXT_NODE;
-  node->name = NULL;
   node->value = strdup(text);
-  node->namespace = NULL;
-  node->attributes = NULL;
-  node->children = NULL;
-  return node;
+  return (dom_node*)node;
 }
 
 dom_node* new_attribute(char* name, char* value){
   dom_node* node = alloc(dom_node, 1);
 
-  node->type = ATTRIBUTE;
-  node->name = strdup(name);
-  node->value = strdup(value);
   node->namespace = NULL;
   node->attributes = NULL;
   node->children = NULL;
+
+  node->type = ATTRIBUTE;
+  node->name = strdup(name);
+  node->value = strdup(value);
   return node;
 }
 
 dom_node* new_cdata(char* cdata_text){
   dom_node* node = alloc(dom_node, 1);
 
-  node->type = CDATA;
   node->name = NULL;
-  node->value = strdup(cdata_text);
   node->namespace = NULL;
   node->attributes = NULL;
   node->children = NULL;
+
+  node->type = CDATA;
+  node->value = strdup(cdata_text);
   return node;
 }
 
@@ -228,7 +234,7 @@ static void __get_elements_by_name(dom_node* root, char* name, list* lk){
     return;
 
   if(root->type == ELEMENT && strcmp(root->name, name) == 0)
-    append_element(lk, root, 0);
+    append_element_with_type(lk, root, 0);
 
   if(root->children != NULL)
     for(it = 0; it < root->children->count; it++)
@@ -248,7 +254,7 @@ static void __get_text_nodes(dom_node* root, list* lk){
     return;
 
   if(root->type == TEXT_NODE)
-    append_element(lk, root, 0);
+    append_element_with_type(lk, root, 0);
 
   if(root->children != NULL)
     for(it = 0; it < root->children->count; it++)
@@ -298,14 +304,14 @@ void destroy_dom_node(dom_node* n){
     free(n->name);
   if((n->type == TEXT_NODE || n->type == CDATA || n->type == ATTRIBUTE) && n->value != NULL)
     free(n->value);
-  if(n->attributes != NULL){
+  if(n->type == ELEMENT && n->attributes != NULL){
     ti = new_tree_iterator(n->attributes);
     while(tree_iterator_has_next(ti))
       destroy_dom_node(tree_iterator_next(ti));
     destroy_iterator(ti);
     destroy_rbtree(n->attributes);
   }
-  if(n->children != NULL){
+  if(n->type == ELEMENT && n->children != NULL){
     for(it = 0; it < n->children->count; it++)
       destroy_dom_node((dom_node*) get_element_at(n->children, it));
     destroy_generic_list(n->children);

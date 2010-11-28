@@ -11,16 +11,23 @@ enum node_type {
   CDATA
 };
 
+typedef struct textnode_s{
+  enum node_type type;
+  struct snode* parent;
+  char* value;
+} textnode_dom_node;
+
+
 typedef struct snode{
   enum node_type type;
-
-  char* namespace;
-  char* name;
-  char* value;
-
-  struct sroot* attributes;
-
   struct snode* parent;
+  union{
+      struct sroot* attributes;
+      char* value;
+  };
+
+  char* name;
+  char* namespace;
 
   struct generic_list_s* children;
 }dom_node;

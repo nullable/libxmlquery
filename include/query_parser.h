@@ -46,6 +46,6 @@ extern void destroy_selector(selector* s);
 extern void destroy_filter_selector(filter_selector* fs);
 extern void destroy_attr_selector(attr_selector* as);
 
-extern match_value* make_operators(const char* str, int op);
+extern match_value* make_operators(char* str, int op);
 #endif
 

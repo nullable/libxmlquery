@@ -1,0 +1,23 @@
+#!/bin/bash
+
+OUTPUTS_DIR=./test_results
+
+FILES=( "test.xml" )
+
+QUERIES=( "@room" "@room device" "@room,device" "@*" "@room>device" "@room[name]" '@room[name="r2"]' '@room device[type]' '@room device[type="blind"]' '@room>device[type="blind"]' '@room device[type="blind"][state]' '@room device[type="blind"][state="87"]' '@ola' '@room:last-child' '@room:nth-child(1)' '@room:nth-child(3000)' '@room:nth-last-child(1)' '@room:nth-last-child(2n)' '@room:nth-last-child(2n + 1)' '@room:nth-last-child(even)' '@room:nth-last-child(odd)' '@room:nth-child(2n)' '@room:nth-child(2n +1)' '@room:nth-child(even)' '@room:nth-child(odd)' '@' '@device[type^="sw"]' '@device[type$="ch"]' '@device[type*="it"]' '@room:empty')
+
+iend=`echo "${#FILES[@]} - 1" | bc`
+jend=`echo "${#QUERIES[@]} - 1" | bc`
+
+for i in `seq 0 $iend`
+do
+    for j in `seq 0 $jend`
+    do
+	FILE=${FILES[i]}
+	QUERY=${QUERIES[j]}
+	echo "======================================================================"
+	echo "== Running test $i.$j"
+	bash test.sh "$FILE" "$QUERY" "$OUTPUTS_DIR/test$i.$j.out"
+	echo "======================================================================"
+    done
+done

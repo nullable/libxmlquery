@@ -1851,7 +1851,7 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 247 "parser.y"
-    { (yyval.attrselector) = (yyvsp[(2) - (2)].attrselector); (yyval.attrselector)->name = new_match_value((yyvsp[(1) - (2)].string), EQUAL_OP); free((yyvsp[(1) - (2)].string)); }
+    { (yyval.attrselector) = (yyvsp[(2) - (2)].attrselector); (yyval.attrselector)->name = new_match_value_no_strdup((yyvsp[(1) - (2)].string), EQUAL_OP); }
     break;
 
   case 31:

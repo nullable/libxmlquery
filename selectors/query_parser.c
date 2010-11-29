@@ -97,6 +97,7 @@ match_value* make_operators(char* str, int op){
             append_string_to_buffer(str, bb);
             append_bytes_to_buffer("\0", bb, 1);
             r = new_match_value_no_strdup(bb->buffer, REGEX_OP);
+            free(str);
             break;
         case ENDSW_OP:
             bb = new_byte_buffer(strlen(str)+2);
@@ -104,6 +105,7 @@ match_value* make_operators(char* str, int op){
             append_string_to_buffer("$", bb);
             append_bytes_to_buffer("\0", bb, 1);
             r = new_match_value_no_strdup(bb->buffer, REGEX_OP);
+            free(str);
             break;
         case WSSV_OP:
             bb = new_byte_buffer((strlen(str)+5)*4);
@@ -125,6 +127,7 @@ match_value* make_operators(char* str, int op){
 
             append_bytes_to_buffer("\0", bb, 1);
             r = new_match_value_no_strdup(bb->buffer, REGEX_OP);
+            free(str);
             break;
         case DSV_OP:
             bb = new_byte_buffer((strlen(str)+5)*4);
@@ -146,6 +149,7 @@ match_value* make_operators(char* str, int op){
 
             append_bytes_to_buffer("\0", bb, 1);
             r = new_match_value_no_strdup(bb->buffer, REGEX_OP);
+            free(str);
             break;
         case NO_OP:
             r = NULL;

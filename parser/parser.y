@@ -244,7 +244,7 @@ attrsels:                                                   { $$ = new_stack(4);
                                                             }
         ;
 
-attrsel: WORD attr_filter                                   { $$ = $2; $$->name = new_match_value($1, EQUAL_OP); free($1); }
+attrsel: WORD attr_filter                                   { $$ = $2; $$->name = new_match_value_no_strdup($1, EQUAL_OP); }
        | regex attr_filter                                  { $$ = $2; $$->name = $1; }
        ;
 

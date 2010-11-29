@@ -47,7 +47,7 @@ list* lxq_selected_elements;
 
 void yyerror(const char *str)
 {
-  fprintf(stderr,"error:%d: %s at '%s'\n", yylineno, str, yytext);
+  fprintf(stderr,"error at:%d: %s at '%s'\n", yylineno, str, yytext);
 }
 
 int yywrap()
@@ -66,8 +66,8 @@ void parse_file(char* filename){
   else{
       holder = yyin = fopen(filename, "r");
       if(yyin == NULL){
-        log(F, "Unnable to open file %s for reading\n", filename);
-        exit(-1);
+        log(F, "Unable to open file %s for reading.", filename);
+        exit(1);
       }
   }
 
@@ -87,8 +87,8 @@ void parse_string(const char* str){
   internal_cpy[len + 1] = '\0';
 
   if(!yy_scan_buffer(internal_cpy, len + 2)){
-    log(F, "flex could not allocate a new buffer to parse the string.\n");
-    exit(-1);
+    log(F, "Flex could not allocate a new buffer to parse the string.");
+    exit(1);
   }
   yylineno = 1;
   yyparse();
@@ -113,7 +113,7 @@ void parse_string(const char* str){
  }
 
 %token START_EL END_EL SLASH SCUSTOM_FILTER
-%token <string> WORD TEXT CDATA_TOK REGEX CUSTOM_FILTER
+%token <string> WORD TEXT CDATA_TOK REGEX CUSTOM_FILTER CUSTOM_OPERATOR
 %token ALL SPACE  END_REGEXI NO_OP EQUAL_OP WSSV_OP STARTSW_OP ENDSW_OP CONTAINS_OP REGEX_OP REGEXI_OP DSV_OP NOTEQUAL_OP EVEN ODD
 %token NTH_CHILD_FILTER NTH_LAST_CHILD_FILTER FIRST_CHILD_FILTER LAST_CHILD_FILTER ONLY_CHILD_FILTER EMPTY_FILTER NOT_FILTER
 %type <dn> attr node prop inner attrs declaration start_tag end_tag namespace
@@ -253,7 +253,9 @@ attr:  namespace '=' value                                  {$$ = new_attribute(
 
 
 value: '"' TEXT '"'                                         {$$ = $2;}
-     | '"' '"'                                              {$$ = "";}
+     | '"' '"'                                              {$$ = strdup("");}
+     | '\'' TEXT '\''                                       {$$ = $2;}
+     | '\'' '\''                                            {$$ = strdup("");}
      ;
 
 
@@ -274,7 +276,7 @@ attrsels:                                                   { $$ = new_stack(4);
         | attrsels '.' WORD                                 { $$ = $1;
                                                               push_stack($$, new_attr_value_selector(
                                                                                  new_match_value(lxq_parser_dot_query_operator, EQUAL_OP),
-                                                                                 new_match_value_no_strdup($3, WSSV_OP)));
+                                                                                 make_operators($3, WSSV_OP)));
                                                             }
         | attrsels '#' WORD                                 { $$ = $1;
                                                               push_stack($$, new_attr_value_selector(
@@ -348,19 +350,19 @@ attr_filter:                                                { $$ = new_attr_valu
            | EQUAL_OP regex                                 { $$ = new_attr_value_selector(NULL, $2); }
            ;
 
-regex: '/' regex_stack end_regex                            {   char* text = (char*)pop_stack($2);
+regex: '/' regex_stack end_regex                            {   char* text = (char*)dequeue($2);
                                                                 while($2->count > 0){
-                                                                    char* r = (char*)pop_stack($2);
-                                                                    text = (char*)realloc(text, strlen(text) + strlen(r) + 1);
+                                                                    char* r = (char*)dequeue($2);
+                                                                    text = (char*)realloc(text, strlen(text) + strlen(r));
                                                                     strcat(text, r);
                                                                     free(r);
                                                                 }
-                                                                $$ = new_match_value(text, $3);
+                                                                $$ = new_match_value_no_strdup(text, $3);
                                                                 destroy_generic_list($2);
                                                             }
 
-regex_stack: REGEX                                          { $$ = new_stack(4); push_stack($$, $1); }
-           | regex_stack REGEX                              { $$ = $1; push_stack($$, $2); }
+regex_stack: REGEX                                          { $$ = new_queue(4); enqueue($$, $1); }
+           | regex_stack REGEX                              { $$ = $1; enqueue($$, $2); }
            ;
 
 end_regex: '/'                                              { $$ = REGEX_OP; }

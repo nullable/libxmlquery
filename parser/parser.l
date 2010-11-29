@@ -21,7 +21,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
- 
+
 %{
 #include <stdio.h>
 #include "../include/y.tab.h"
@@ -30,7 +30,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 stack* trash_bin = NULL;
 int lxq_parser_last_state;
 %}
-%x IN_STATE TEXT_BLOCK CDATA COMMENT FUNC PARAMS NOT_STATE XML_INITIAL QUERY_INITIAL TEXT_BLOCK_DQ_QUERY TEXT_BLOCK_SQ_QUERY REGEX_BLOCK ESCAPE
+%x IN_STATE TEXT_BLOCK_SQ_XML TEXT_BLOCK_DQ_XML CDATA COMMENT FUNC PARAMS NOT_STATE XML_INITIAL QUERY_INITIAL TEXT_BLOCK_DQ_QUERY TEXT_BLOCK_SQ_QUERY REGEX_BLOCK ESCAPE
 
 %option yylineno
 %%
@@ -56,11 +56,15 @@ int lxq_parser_last_state;
 <IN_STATE>\=                                                { return '='; }
 <IN_STATE>[-_a-zA-Z][-_a-zA-Z0-9]*                          { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return WORD; }
 <IN_STATE>\:                                                { return ':'; }
-<IN_STATE>\"                                                { BEGIN TEXT_BLOCK; return '"'; }
+<IN_STATE>\"                                                { BEGIN TEXT_BLOCK_DQ_XML; return '"'; }
+<IN_STATE>\'                                                { BEGIN TEXT_BLOCK_SQ_XML; return '\''; }
 <IN_STATE>[\r\n \t]+                                        ;
 
-<TEXT_BLOCK>[^"]*                                           { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return TEXT; }
-<TEXT_BLOCK>\"                                              { BEGIN IN_STATE; return '"'; }
+<TEXT_BLOCK_SQ_XML>[^']*                                    { yylval.string = strdup(yytext); return TEXT; }
+<TEXT_BLOCK_SQ_XML>\'                                       { BEGIN IN_STATE; return '\''; }
+
+<TEXT_BLOCK_DQ_XML>[^"]*                                    { yylval.string = strdup(yytext); return TEXT; }
+<TEXT_BLOCK_DQ_XML>\"                                       { BEGIN IN_STATE; return '"'; }
 
 <CDATA>("\n"|.|"\r")+/"]]>"                                      { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return CDATA_TOK; }
 <CDATA>"]]>"                                                { BEGIN XML_INITIAL; }
@@ -122,7 +126,7 @@ int lxq_parser_last_state;
 <REGEX_BLOCK>\\[^/]                                         { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return REGEX; }
 <REGEX_BLOCK>"/i"                                           { BEGIN QUERY_INITIAL; return END_REGEXI; }
 <REGEX_BLOCK>"/"                                            { BEGIN QUERY_INITIAL; return '/'; }
-<REGEX_BLOCK>\\\/                                           { yylval.string = "/"; return REGEX; }
+<REGEX_BLOCK>\\\/                                           { yylval.string = strdup("/"); return REGEX; }
 
 <TEXT_BLOCK_SQ_QUERY>[^']*                                  { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return TEXT; }
 <TEXT_BLOCK_SQ_QUERY>\'                                     { BEGIN QUERY_INITIAL; return '\''; }

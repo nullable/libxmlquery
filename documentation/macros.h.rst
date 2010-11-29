@@ -79,7 +79,7 @@ First note the macros for I, W, E, F at the bottom. These are merely alias for t
    #include "macros.h"
 
    int main(){
-    log(I, "Printing info\n");
+    log(I, "Printing info");
     return 0;
    }
 

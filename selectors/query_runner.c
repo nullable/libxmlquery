@@ -260,7 +260,7 @@ int match_str(const char* str, const match_value* op){
         return strcmp(str, op->value);
         break;
     default:
-        log(F, "Unknown, (unimplemented?) operator: %d.\n", op->op);
+        log(F, "Unknown, (unimplemented?) operator: %d.", op->op);
         exit(1);
     }
 }
@@ -532,7 +532,7 @@ list* query(const char* query_string, dom_node* node){
     queue* query = parse_query(new_query);
 
     if(!query){
-        log(W, "Query %s is not a valid query.\n", query_string);
+        log(W, "Query %s is not a valid query.", query_string);
         free(new_query);
         return NULL;
     }

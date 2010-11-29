@@ -142,17 +142,17 @@ dom_node* get_xml_declaration(doc* document){
 
 void prepend_child(dom_node* parent, dom_node* child){
   if(child == NULL) {
-    log(W, "Trying to prepend a NULL child.\n");
+    log(W, "Trying to prepend a NULL child.");
     return;
   }
   if(child->type == ATTRIBUTE){
-    log(W, "Trying to prepend attribute %s as child of node %s.\n", child->name, parent->name);
+    log(W, "Trying to prepend attribute %s as child of node %s.", child->name, parent->name);
     return;
   }
   if(parent->children == NULL)
     parent->children = new_generic_list(1);
 
-  //log(W, "prepend_child needs to be implemented.\n");
+  //log(W, "prepend_child needs to be implemented.");
 
   prepend_element_with_type(parent->children, child, 0);
   child->parent = parent;
@@ -160,11 +160,11 @@ void prepend_child(dom_node* parent, dom_node* child){
 
 void append_child(dom_node* parent, dom_node* child){
   if(child == NULL) {
-    log(W, "Trying to append a NULL child.\n");
+    log(W, "Trying to append a NULL child.");
     return;
   }
   if(child->type == ATTRIBUTE){
-    log(W, "Trying to append attribute %s as child of node %s.\n", child->name, parent->name);
+    log(W, "Trying to append attribute %s as child of node %s.", child->name, parent->name);
     return;
   }
   if(parent->children == NULL)
@@ -179,7 +179,7 @@ void* key(struct stree_node* node){
 
 void add_attribute(dom_node* node, dom_node* attribute){
   if(attribute == NULL) {
-    log(W, "Trying to add a NULL attrubute.\n");
+    log(W, "Trying to add a NULL attrubute.");
     return;
   }
   if(attribute->type == ATTRIBUTE){
@@ -190,14 +190,14 @@ void add_attribute(dom_node* node, dom_node* attribute){
       destroy_dom_node(older);
     return;
   }
-  log(W, "Trying to add node %s as attribute of node %s\n", attribute->name, node->name);
+  log(W, "Trying to add node %s as attribute of node %s", attribute->name, node->name);
   return;
 }
 
 void append_children(dom_node* parent, struct generic_list_s* children){
   int i;
   if(children == NULL){
-    log(W, "Trying to append NULL children.\n");
+    log(W, "Trying to append NULL children.");
     return;
   }
   if(parent->children == NULL)

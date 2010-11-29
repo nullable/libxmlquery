@@ -345,28 +345,28 @@ list* query_result = query("@room", get_doc_root(document));
   			\begin{tabular}{ | l | r | r | r | r | r | }
 			    \hline
 				       	       		     			 & Non-optimized (MB) & Optimized (MB)\\ \hline
-				    MS-Windows 7   			&  102.23  & 102.23  \\ \hline
-				    Linux 2.6 (Intel core duo) 	&  98.78  & 98.78  \\ \hline
-				    Linux 2.6 (ARM cpu)   		&  54.2 RAM and 48.58 Swap  & 54.2 RAM and 48.58 Swap \\ \hline
-				    Mac OSx 10.4   			&  100.43  & 100.43 \\ 
+				    MS-Windows 7   			&  41  & 41  \\ \hline
+				    Linux 2.6 (Intel core duo) 	&  34  & 34  \\ \hline
+				    Linux 2.6 (ARM cpu)   		&  37  & 37 \\ \hline
+				    Mac OSx 10.4   			&  35  & 35 \\ 
 			    \hline
 			\end{tabular}		   
 	\end{center}
 
 	From this first test we can already conclude that optimizing the query engine didn't do nothing to optimize space. In fact, further analyzes to our profiling output reveals that the peak memory usage is related to the XML 
-	parser. At this point we can't do anything because the parser has already been optimized and the parsed data doesn't have such an overhead. 
+	parser. At this point we can't do anything because the parser has already been optimized and the parsed data doesn't have such an overhead. However, with the flag \emph{USE\_DICT} (see appendix \ref{chap:gcc}) the
+	amount of memory usage drops about 6M.
 	
-	In the ARM cpu, since it has only 64MB of RAM, after a while swap area begins to be used. Swapping is done on an SD card with a total of 2GB and a partition of 312MB for swapping. The next table shows the results for 
-	the second kind of test.
+	The next table shows the results for 	the second kind of test.
 	
 	\begin{center}
   			\begin{tabular}{ | l | r | r | r | r | r | }
 			    \hline
 				       	       		     			 & Non-optimized (MB) & Optimized (MB)\\ \hline
-				    MS-Windows 7   			&  0.035  & 0.035  \\ \hline
-				    Linux 2.6 (Intel core duo) 	&  0.026  & 0.026  \\ \hline
-				    Linux 2.6 (ARM cpu)   		&  0.030  & 0.030 \\ \hline
-				    Mac OSx 10.4   			&  0.032  & 0.032 \\ 
+				    MS-Windows 7   			&  0.026  & 0.026  \\ \hline
+				    Linux 2.6 (Intel core duo) 	&  0.019  & 0.019  \\ \hline
+				    Linux 2.6 (ARM cpu)   		&  0.022  & 0.022 \\ \hline
+				    Mac OSx 10.4   			&  0.020  & 0.020 \\ 
 			    \hline
 			\end{tabular}		   
 	\end{center}

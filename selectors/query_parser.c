@@ -64,8 +64,10 @@ void destroy_filter_selector(filter_selector* fs){
 }
 
 void destroy_attr_selector(attr_selector* as){
+  free(as->name->value);
   free(as->name);
-  free(as->value);
+  if(as->value && as->value->value) free(as->value->value);
+  if(as->value) free(as->value);
   free(as);
 }
 

@@ -126,7 +126,7 @@ void prepend_child(dom_node* parent, dom_node* child){
     return;
   }
   if(parent->children == NULL)
-    parent->children = new_generic_list(16);
+    parent->children = new_generic_list(1);
 
   log(W, "prepend_child needs to be implemented.\n");
 
@@ -199,6 +199,7 @@ dom_node* new_element_node(const char* name){
   node->namespace = NULL;
   node->attributes = NULL;
   node->children = NULL;
+  node->parent = NULL;
 
   node->type = ELEMENT;
   node->name = get_string_pointer(name);
@@ -216,7 +217,7 @@ dom_node* new_text_node(char* text){
 
   node->parent = NULL;
   node->type = TEXT_NODE;
-  node->value = strdup(text);
+  node->value = get_string_pointer(text);
   return (dom_node*)node;
 }
 
@@ -242,7 +243,7 @@ dom_node* new_cdata(char* cdata_text){
   node->children = NULL;
 
   node->type = CDATA;
-  node->value = strdup(cdata_text);
+  node->value = get_string_pointer(cdata_text);
   return node;
 }
 
@@ -335,7 +336,7 @@ void destroy_dom_node(dom_node* n){
   if((n->type == ELEMENT || n->type == ATTRIBUTE) && n->name != NULL)
     if(!USE_DICT) free(n->name);
   if((n->type == TEXT_NODE || n->type == CDATA || n->type == ATTRIBUTE) && n->value != NULL)
-    free(n->value);
+    if(!USE_DICT) free(n->value);
   if(n->type == ELEMENT && n->attributes != NULL){
     ti = new_tree_iterator(n->attributes);
     while(tree_iterator_has_next(ti))
@@ -349,6 +350,17 @@ void destroy_dom_node(dom_node* n){
     destroy_generic_list(n->children);
   }
   free(n);
+}
+
+void destroy_dictionary(){
+    if(dictionary != NULL){
+        struct siterator* ti = new_tree_iterator(dictionary);
+        while(tree_iterator_has_next(ti))
+            free(tree_iterator_next(ti));
+        destroy_iterator(ti);
+        destroy_rbtree(dictionary);
+        dictionary = NULL;
+    }
 }
 
 void destroy_dom_tree(doc* root){

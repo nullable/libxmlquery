@@ -14,6 +14,20 @@ int match_str(const char* str, const match_value* op);
 
 list* lxq_custom_filters = NULL;
 
+void destroy_custom_filters(){
+    if(!lxq_custom_filters) return;
+
+    int i;
+    for(i = 0; i < lxq_custom_filters->count; i++){
+        custom_filter* cf = (custom_filter*)get_element_at(lxq_custom_filters, i);
+        free(cf->name);
+        free(cf);
+    }
+
+    destroy_generic_list(lxq_custom_filters);
+    lxq_custom_filters = NULL;
+}
+
 list* filter_nodes_by_type(list* nodes, enum node_type type){
     if(nodes == NULL) return NULL;
     int i;

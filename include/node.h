@@ -73,5 +73,6 @@ extern void remove_node(doc* root, dom_node* node);
 
 extern void destroy_dom_node(dom_node* n);
 extern void destroy_dom_tree(doc* root);
+extern void destroy_dictionary();
 #endif
 

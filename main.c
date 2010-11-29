@@ -33,7 +33,7 @@ int main(int argc, char** argv){
   register_custom_filter("alberto", &alberto);
   doc* document = parse_xml(argv[1]);
 
-  printf("%s", node_to_string(document->root, XML));
+  //printf("%s", node_to_string(document->root, XML));
 
   //bdom* b = serialize_dom_doc(document);
 
@@ -104,6 +104,8 @@ int main(int argc, char** argv){
   printf("poping %p\n", pop_stack(s));
 
   destroy_stack(s);*/
+  destroy_dictionary();
+  destroy_custom_filters();
   return 0;
 }
 

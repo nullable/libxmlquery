@@ -139,21 +139,24 @@ declaration: START_EL '?' namespace attrs '?' END_EL        {
 
 node: start_tag inner end_tag                               {
                                                               if(strcmp(get_name($1),get_name($3)) != 0){
-								                                char error_line[1024] = {0};
+								                                char* error_line = alloc(char, 41 + strlen(get_name($1)) + strlen(get_name($3)));
 								                                sprintf(error_line, "Start tag '%s' does not match end tag '%s' ", get_name($1), get_name($3));
                                                                 yyerror(error_line);
+                                                                free(error_line);
                                                                 exit(1);
                                                               }
-                                                              //append_children($1, $2->children);
+
                                                               $1->children = $2->children;
-                                                              //if($2->namespace != NULL)
-                                                              //  free($2->namespace);
-                                                              //free($2->name);
+                                                              int i;
+                                                              if($1->children){
+                                                                  for(i = 0; i < $1->children->count; i++){
+                                                                      ((dom_node*)get_element_at($1->children, i))->parent = $1;
+                                                                  }
+                                                              }
+
                                                               $2->children = NULL;
                                                               destroy_dom_node($2);
 
-                                                              //destroy_generic_list($2->children);
-                                                              //free($2);
                                                               $$ = $1;
                                                               destroy_dom_node($3);
                                                             }
@@ -182,11 +185,11 @@ prop: CDATA_TOK                                             {$$ = new_cdata($1);
 
 start_tag: START_EL namespace attrs END_EL                  { $$ = $3;
                                                               char* old = set_name($$, get_name($2));
-							      if(old)
-								free(old);
+							                                  if(old)
+								                                free(old);
                                                               old = set_namespace($$, get_namespace($2));
-							      if(old)
-								free(old);
+							                                  if(old)
+								                                free(old);
                                                               destroy_dom_node($2);
                                                             }
          ;
@@ -301,8 +304,8 @@ relation_operator: '>'                                      { $$ = '>'; }
                  ;
 
 attr_filter:                                                { $$ = new_attr_value_selector(NULL, NULL); }
-           | operator '"' TEXT '"'                          { $$ = new_attr_value_selector(NULL, make_operators($3, $1)); free($3);}
-           | operator '\'' TEXT '\''                        { $$ = new_attr_value_selector(NULL, make_operators($3, $1)); free($3); }
+           | operator '"' TEXT '"'                          { $$ = new_attr_value_selector(NULL, make_operators($3, $1)); }
+           | operator '\'' TEXT '\''                        { $$ = new_attr_value_selector(NULL, make_operators($3, $1)); }
            | EQUAL_OP regex                                 { $$ = new_attr_value_selector(NULL, $2); }
            ;
 

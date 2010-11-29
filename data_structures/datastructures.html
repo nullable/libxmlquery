@@ -177,8 +177,8 @@ void <tt class="descname">sorted_insert_element_with_type</tt><big>(</big><a cla
 </dd></dl>
 
 <dl class="function">
-<dt id="append_element">
-void <tt class="descname">append_element</tt><big>(</big><a class="reference internal" href="#list" title="list">list</a>*<em> l</em>, void*<em> obj</em>, int16_t<em> type</em><big>)</big><a class="headerlink" href="#append_element" title="Permalink to this definition">¶</a></dt>
+<dt id="append_element_with_type">
+void <tt class="descname">append_element_with_type</tt><big>(</big><a class="reference internal" href="#list" title="list">list</a>*<em> l</em>, void*<em> obj</em>, int16_t<em> type</em><big>)</big><a class="headerlink" href="#append_element_with_type" title="Permalink to this definition">¶</a></dt>
 <dd><p><tt class="xref c c-member docutils literal"><span class="pre">l</span></tt> List where to append the element.</p>
 <p><tt class="xref c c-member docutils literal"><span class="pre">obj</span></tt> New element to store in the list.</p>
 <p><tt class="xref c c-member docutils literal"><span class="pre">type</span></tt> The type of the new element.</p>
@@ -186,8 +186,8 @@ void <tt class="descname">append_element</tt><big>(</big><a class="reference int
 </dd></dl>
 
 <dl class="function">
-<dt id="prepend_element">
-void <tt class="descname">prepend_element</tt><big>(</big><a class="reference internal" href="#list" title="list">list</a>*<em> l</em>, void*<em> obj</em>, int16_t<em> type</em><big>)</big><a class="headerlink" href="#prepend_element" title="Permalink to this definition">¶</a></dt>
+<dt id="prepend_element_with_type">
+void <tt class="descname">prepend_element_with_type</tt><big>(</big><a class="reference internal" href="#list" title="list">list</a>*<em> l</em>, void*<em> obj</em>, int16_t<em> type</em><big>)</big><a class="headerlink" href="#prepend_element_with_type" title="Permalink to this definition">¶</a></dt>
 <dd><p><tt class="xref c c-member docutils literal"><span class="pre">l</span></tt> List where to prepend the element.</p>
 <p><tt class="xref c c-member docutils literal"><span class="pre">obj</span></tt> New element to store in the list.</p>
 <p><tt class="xref c c-member docutils literal"><span class="pre">type</span></tt> The type of the new element.</p>
@@ -200,7 +200,7 @@ void <tt class="descname">add_element_with_type</tt><big>(</big><a class="refere
 <dd><p><tt class="xref c c-member docutils literal"><span class="pre">l</span></tt> List where to add the element.</p>
 <p><tt class="xref c c-member docutils literal"><span class="pre">obj</span></tt> New element to store in the list.</p>
 <p><tt class="xref c c-member docutils literal"><span class="pre">type</span></tt> The type of the new element.</p>
-<p>This function adds an element to a list. It differs from <a class="reference internal" href="#prepend_element" title="prepend_element"><tt class="xref c c-func docutils literal"><span class="pre">prepend_element()</span></tt></a> and <a class="reference internal" href="#append_element" title="append_element"><tt class="xref c c-func docutils literal"><span class="pre">append_element()</span></tt></a> in the sense that the user doesn&#8217;t need to know
+<p>This function adds an element to a list. It differs from <tt class="xref c c-func docutils literal"><span class="pre">prepend_element()</span></tt> and <tt class="xref c c-func docutils literal"><span class="pre">append_element()</span></tt> in the sense that the user doesn&#8217;t need to know
 Where the element will be added.</p>
 </dd></dl>
 
@@ -221,8 +221,8 @@ void* <tt class="descname">get_element_at</tt><big>(</big>const <a class="refere
 </dd></dl>
 
 <dl class="function">
-<dt id="get_element_and_type_at">
-void* <tt class="descname">get_element_and_type_at</tt><big>(</big>const <a class="reference internal" href="#list" title="list">list</a>*<em> l</em>, int32_t<em> pos</em>, int16_t*<em> type</em><big>)</big><a class="headerlink" href="#get_element_and_type_at" title="Permalink to this definition">¶</a></dt>
+<dt id="get_element_with_type_at">
+void* <tt class="descname">get_element_with_type_at</tt><big>(</big>const <a class="reference internal" href="#list" title="list">list</a>*<em> l</em>, int32_t<em> pos</em>, int16_t*<em> type</em><big>)</big><a class="headerlink" href="#get_element_with_type_at" title="Permalink to this definition">¶</a></dt>
 <dd><p><tt class="xref c c-member docutils literal"><span class="pre">l</span></tt> List from where to get the element.</p>
 <p><tt class="xref c c-member docutils literal"><span class="pre">pos</span></tt> The element&#8217;s position.</p>
 <p><tt class="xref c c-member docutils literal"><span class="pre">type</span></tt> An address to store the elements type.</p>

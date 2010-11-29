@@ -132,7 +132,7 @@ Function description
 
    This function inserts an element into a list in sorted order, according to the function pointer passed as an argument.
 
-.. c:function:: void append_element(list* l, void* obj, int16_t type)
+.. c:function:: void append_element_with_type(list* l, void* obj, int16_t type)
 
    :c:member:`l` List where to append the element.
 
@@ -142,7 +142,7 @@ Function description
 
    This function inserts an element at the end of the list.
 
-.. c:function:: void prepend_element(list* l, void* obj, int16_t type)
+.. c:function:: void prepend_element_with_type(list* l, void* obj, int16_t type)
 
    :c:member:`l` List where to prepend the element.
 
@@ -179,7 +179,7 @@ Function description
 
    This function returns the element stored at the given position.
 
-.. c:function:: void* get_element_and_type_at(const list* l, int32_t pos, int16_t* type)
+.. c:function:: void* get_element_with_type_at(const list* l, int32_t pos, int16_t* type)
 
    :c:member:`l` List from where to get the element.
 

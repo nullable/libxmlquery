@@ -703,7 +703,30 @@ int yy_flex_debug = 0;
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
 #line 1 "parser.l"
-#line 2 "parser.l"
+/*
+Copyright (c) 2010 Frederico Gonçalves, Vasco Fernandes
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+*/
+#line 26 "parser.l"
 #include <stdio.h>
 #include "../include/y.tab.h"
 #include "../include/stack.h"
@@ -711,7 +734,7 @@ char *yytext;
 stack* trash_bin = NULL;
 int lxq_parser_last_state;
 
-#line 715 "lex.yy.c"
+#line 738 "lex.yy.c"
 
 #define INITIAL 0
 #define IN_STATE 1
@@ -911,9 +934,9 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 12 "parser.l"
+#line 36 "parser.l"
 
-#line 917 "lex.yy.c"
+#line 940 "lex.yy.c"
 
 	if ( !(yy_init) )
 		{
@@ -1008,126 +1031,126 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 13 "parser.l"
+#line 37 "parser.l"
 {BEGIN QUERY_INITIAL; return '@';}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 14 "parser.l"
+#line 38 "parser.l"
 { BEGIN COMMENT; lxq_parser_last_state = XML_INITIAL;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 15 "parser.l"
+#line 39 "parser.l"
 { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; BEGIN CDATA; }
 	YY_BREAK
 case 4:
 /* rule 4 can match eol */
 YY_RULE_SETUP
-#line 16 "parser.l"
+#line 40 "parser.l"
 {BEGIN XML_INITIAL;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 17 "parser.l"
+#line 41 "parser.l"
 { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; BEGIN XML_INITIAL; return TEXT; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 18 "parser.l"
+#line 42 "parser.l"
 { BEGIN IN_STATE; return START_EL; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 20 "parser.l"
+#line 44 "parser.l"
 { BEGIN COMMENT; lxq_parser_last_state = XML_INITIAL;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 21 "parser.l"
+#line 45 "parser.l"
 { BEGIN CDATA; }
 	YY_BREAK
 case 9:
 /* rule 9 can match eol */
 YY_RULE_SETUP
-#line 22 "parser.l"
+#line 46 "parser.l"
 ;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 23 "parser.l"
+#line 47 "parser.l"
 ;
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 24 "parser.l"
+#line 48 "parser.l"
 { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return TEXT; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 25 "parser.l"
+#line 49 "parser.l"
 { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return TEXT; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 26 "parser.l"
+#line 50 "parser.l"
 { BEGIN IN_STATE; return START_EL; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 28 "parser.l"
+#line 52 "parser.l"
 { BEGIN COMMENT; lxq_parser_last_state = IN_STATE;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 29 "parser.l"
+#line 53 "parser.l"
 { BEGIN XML_INITIAL; return END_EL; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 30 "parser.l"
+#line 54 "parser.l"
 { return '?'; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 31 "parser.l"
+#line 55 "parser.l"
 { return SLASH; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 32 "parser.l"
+#line 56 "parser.l"
 { return '='; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 33 "parser.l"
+#line 57 "parser.l"
 { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return WORD; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 34 "parser.l"
+#line 58 "parser.l"
 { return ':'; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 35 "parser.l"
+#line 59 "parser.l"
 { BEGIN TEXT_BLOCK; return '"'; }
 	YY_BREAK
 case 22:
 /* rule 22 can match eol */
 YY_RULE_SETUP
-#line 36 "parser.l"
+#line 60 "parser.l"
 ;
 	YY_BREAK
 case 23:
 /* rule 23 can match eol */
 YY_RULE_SETUP
-#line 38 "parser.l"
+#line 62 "parser.l"
 { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return TEXT; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 39 "parser.l"
+#line 63 "parser.l"
 { BEGIN IN_STATE; return '"'; }
 	YY_BREAK
 case 25:
@@ -1136,307 +1159,307 @@ case 25:
 (yy_c_buf_p) = yy_cp -= 3;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 41 "parser.l"
+#line 65 "parser.l"
 { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return CDATA_TOK; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 42 "parser.l"
+#line 66 "parser.l"
 { BEGIN XML_INITIAL; }
 	YY_BREAK
 case 27:
 /* rule 27 can match eol */
 YY_RULE_SETUP
-#line 44 "parser.l"
+#line 68 "parser.l"
 {;}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 45 "parser.l"
+#line 69 "parser.l"
 { BEGIN lxq_parser_last_state; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 47 "parser.l"
+#line 71 "parser.l"
 { return ALL; }
 	YY_BREAK
 case 30:
 /* rule 30 can match eol */
 YY_RULE_SETUP
-#line 48 "parser.l"
+#line 72 "parser.l"
 ;
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 49 "parser.l"
+#line 73 "parser.l"
 { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return WORD; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 50 "parser.l"
+#line 74 "parser.l"
 { return '['; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 51 "parser.l"
+#line 75 "parser.l"
 { return ']'; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 52 "parser.l"
+#line 76 "parser.l"
 { return SPACE; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 53 "parser.l"
+#line 77 "parser.l"
 { BEGIN TEXT_BLOCK_DQ_QUERY; return '"'; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 54 "parser.l"
+#line 78 "parser.l"
 { BEGIN TEXT_BLOCK_SQ_QUERY; return '\''; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 55 "parser.l"
+#line 79 "parser.l"
 { BEGIN REGEX_BLOCK; return '/'; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 56 "parser.l"
+#line 80 "parser.l"
 { BEGIN FUNC; return ':'; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 57 "parser.l"
+#line 81 "parser.l"
 { return ','; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 58 "parser.l"
+#line 82 "parser.l"
 { return '>'; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 59 "parser.l"
+#line 83 "parser.l"
 { return '+'; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 60 "parser.l"
+#line 84 "parser.l"
 { return '~'; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 61 "parser.l"
+#line 85 "parser.l"
 { BEGIN PARAMS; return '('; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 62 "parser.l"
+#line 86 "parser.l"
 { return ')'; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 63 "parser.l"
+#line 87 "parser.l"
 { return '.'; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 64 "parser.l"
+#line 88 "parser.l"
 { return '#'; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 65 "parser.l"
+#line 89 "parser.l"
 { return EQUAL_OP; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 66 "parser.l"
+#line 90 "parser.l"
 { return WSSV_OP; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 67 "parser.l"
+#line 91 "parser.l"
 { return STARTSW_OP; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 68 "parser.l"
+#line 92 "parser.l"
 { return ENDSW_OP; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 69 "parser.l"
+#line 93 "parser.l"
 { return CONTAINS_OP; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 70 "parser.l"
+#line 94 "parser.l"
 { return DSV_OP; }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 71 "parser.l"
+#line 95 "parser.l"
 { return NOTEQUAL_OP; }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 72 "parser.l"
+#line 96 "parser.l"
 { return yytext[0];}
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 74 "parser.l"
+#line 98 "parser.l"
 { BEGIN QUERY_INITIAL; return NTH_CHILD_FILTER; }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 75 "parser.l"
+#line 99 "parser.l"
 { BEGIN QUERY_INITIAL; return NTH_LAST_CHILD_FILTER; }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 76 "parser.l"
+#line 100 "parser.l"
 { BEGIN QUERY_INITIAL; return FIRST_CHILD_FILTER; }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 77 "parser.l"
+#line 101 "parser.l"
 { BEGIN QUERY_INITIAL; return LAST_CHILD_FILTER; }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 78 "parser.l"
+#line 102 "parser.l"
 { BEGIN QUERY_INITIAL; return ONLY_CHILD_FILTER; }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 79 "parser.l"
+#line 103 "parser.l"
 { BEGIN QUERY_INITIAL; return EMPTY_FILTER; }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 80 "parser.l"
+#line 104 "parser.l"
 { BEGIN NOT_STATE; return NOT_FILTER; }
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 81 "parser.l"
+#line 105 "parser.l"
 { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; BEGIN QUERY_INITIAL; return CUSTOM_FILTER; }
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 85 "parser.l"
+#line 109 "parser.l"
 { BEGIN QUERY_INITIAL; return '('; }
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 87 "parser.l"
+#line 111 "parser.l"
 { yylval.digits = atoi(yytext); return DIGITS; }
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 88 "parser.l"
+#line 112 "parser.l"
 { return 'n'; }
 	YY_BREAK
 case 66:
 /* rule 66 can match eol */
 YY_RULE_SETUP
-#line 89 "parser.l"
+#line 113 "parser.l"
 ;
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 90 "parser.l"
+#line 114 "parser.l"
 { return '+'; }
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 91 "parser.l"
+#line 115 "parser.l"
 { return '-'; }
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 92 "parser.l"
+#line 116 "parser.l"
 { return EVEN; }
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 93 "parser.l"
+#line 117 "parser.l"
 { return ODD; }
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 94 "parser.l"
+#line 118 "parser.l"
 { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return WORD; }
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 95 "parser.l"
+#line 119 "parser.l"
 { BEGIN QUERY_INITIAL; return ')'; }
 	YY_BREAK
 case 73:
 /* rule 73 can match eol */
 YY_RULE_SETUP
-#line 97 "parser.l"
+#line 121 "parser.l"
 { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return REGEX; }
 	YY_BREAK
 case 74:
 /* rule 74 can match eol */
 YY_RULE_SETUP
-#line 98 "parser.l"
+#line 122 "parser.l"
 { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return REGEX; }
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 99 "parser.l"
+#line 123 "parser.l"
 { BEGIN QUERY_INITIAL; return END_REGEXI; }
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 100 "parser.l"
+#line 124 "parser.l"
 { BEGIN QUERY_INITIAL; return '/'; }
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 101 "parser.l"
+#line 125 "parser.l"
 { yylval.string = "/"; return REGEX; }
 	YY_BREAK
 case 78:
 /* rule 78 can match eol */
 YY_RULE_SETUP
-#line 103 "parser.l"
+#line 127 "parser.l"
 { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return TEXT; }
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
-#line 104 "parser.l"
+#line 128 "parser.l"
 { BEGIN QUERY_INITIAL; return '\''; }
 	YY_BREAK
 case 80:
 /* rule 80 can match eol */
 YY_RULE_SETUP
-#line 106 "parser.l"
+#line 130 "parser.l"
 { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return TEXT; }
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
-#line 107 "parser.l"
+#line 131 "parser.l"
 { BEGIN QUERY_INITIAL; return '"'; }
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
-#line 109 "parser.l"
+#line 133 "parser.l"
 { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return TEXT; }
 	YY_BREAK
 case 83:
 YY_RULE_SETUP
-#line 110 "parser.l"
+#line 134 "parser.l"
 ECHO;
 	YY_BREAK
-#line 1440 "lex.yy.c"
+#line 1463 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(IN_STATE):
 case YY_STATE_EOF(TEXT_BLOCK):
@@ -2459,7 +2482,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 110 "parser.l"
+#line 134 "parser.l"
 
 
 

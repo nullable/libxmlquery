@@ -21,7 +21,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
- 
+
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
@@ -152,7 +152,7 @@ void prepend_child(dom_node* parent, dom_node* child){
   if(parent->children == NULL)
     parent->children = new_generic_list(1);
 
-  log(W, "prepend_child needs to be implemented.\n");
+  //log(W, "prepend_child needs to be implemented.\n");
 
   prepend_element_with_type(parent->children, child, 0);
   child->parent = parent;

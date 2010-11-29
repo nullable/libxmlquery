@@ -4,7 +4,7 @@ DOM_SRC = ./dom
 PARSER_SRC = ./parser
 STRUCTS = ./data_structures
 SELECTORS = ./selectors
-OUT = dom_parser
+OUT = xmlquery
 
 all: exec so
 
@@ -26,3 +26,4 @@ clean:
 
 so: object_code
 	$(CC) $(CFLAGS) $(PARSER_SRC)/*.o $(DOM_SRC)/*.o $(STRUCTS)/*.o $(SELECTORS)/*.o -shared -o libxmlquery.so
+

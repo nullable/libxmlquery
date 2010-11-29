@@ -21,7 +21,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
- 
+
 #include <stdio.h>
 #include <string.h>
 #include "../include/macros.h"
@@ -216,7 +216,7 @@ void prepend_element_with_type(list* l, void* obj, int16_t type)
     if(!l->with_type && type != 0){ log(W, "Inserting element with type %d in a list without type, type will be lost", type);}
 
     if(l->count >= l->capacity){ refactor_generic_list(l); }
-    if(--l->start < 0){ l->start = l->capacity - l->start; };
+    if(--l->start < 0){ l->start = l->capacity + l->start; };
 
     if(l->with_type){
         struct list_bucket *b = alloc(struct list_bucket, 1);

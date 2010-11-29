@@ -21,7 +21,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
- 
+
 %{
 #include <stdio.h>
 #include <string.h>
@@ -60,15 +60,21 @@ void parse_file(char* filename){
   FILE* holder;
   struct yy_buffer_state* bs;
 
-  holder = yyin = fopen(filename, "r");
-  if(yyin == NULL){
-    log(F, "Unnable to open file %s for reading\n", filename);
-    exit(-1);
+  if(!strcmp(filename, "-")){
+      holder = yyin = 0;
   }
+  else{
+      holder = yyin = fopen(filename, "r");
+      if(yyin == NULL){
+        log(F, "Unnable to open file %s for reading\n", filename);
+        exit(-1);
+      }
+  }
+
   yylineno = 1;
   yyparse();
   yylex_destroy();
-  fclose(holder);
+  if(holder) fclose(holder);
 }
 
 void parse_string(const char* str){
@@ -131,8 +137,17 @@ choose: '@' selector_group
       | document
       ;
 
-document: node                                              {lxq_document = new_document(NULL); set_doc_root(lxq_document, $1);}
-        | declaration node                                  {lxq_document = new_document($1); set_doc_root(lxq_document, $2);}
+document: prop inner                                        { lxq_document = new_document(NULL);
+                                                              if($2->children == NULL && $1->type == ELEMENT){
+                                                                set_doc_root(lxq_document, $1);
+                                                              }
+                                                              else{
+                                                                  set_name($2, "root");
+                                                                  prepend_child($2, $1);
+                                                                  set_doc_root(lxq_document, $2);
+                                                              }
+                                                            }
+        | declaration node                                  { lxq_document = new_document($1); set_doc_root(lxq_document, $2);}
         ;
 
 namespace: WORD                                             { $$ = new_element_node($1); free($1);}

@@ -21,7 +21,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
- 
+
 #include <string.h>
 
 #include "../include/query_runner.h"
@@ -32,25 +32,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "../include/query_parser.h"
 #include "../include/eregex.h"
 #include "../include/byte_buffer.h"
+#include "../include/custom_selectors.h"
 
 list* run_query(queue* query, const list* all_nodes);
 int match_str(const char* str, const match_value* op);
-
-list* lxq_custom_filters = NULL;
-
-void destroy_custom_filters(){
-    if(!lxq_custom_filters) return;
-
-    int i;
-    for(i = 0; i < lxq_custom_filters->count; i++){
-        custom_filter* cf = (custom_filter*)get_element_at(lxq_custom_filters, i);
-        free(cf->name);
-        free(cf);
-    }
-
-    destroy_generic_list(lxq_custom_filters);
-    lxq_custom_filters = NULL;
-}
 
 list* filter_nodes_by_type(list* nodes, enum node_type type){
     if(nodes == NULL) return NULL;
@@ -63,58 +48,6 @@ list* filter_nodes_by_type(list* nodes, enum node_type type){
     }
 
     return r;
-}
-
-custom_filter* new_custom_filter(const char* name){
-    custom_filter* r = alloc(custom_filter, 1);
-    r->name = strdup(name);
-    r->function.simple = NULL;
-    r->function.args = NULL;
-    return r;
-}
-
-void register_simple_custom_filter(const char* name, int (*filter)(dom_node* node)) {
-    if(lxq_custom_filters == NULL)
-        lxq_custom_filters = new_generic_list(1);
-
-    custom_filter* r = new_custom_filter(name);
-    r->function.simple = filter;
-    add_element(lxq_custom_filters, r);
-}
-
-void register_custom_filter(const char* name, int (*filter)(dom_node* node, list* args)){
-    if(lxq_custom_filters == NULL)
-        lxq_custom_filters = new_generic_list(1);
-
-    custom_filter* r = new_custom_filter(name);
-    (r->function).args = filter;
-    add_element(lxq_custom_filters, r);
-}
-
-int (*get_simple_custom_filter_by_name(const char* name))(dom_node*){
-    int i;
-    if(lxq_custom_filters == NULL) return NULL;
-    for(i = 0; i < lxq_custom_filters->count; i++){
-        custom_filter* cf = (custom_filter*)get_element_at(lxq_custom_filters, i);
-        if(!strcmp(name, cf->name) && cf->function.simple != NULL){
-            return cf->function.simple;
-        }
-    }
-
-    return NULL;
-}
-
-int (*get_custom_filter_by_name(const char* name))(dom_node*, list* args){
-    int i;
-    if(lxq_custom_filters == NULL) return NULL;
-    for(i = 0; i < lxq_custom_filters->count; i++){
-        custom_filter* cf = (custom_filter*)get_element_at(lxq_custom_filters, i);
-        if(!strcmp(name, cf->name) && cf->function.args != NULL){
-            return cf->function.args;
-        }
-    }
-
-    return NULL;
 }
 
 list* get_xml_descendants(dom_node* n){
@@ -153,6 +86,14 @@ dom_node* get_xml_node_after(dom_node* n){
     else return get_element_at(siblings, p);
 }
 
+list* apply_custom_relation_operator(const list* nodes, char* op){
+    list* (*operator)(list*) = get_simple_custom_operator_by_name(op);
+
+    if(operator == NULL) return NULL;
+
+    list* r = operator(nodes);
+    return r;
+}
 
 list* apply_operator(const list* nodes, int op){
     int i;
@@ -163,65 +104,62 @@ list* apply_operator(const list* nodes, int op){
     for(i = 0; i < nodes->count; i++){
         dom_node* node = get_element_at(nodes, i);
         switch(op){
-        case SPACE:
-	  {
-	  //result = merge_lists(result, get_xml_descendants(node));
-	    list* desc = get_xml_descendants(node);
-	    generic_list_iterator* it = new_generic_list_iterator(desc);
-	    while(generic_list_iterator_has_next(it)){
-	      void* aux = generic_list_iterator_next(it);
-	      void* old = rb_tree_insert(rbtree, aux);
-	      if(!old)
-		add_element(result, aux);
-	    }
-	    destroy_generic_list_iterator(it);
-	    destroy_generic_list(desc);
-            break;
-	  }
-        case '>':
-	  {
-	    // result = merge_lists(result, get_xml_children(node));
-	    list* c = get_xml_children(node);
-	    generic_list_iterator* it = new_generic_list_iterator(c);
-	    while(generic_list_iterator_has_next(it)){
-	      void* aux = generic_list_iterator_next(it);
-	      void* old = rb_tree_insert(rbtree, aux);
-	      if(!old)
-		add_element(result, aux);
-	    }
-	    destroy_generic_list_iterator(it);
-	    destroy_generic_list(c);
-            break;
-	  }
-        case '~':
-	  {
-	    // result = merge_lists(result, get_xml_nodes_after(node));
-	    list* a = get_xml_nodes_after(node);
-	    generic_list_iterator* it = new_generic_list_iterator(a);
-	    while(generic_list_iterator_has_next(it)){
-	      void* aux = generic_list_iterator_next(it);
-	      void* old = rb_tree_insert(rbtree, aux);
-	      if(!old)
-		add_element(result, aux);
-	    }
-	    destroy_generic_list_iterator(it);
-	    destroy_generic_list(a);
-            break;
-	  }
-        case '+':
-	  {
-            next_node = get_xml_node_after(node);
-	    // if(next_node != NULL) add_element(result, next_node);
-	    if(next_node != NULL){
-	      void* old = rb_tree_insert(rbtree, next_node);
-	      if(!old)
-		add_element(result, next_node);
-	    }
-            break;
-	  }
+            case SPACE:
+            {
+                list* desc = get_xml_descendants(node);
+	            generic_list_iterator* it = new_generic_list_iterator(desc);
+	            while(generic_list_iterator_has_next(it)){
+	                void* aux = generic_list_iterator_next(it);
+                    void* old = rb_tree_insert(rbtree, aux);
+                    if(!old)
+                        add_element(result, aux);
+	            }
+                destroy_generic_list_iterator(it);
+                destroy_generic_list(desc);
+                break;
+            }
+            case '>':
+            {
+                list* c = get_xml_children(node);
+                generic_list_iterator* it = new_generic_list_iterator(c);
+                while(generic_list_iterator_has_next(it)){
+                    void* aux = generic_list_iterator_next(it);
+                    void* old = rb_tree_insert(rbtree, aux);
+                    if(!old)
+                        add_element(result, aux);
+	            }
+                destroy_generic_list_iterator(it);
+                destroy_generic_list(c);
+                break;
+            }
+            case '~':
+            {
+	            list* a = get_xml_nodes_after(node);
+	            generic_list_iterator* it = new_generic_list_iterator(a);
+	            while(generic_list_iterator_has_next(it)){
+	                void* aux = generic_list_iterator_next(it);
+	                void* old = rb_tree_insert(rbtree, aux);
+	                if(!old)
+		                add_element(result, aux);
+	            }
+	            destroy_generic_list_iterator(it);
+	            destroy_generic_list(a);
+                break;
+            }
+            case '+':
+            {
+                next_node = get_xml_node_after(node);
+	            if(next_node != NULL){
+                    void* old = rb_tree_insert(rbtree, next_node);
+                    if(!old)
+                        add_element(result, next_node);
+	            }
+                break;
+            }
+            default:
+                log(W, "Relation operator %d, is not implemented.", op);
         }
     }
-    //    return remove_duplicates(result);
     destroy_rbtree(rbtree);
     return result;
 }
@@ -403,6 +341,7 @@ list* filter_nodes_by_pseudo_filter(const list* nodes, filter_selector* filter_s
             }
             else{
                 log(W, "The filter '%s' is not registered as a simple filter.", filter_s->name);
+                i = nodes->count;
             }
             break;
         case CUSTOM_FILTER:
@@ -412,6 +351,7 @@ list* filter_nodes_by_pseudo_filter(const list* nodes, filter_selector* filter_s
             }
             else{
                 log(W, "The filter '%s' is not registered as a full filter.", filter_s->name);
+                i = nodes->count;
             }
             break;
         default:
@@ -464,27 +404,33 @@ list* run_query(queue* query, const list* all_nodes){
     int op, *holder;
 
     while(query->count > 0){
-        switch(peek_queue_type(query)){
+        int type = peek_queue_type(query);
+        switch(type){
+        case CUSTOM_RELATION_OPERATOR:
         case LXQ_RELATION_TYPE:
 	      holder = ((int*)dequeue(query));
 	      op = *holder;
 	      if(op == ','){
-	        //	    result = merge_lists(result, nodes);
 	        generic_list_iterator* it = new_generic_list_iterator(nodes);
 	        while(generic_list_iterator_has_next(it)){
 	          void* aux = generic_list_iterator_next(it);
 	          void* old = rb_tree_insert(rbtree, aux);
 	          if(!old)
-		    add_element(result, aux);
+		        add_element(result, aux);
 	        }
 	        destroy_generic_list_iterator(it);
 	        destroy_generic_list(nodes);
 	        nodes = duplicate_generic_list(all_nodes);
 	      }
+	      else if(type == CUSTOM_RELATION_OPERATOR){
+            old = nodes;
+            nodes = apply_custom_relation_operator(nodes, (char*)holder);
+            destroy_generic_list(old);
+	      }
 	      else{
-	        old = nodes;
-	        nodes = apply_operator(nodes, op);
-	        destroy_generic_list(old);
+            old = nodes;
+            nodes = apply_operator(nodes, op);
+            destroy_generic_list(old);
 	      }
 	      free(holder);
 	      break;
@@ -532,7 +478,7 @@ list* query(const char* query_string, dom_node* node){
     queue* query = parse_query(new_query);
 
     if(!query){
-        log(W, "Query %s is not a valid query.", query_string);
+        log(W, "Query '%s' is not a valid query.", query_string);
         free(new_query);
         return NULL;
     }

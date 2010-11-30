@@ -29,6 +29,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "include/lxq_parser.h"
 #include "include/stack.h"
 #include "include/query_runner.h"
+#include "include/custom_selectors.h"
 #include "include/node.h"
 
 int main(int argc, char** argv){
@@ -51,9 +52,10 @@ int main(int argc, char** argv){
     doc* document = parse_xml(filename);
     if(document == NULL) exit(1);
 
+    register_extended_operators();
     list* result = query(query_string, document->root);
 
-    if(!result) exit(1);
+    if(result == NULL) exit(1);
 
     for(i=0; i < result->count; i++){
         dom_node* t = (dom_node*)get_element_at(result, i);

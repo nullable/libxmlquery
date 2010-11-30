@@ -66,7 +66,7 @@ int lxq_parser_last_state;
 <TEXT_BLOCK_DQ_XML>[^"]*                                    { yylval.string = strdup(yytext); return TEXT; }
 <TEXT_BLOCK_DQ_XML>\"                                       { BEGIN IN_STATE; return '"'; }
 
-<CDATA>("\n"|.|"\r")+/"]]>"                                      { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return CDATA_TOK; }
+<CDATA>("\n"|.|"\r")+/"]]>"                                 { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return CDATA_TOK; }
 <CDATA>"]]>"                                                { BEGIN XML_INITIAL; }
 
 <COMMENT>("\n"|.|"\r")                                           {;}
@@ -75,6 +75,7 @@ int lxq_parser_last_state;
 <QUERY_INITIAL>\*                                           { return ALL; }
 <QUERY_INITIAL>[\n\r]+                                      ;
 <QUERY_INITIAL>[_a-zA-Z][-_a-zA-Z0-9]*                      { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return WORD; }
+<QUERY_INITIAL>[ ]*![_a-zA-Z][-_a-zA-Z0-9]*[ ]*            { yylval.string = strdup(yytext+1); return CUSTOM_RELATION_OPERATOR; }
 <QUERY_INITIAL>\[                                           { return '['; }
 <QUERY_INITIAL>\]                                           { return ']'; }
 <QUERY_INITIAL>[ ]*                                         { return SPACE; }

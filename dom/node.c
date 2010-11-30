@@ -30,18 +30,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #define USE_DICT 1
 
-void* ident(struct stree_node* o){
-    return o->node;
-}
 
-int64_t compare(void* keyA, void* keyB){
-  return strcmp((char*) keyA, (char*) keyB);
-}
 
 struct sroot* dictionary = NULL;
 
 void initialize_dictionary(){
-    dictionary = new_rbtree(&ident, &compare);
+    dictionary = new_rbtree(&ident, &compare_string);
 }
 
 char* get_string_pointer(const char* string){
@@ -49,7 +43,7 @@ char* get_string_pointer(const char* string){
     if(string == NULL){ return NULL; }
     if(USE_DICT){
         if(!dictionary){ initialize_dictionary(); }
-        value = search_rbtree(*dictionary, (void*)string);
+        value = search_rbtree(dictionary, (const void*)string);
         if(value == NULL){
             value = strdup(string);
             rb_tree_insert(dictionary, value);
@@ -173,7 +167,7 @@ void append_child(dom_node* parent, dom_node* child){
   child->parent = parent;
 }
 
-void* key(struct stree_node* node){
+const void* dom_node_key(const struct stree_node* node){
   return ((dom_node*) node->node)->name;
 }
 
@@ -184,7 +178,7 @@ void add_attribute(dom_node* node, dom_node* attribute){
   }
   if(attribute->type == ATTRIBUTE){
     if(node->attributes == NULL)
-      node->attributes = new_rbtree(&key, &compare);
+      node->attributes = new_rbtree(&dom_node_key, &compare_string);
     dom_node* older = (dom_node*) rb_tree_insert(node->attributes, attribute);
     if(older != NULL)
       destroy_dom_node(older);
@@ -275,7 +269,7 @@ dom_node* get_attribute_by_name(dom_node* node, char* attr_name){
   if(node->attributes == NULL)
     return NULL;
 
-  return (dom_node*) search_rbtree(*(node->attributes), attr_name);
+  return (dom_node*) search_rbtree(node->attributes, attr_name);
 }
 
 dom_node* get_child_at(dom_node* parent, int index){

@@ -21,7 +21,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
- 
+
 #include <stdio.h>
 #include <string.h>
 #include "node.h"
@@ -29,6 +29,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "lxq_parser.h"
 #include "stack.h"
 #include "query_runner.h"
+#include "custom_selectors.h"
 #include "node.h"
 
 void dump(char* array, int offset, int size){

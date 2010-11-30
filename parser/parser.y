@@ -48,6 +48,8 @@ list* lxq_selected_elements;
 void yyerror(const char *str)
 {
   fprintf(stderr,"error at:%d: %s at '%s'\n", yylineno, str, yytext);
+  lxq_document = NULL;
+  lxq_selected_elements = NULL;
 }
 
 int yywrap()
@@ -113,7 +115,7 @@ void parse_string(const char* str){
  }
 
 %token START_EL END_EL SLASH SCUSTOM_FILTER
-%token <string> WORD TEXT CDATA_TOK REGEX CUSTOM_FILTER CUSTOM_OPERATOR
+%token <string> WORD TEXT CDATA_TOK REGEX CUSTOM_FILTER CUSTOM_OPERATOR CUSTOM_RELATION_OPERATOR
 %token ALL SPACE  END_REGEXI NO_OP EQUAL_OP WSSV_OP STARTSW_OP ENDSW_OP CONTAINS_OP REGEX_OP REGEXI_OP DSV_OP NOTEQUAL_OP EVEN ODD
 %token NTH_CHILD_FILTER NTH_LAST_CHILD_FILTER FIRST_CHILD_FILTER LAST_CHILD_FILTER ONLY_CHILD_FILTER EMPTY_FILTER NOT_FILTER
 %type <dn> attr node prop inner attrs declaration start_tag end_tag namespace
@@ -266,6 +268,11 @@ selector_group: selector                                    { lxq_selected_eleme
                                                               enqueue_with_type($$, a, LXQ_RELATION_TYPE);
                                                               enqueue_with_type($$, $3, LXQ_SELECTOR_TYPE);
                                                             }
+              | selector_group CUSTOM_RELATION_OPERATOR selector    { $$ = $1;
+                                                                      enqueue_with_type($$, strdup($2+1), CUSTOM_RELATION_OPERATOR);
+                                                                      free($2);
+                                                                      enqueue_with_type($$, $3, LXQ_SELECTOR_TYPE);
+                                                                    }
               ;
 
 selector: id attrsels pseudo_filters                        { $$ = new_selector($1); $$->attrs = $2; $$->filters = $3; }

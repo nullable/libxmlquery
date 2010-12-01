@@ -136,12 +136,12 @@ the capability of querying the document through the program arguments:</p>
 </div>
 <p>Go ahead and run it with</p>
 <blockquote>
-<div class="highlight-bash"><div class="highlight"><pre>./a.out <span class="s2">&quot;@/ti..e/&quot;</span>
+<div class="highlight-bash"><div class="highlight"><pre>./a.out <span class="s2">&quot;@title/&quot;</span>
 </pre></div>
 </div>
 </blockquote>
-<p>It will search the document for all elements that begin with &#8220;ti&#8221;, have any two characters following it and end with &#8220;e&#8221;.</p>
-<p>However, we&#8217;re able to see the output. Lets add that feature:</p>
+<p>It will search the document for all elements named &#8220;title&#8221;.</p>
+<p>However, we aren&#8217;t able to see the output. Lets add that feature:</p>
 <div class="highlight-c"><div class="highlight"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
 <span class="cp">#include &quot;node.h&quot;</span>
 <span class="cp">#include &quot;lxq_parser.h&quot;</span>
@@ -185,9 +185,9 @@ the capability of querying the document through the program arguments:</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Try it with the same query as before and then try to retrieve the element &#8220;title&#8221; for the &#8220;item&#8221; title with:</p>
+<p>Try it with the same query as before and then try to retrieve the element &#8220;title&#8221; for the &#8220;item&#8221; with:</p>
 <blockquote>
-<div class="highlight-bash"><div class="highlight"><pre>./a.out <span class="s2">&quot;@/i.../&gt;/ti..e/&quot;</span>
+<div class="highlight-bash"><div class="highlight"><pre>./a.out <span class="s2">&quot;@item&gt;title&quot;</span>
 </pre></div>
 </div>
 </blockquote>
@@ -235,7 +235,8 @@ the capability of querying the document through the program arguments:</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>This concludes the tutorial. We&#8217;ve shown how to parse, query and manipulate XML documents.</p>
+<p>Notice that we&#8217;ve removed the capabillity of using the arguments passed to the program. To run this example you just need to run the program without arguments.</p>
+<p>This concludes the tutorial. We&#8217;ve shown how to parse, query and manipulate XML documents. The rest of the documentation explains how to add new features such as custom filters, custom operators and regular expressions.</p>
 </div>
 
 

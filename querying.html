@@ -107,12 +107,12 @@ name (as we&#8217;ve seen), according to the node attributes and according to
 with an attribute named <em>attr</em> with the value <em>bar</em>, and the node must also be
 the <em>only child</em> of its parent node.</p>
 </div>
-<div class="section" id="custom-pseudo-filters">
-<h3>Custom pseudo-filters<a class="headerlink" href="#custom-pseudo-filters" title="Permalink to this headline">¶</a></h3>
-<p>We&#8217;ve created some new features. We added the possibility of making <em>custom pseudo-filters</em>.
-<em>Custom pseudo-filters</em> provide a way for the user to define their own filters, which can be
+<div class="section" id="custom-filters">
+<h3>Custom filters<a class="headerlink" href="#custom-filters" title="Permalink to this headline">¶</a></h3>
+<p>We&#8217;ve created some new features. We added the possibility of making <em>custom filters</em>.
+<em>Custom filters</em> provide a way for the user to define their own filters, which can be
 chained with other query operators.</p>
-<p>To create a <em>custom pseudo-filter</em> you just need to define a function with the one of the following signatures:</p>
+<p>To create a <em>custom filter</em> you just need to define a function with the one of the following signatures:</p>
 <div class="highlight-c"><div class="highlight"><pre><span class="kt">int</span> <span class="n">simple_filter</span><span class="p">(</span><span class="n">dom_node</span><span class="o">*</span> <span class="n">node</span><span class="p">);</span>
 <span class="kt">int</span> <span class="n">complex_filter</span><span class="p">(</span><span class="n">dom_node</span><span class="o">*</span> <span class="n">node</span><span class="p">,</span> <span class="n">list</span><span class="o">*</span> <span class="n">args</span><span class="p">);</span>
 </pre></div>
@@ -130,7 +130,34 @@ void <tt class="descname">register_custom_filter</tt><big>(</big>const char*<em>
 <dd></dd></dl>
 
 <p>The first function registers a simple filter, while the second registers a complex one.</p>
-<p>When you&#8217;re done with this you can call your filters just like a CSS3 <em>pseudo-filter</em>.</p>
+<p>When you&#8217;re done with this you can call your filters just like a CSS3 <em>filter</em>.</p>
+<p>When your program finishes, we should call:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="kt">void</span> <span class="n">destroy_custom_filters</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="custom-operators">
+<h3>Custom operators<a class="headerlink" href="#custom-operators" title="Permalink to this headline">¶</a></h3>
+<p>Another feature we&#8217;ve added is the possibility to create your own operators.</p>
+<p>Like custom filters, custom operators need to be registered in order to be used:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="kt">void</span> <span class="n">register_simple_custom_operator</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">name</span><span class="p">,</span> <span class="n">list</span><span class="o">*</span> <span class="p">(</span><span class="o">*</span><span class="n">operator</span><span class="p">)(</span><span class="n">list</span><span class="o">*</span> <span class="n">nodes</span><span class="p">));</span>
+</pre></div>
+</div>
+<p>The first argument is the name of the operator. This name will be used to call the operator. You can call your operator with an exclamation point. For example, if we register the operator <em>second</em> we can call it with &#8221;!second&#8221;.</p>
+<p>The second argument is a pointer to a function that applies the operator. This function must be defined and provided by the user.</p>
+<p>We already provide two custom operators that we call extended operators. They have the following mean:</p>
+<ul class="simple">
+<li>first - Returns the first occurrence of an element. If you write &#8220;device!first&#8221; it will return the first device element.</li>
+<li>text-children - Returns the text below an element. If you write &#8220;device!text-children&#8221; it will return all the text nodes directly below elements with tag device.</li>
+</ul>
+<p>However, in order to use them you need to call:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="n">register_extended_operators</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>and when you&#8217;re done you should call:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="n">destroy_custom_operators</span><span class="p">()</span>
+</pre></div>
+</div>
 </div>
 </div>
 </div>
@@ -146,7 +173,8 @@ void <tt class="descname">register_custom_filter</tt><big>(</big>const char*<em>
 <li><a class="reference internal" href="#">Querying</a><ul>
 <li><a class="reference internal" href="#selectors">Selectors</a><ul>
 <li><a class="reference internal" href="#introduction">Introduction</a></li>
-<li><a class="reference internal" href="#custom-pseudo-filters">Custom pseudo-filters</a></li>
+<li><a class="reference internal" href="#custom-filters">Custom filters</a></li>
+<li><a class="reference internal" href="#custom-operators">Custom operators</a></li>
 </ul>
 </li>
 </ul>

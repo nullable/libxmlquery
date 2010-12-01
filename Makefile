@@ -4,18 +4,14 @@ DOM_SRC = ./dom
 PARSER_SRC = ./parser
 STRUCTS = ./data_structures
 SELECTORS = ./selectors
-OUT = xmlquery
 
-all: exec so
+all: so
 
 object_code:
 	make -C $(DOM_SRC) all
 	make -C $(PARSER_SRC) all
 	make -C $(STRUCTS) all
 	make -C $(SELECTORS) all
-
-exec: object_code
-	$(CC) $(CFLAGS) -o $(OUT) $(PARSER_SRC)/*.o $(DOM_SRC)/*.o $(STRUCTS)/*.o $(SELECTORS)/*.o main.c
 
 clean:
 	make -C $(DOM_SRC) clean

@@ -195,4 +195,4 @@ Ok we're able to retrieve any thing from our RSS Feed. But now, we want to chang
 
 Notice that we've removed the capabillity of using the arguments passed to the program. To run this example you just need to run the program without arguments.
 
-This concludes the tutorial. We've shown how to parse, query and manipulate XML documents. The rest of the documentation explains how to add new features such as custom filters and operators.
+This concludes the tutorial. We've shown how to parse, query and manipulate XML documents. The rest of the documentation explains how to add new features such as custom filters, custom operators and regular expressions.

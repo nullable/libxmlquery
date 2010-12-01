@@ -89,9 +89,13 @@ dom_node* get_xml_node_after(dom_node* n){
 list* apply_custom_relation_operator(const list* nodes, char* op){
     list* (*operator)(list*) = get_simple_custom_operator_by_name(op);
 
-    if(operator == NULL) return NULL;
+    if(operator == NULL){
+      log(W, "Custom operator %s is not registered", op);
+      return NULL;
+    }
 
-    list* r = operator(nodes);
+
+    list* r = operator((list*) nodes);
     return r;
 }
 

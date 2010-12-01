@@ -51,9 +51,9 @@ int main(int argc, char** argv){
   register_custom_filter("filter", &filter);
   doc* document = parse_xml(argv[1]);
 
+  register_extended_operators();
 
   list* result = query(argv[2],document->root);
-
 
   int i;
   char* cha;
@@ -72,6 +72,7 @@ int main(int argc, char** argv){
 
   destroy_dictionary();
   destroy_custom_filters();
+  destroy_custom_operators();
   return 0;
 }
 

@@ -29,6 +29,26 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 stack* trash_bin = NULL;
 int lxq_parser_last_state;
+
+char *trimwhitespace(char *str)
+{
+  char *end;
+
+  // Trim leading space
+  while(*str == ' ') str++;
+
+  if(*str == 0)  // All spaces?
+    return str;
+
+  // Trim trailing space
+  end = str + strlen(str) - 1;
+  while(end > str && *end == ' ') end--;
+
+  // Write new null terminator
+  *(end+1) = 0;
+
+  return str;
+}
 %}
 %x IN_STATE TEXT_BLOCK_SQ_XML TEXT_BLOCK_DQ_XML CDATA COMMENT FUNC PARAMS NOT_STATE XML_INITIAL QUERY_INITIAL TEXT_BLOCK_DQ_QUERY TEXT_BLOCK_SQ_QUERY REGEX_BLOCK ESCAPE
 
@@ -75,7 +95,8 @@ int lxq_parser_last_state;
 <QUERY_INITIAL>\*                                           { return ALL; }
 <QUERY_INITIAL>[\n\r]+                                      ;
 <QUERY_INITIAL>[_a-zA-Z][-_a-zA-Z0-9]*                      { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return WORD; }
-<QUERY_INITIAL>[ ]*![_a-zA-Z][-_a-zA-Z0-9]*[ ]*            { yylval.string = strdup(yytext+1); return CUSTOM_RELATION_OPERATOR; }
+<QUERY_INITIAL>[ ]*![_a-zA-Z][-_a-zA-Z0-9]*[ ]*             { yylval.string = strdup(yytext); char* aux = strdup(trimwhitespace(yylval.string)); 
+                                                              free(yylval.string); yylval.string = aux; return CUSTOM_RELATION_OPERATOR; }
 <QUERY_INITIAL>\[                                           { return '['; }
 <QUERY_INITIAL>\]                                           { return ']'; }
 <QUERY_INITIAL>[ ]*                                         { return SPACE; }

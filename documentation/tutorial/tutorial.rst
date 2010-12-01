@@ -95,11 +95,11 @@ Go ahead and run it with
 
    .. code-block:: bash 
 
-      ./a.out "@/ti..e/"
+      ./a.out "@title/"
 
-It will search the document for all elements that begin with "ti", have any two characters following it and end with "e".
+It will search the document for all elements named "title".
 
-However, we're able to see the output. Lets add that feature::
+However, we aren't able to see the output. Lets add that feature::
 
   #include <stdio.h>
   #include "node.h"
@@ -143,11 +143,11 @@ However, we're able to see the output. Lets add that feature::
     return 0;
   }
 
-Try it with the same query as before and then try to retrieve the element "title" for the "item" title with:
+Try it with the same query as before and then try to retrieve the element "title" for the "item" with:
 
    .. code-block:: bash 
 
-      ./a.out "@/i.../>/ti..e/"
+      ./a.out "@item>title"
 
 Ok we're able to retrieve any thing from our RSS Feed. But now, we want to change the title of the element "item" to "no-title". Let's do it::
 
@@ -193,4 +193,6 @@ Ok we're able to retrieve any thing from our RSS Feed. But now, we want to chang
     return 0;
   }
 
-This concludes the tutorial. We've shown how to parse, query and manipulate XML documents.
+Notice that we've removed the capabillity of using the arguments passed to the program. To run this example you just need to run the program without arguments.
+
+This concludes the tutorial. We've shown how to parse, query and manipulate XML documents. The rest of the documentation explains how to add new features such as custom filters, custom operators and regular expressions.

@@ -23,3 +23,8 @@ clean:
 so: object_code
 	$(CC) $(CFLAGS) $(PARSER_SRC)/*.o $(DOM_SRC)/*.o $(STRUCTS)/*.o $(SELECTORS)/*.o -shared -o libxmlquery.so
 
+install:
+	./install.sh
+
+uninstall:
+	./install.sh -u

@@ -77,14 +77,14 @@ with an attribute named *attr* with the value *bar*, and the node must also be
 the *only child* of its parent node.
 
 
-Custom pseudo-filters
-^^^^^^^^^^^^^^^^^^^^^
+Custom filters
+^^^^^^^^^^^^^^
 
-We've created some new features. We added the possibility of making *custom pseudo-filters*.
-*Custom pseudo-filters* provide a way for the user to define their own filters, which can be
+We've created some new features. We added the possibility of making *custom filters*.
+*Custom filters* provide a way for the user to define their own filters, which can be
 chained with other query operators.
 
-To create a *custom pseudo-filter* you just need to define a function with the one of the following signatures::
+To create a *custom filter* you just need to define a function with the one of the following signatures::
 
    int simple_filter(dom_node* node);
    int complex_filter(dom_node* node, list* args);
@@ -99,4 +99,7 @@ After defining your filter you need to register them. You do this by calling:
 
 The first function registers a simple filter, while the second registers a complex one.
 
-When you're done with this you can call your filters just like a CSS3 *pseudo-filter*.
+When you're done with this you can call your filters just like a CSS3 *filter*.
+
+Custom operators
+^^^^^^^^^^^^^^^^

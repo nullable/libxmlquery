@@ -21,7 +21,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
- 
+
 %{
 #include <stdio.h>
 #include <string.h>
@@ -47,7 +47,9 @@ list* lxq_selected_elements;
 
 void yyerror(const char *str)
 {
-  fprintf(stderr,"error:%d: %s at '%s'\n", yylineno, str, yytext);
+  fprintf(stderr,"error at:%d: %s at '%s'\n", yylineno, str, yytext);
+  lxq_document = NULL;
+  lxq_selected_elements = NULL;
 }
 
 int yywrap()
@@ -60,15 +62,21 @@ void parse_file(char* filename){
   FILE* holder;
   struct yy_buffer_state* bs;
 
-  holder = yyin = fopen(filename, "r");
-  if(yyin == NULL){
-    log(F, "Unnable to open file %s for reading\n", filename);
-    exit(-1);
+  if(!strcmp(filename, "-")){
+      holder = yyin = 0;
   }
+  else{
+      holder = yyin = fopen(filename, "r");
+      if(yyin == NULL){
+        log(F, "Unable to open file %s for reading.", filename);
+        exit(1);
+      }
+  }
+
   yylineno = 1;
   yyparse();
   yylex_destroy();
-  fclose(holder);
+  if(holder) fclose(holder);
 }
 
 void parse_string(const char* str){
@@ -81,8 +89,8 @@ void parse_string(const char* str){
   internal_cpy[len + 1] = '\0';
 
   if(!yy_scan_buffer(internal_cpy, len + 2)){
-    log(F, "flex could not allocate a new buffer to parse the string.\n");
-    exit(-1);
+    log(F, "Flex could not allocate a new buffer to parse the string.");
+    exit(1);
   }
   yylineno = 1;
   yyparse();
@@ -107,7 +115,7 @@ void parse_string(const char* str){
  }
 
 %token START_EL END_EL SLASH SCUSTOM_FILTER
-%token <string> WORD TEXT CDATA_TOK REGEX CUSTOM_FILTER
+%token <string> WORD TEXT CDATA_TOK REGEX CUSTOM_FILTER CUSTOM_OPERATOR CUSTOM_RELATION_OPERATOR
 %token ALL SPACE  END_REGEXI NO_OP EQUAL_OP WSSV_OP STARTSW_OP ENDSW_OP CONTAINS_OP REGEX_OP REGEXI_OP DSV_OP NOTEQUAL_OP EVEN ODD
 %token NTH_CHILD_FILTER NTH_LAST_CHILD_FILTER FIRST_CHILD_FILTER LAST_CHILD_FILTER ONLY_CHILD_FILTER EMPTY_FILTER NOT_FILTER
 %type <dn> attr node prop inner attrs declaration start_tag end_tag namespace
@@ -131,8 +139,17 @@ choose: '@' selector_group
       | document
       ;
 
-document: node                                              {lxq_document = new_document(NULL); set_doc_root(lxq_document, $1);}
-        | declaration node                                  {lxq_document = new_document($1); set_doc_root(lxq_document, $2);}
+document: prop inner                                        { lxq_document = new_document(NULL);
+                                                              if($2->children == NULL && $1->type == ELEMENT){
+                                                                set_doc_root(lxq_document, $1);
+                                                              }
+                                                              else{
+                                                                  set_name($2, "root");
+                                                                  prepend_child($2, $1);
+                                                                  set_doc_root(lxq_document, $2);
+                                                              }
+                                                            }
+        | declaration node                                  { lxq_document = new_document($1); set_doc_root(lxq_document, $2);}
         ;
 
 namespace: WORD                                             { $$ = new_element_node($1); free($1);}
@@ -238,7 +255,9 @@ attr:  namespace '=' value                                  {$$ = new_attribute(
 
 
 value: '"' TEXT '"'                                         {$$ = $2;}
-     | '"' '"'                                              {$$ = "";}
+     | '"' '"'                                              {$$ = strdup("");}
+     | '\'' TEXT '\''                                       {$$ = $2;}
+     | '\'' '\''                                            {$$ = strdup("");}
      ;
 
 
@@ -249,6 +268,11 @@ selector_group: selector                                    { lxq_selected_eleme
                                                               enqueue_with_type($$, a, LXQ_RELATION_TYPE);
                                                               enqueue_with_type($$, $3, LXQ_SELECTOR_TYPE);
                                                             }
+              | selector_group CUSTOM_RELATION_OPERATOR selector    { $$ = $1;
+                                                                      enqueue_with_type($$, strdup($2+1), CUSTOM_RELATION_OPERATOR);
+                                                                      free($2);
+                                                                      enqueue_with_type($$, $3, LXQ_SELECTOR_TYPE);
+                                                                    }
               ;
 
 selector: id attrsels pseudo_filters                        { $$ = new_selector($1); $$->attrs = $2; $$->filters = $3; }
@@ -259,7 +283,7 @@ attrsels:                                                   { $$ = new_stack(4);
         | attrsels '.' WORD                                 { $$ = $1;
                                                               push_stack($$, new_attr_value_selector(
                                                                                  new_match_value(lxq_parser_dot_query_operator, EQUAL_OP),
-                                                                                 new_match_value_no_strdup($3, WSSV_OP)));
+                                                                                 make_operators($3, WSSV_OP)));
                                                             }
         | attrsels '#' WORD                                 { $$ = $1;
                                                               push_stack($$, new_attr_value_selector(
@@ -333,19 +357,19 @@ attr_filter:                                                { $$ = new_attr_valu
            | EQUAL_OP regex                                 { $$ = new_attr_value_selector(NULL, $2); }
            ;
 
-regex: '/' regex_stack end_regex                            {   char* text = (char*)pop_stack($2);
+regex: '/' regex_stack end_regex                            {   char* text = (char*)dequeue($2);
                                                                 while($2->count > 0){
-                                                                    char* r = (char*)pop_stack($2);
-                                                                    text = (char*)realloc(text, strlen(text) + strlen(r) + 1);
+                                                                    char* r = (char*)dequeue($2);
+                                                                    text = (char*)realloc(text, strlen(text) + strlen(r));
                                                                     strcat(text, r);
                                                                     free(r);
                                                                 }
-                                                                $$ = new_match_value(text, $3);
+                                                                $$ = new_match_value_no_strdup(text, $3);
                                                                 destroy_generic_list($2);
                                                             }
 
-regex_stack: REGEX                                          { $$ = new_stack(4); push_stack($$, $1); }
-           | regex_stack REGEX                              { $$ = $1; push_stack($$, $2); }
+regex_stack: REGEX                                          { $$ = new_queue(4); enqueue($$, $1); }
+           | regex_stack REGEX                              { $$ = $1; enqueue($$, $2); }
            ;
 
 end_regex: '/'                                              { $$ = REGEX_OP; }

@@ -21,7 +21,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
- 
+
 #include <stdio.h>
 #include <string.h>
 #include "../include/macros.h"
@@ -30,7 +30,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 struct generic_list_s *_new_generic_list(int32_t initial, int8_t with_type)
 {
   if(initial <= 0){
-    log(F, "New generic list initial capacity must be greater than 0, %d given\n", initial);
+    log(F, "New generic list initial capacity must be greater than 0, %d given.", initial);
     exit(1);
   }
 
@@ -95,8 +95,8 @@ static void refactor_generic_list(list* l){
 
   l->array = realloc(l->array, sizeof(void*) * l->capacity * 2);
   if(l->array == NULL){
-    log(F, "Realloc failed.\n");
-    exit(-1);
+    log(F, "Realloc failed.");
+    exit(1);
   }
 
   //number of items behind start (circular!)
@@ -123,10 +123,10 @@ void* set_element_with_type_at(list *l, void* obj, int16_t type, int32_t pos)
 {
     void* r = NULL;
 
-    if(!l->with_type && type != 0){ log(W, "Setting list element with type %d in a list without type, type will be lost", type);}
+    if(!l->with_type && type != 0){ log(W, "Setting list element with type %d in a list without type, type will be lost.", type);}
 
     if(!(pos < l->count && pos >= 0)){
-        log(E, "Tried to set element the a list at an invalid position, list-size: %d, position requested: %d\n", l->count, pos);
+        log(E, "Tried to set element the a list at an invalid position, list-size: %d, position requested: %d.", l->count, pos);
         exit(-1);
     }
 
@@ -158,12 +158,12 @@ void* set_element_at(list* l, void* obj, int32_t pos)
 void insert_element_with_type_at(list* l, void* obj, int16_t type, int32_t pos){
     int32_t i;
 
-    if(!l->with_type && type != 0){ log(W, "Inserting element with type %d in a list without type, type will be lost", type);}
+    if(!l->with_type && type != 0){ log(W, "Inserting element with type %d in a list without type, type will be lost.", type);}
 
 
     if(!(pos <= l->count && pos >= 0)){
-        log(E, "Tried to insert an element to list at invalid position, list-size: %d, position requested: %d\n", l->count, pos);
-        exit(-1);
+        log(E, "Tried to insert an element to list at invalid position, list-size: %d, position requested: %d.", l->count, pos);
+        exit(1);
     }
 
     if(l->count >= l->capacity){
@@ -213,10 +213,10 @@ void append_element_with_type(list* l, void* obj, int16_t type)
 
 void prepend_element_with_type(list* l, void* obj, int16_t type)
 {
-    if(!l->with_type && type != 0){ log(W, "Inserting element with type %d in a list without type, type will be lost", type);}
+    if(!l->with_type && type != 0){ log(W, "Inserting element with type %d in a list without type, type will be lost.", type);}
 
     if(l->count >= l->capacity){ refactor_generic_list(l); }
-    if(--l->start < 0){ l->start = l->capacity - l->start; };
+    if(--l->start < 0){ l->start = l->capacity + l->start; };
 
     if(l->with_type){
         struct list_bucket *b = alloc(struct list_bucket, 1);
@@ -301,7 +301,7 @@ int32_t remove_all(list* l, void* obj)
 
 void* remove_element_at(list* l, int32_t pos)
 {
-    if(pos >= l->count){ log(W, "Trying to remove object on position (%d) greater than element count (%d)", pos, l->count); return NULL; }
+    if(pos >= l->count){ log(W, "Trying to remove object on position (%d) greater than element count (%d).", pos, l->count); return NULL; }
     int32_t d = (l->start + pos) % l->capacity;
 
     void* r;
@@ -397,7 +397,7 @@ void* pop_stack(stack* s)
 int16_t peek_element_type_at(list* l, int32_t pos)
 {
   if(!l->with_type) { log(W, "Peeking type on a list without type, returned type is ALWAYS 0."); return 0; }
-  if(pos < 0 || pos >= l->count){ log(W, "Trying to access object on position (%d) outside range (0 to %d)", pos, l->count-1); exit(1); }
+  if(pos < 0 || pos >= l->count){ log(W, "Trying to access object on position (%d) outside range (0 to %d).", pos, l->count-1); exit(1); }
   int d = (l->start + pos) % l->capacity;
   return ((struct list_bucket*)l->array[d])->type;
 }
@@ -407,13 +407,13 @@ int16_t peek_stack_type(stack *s)
     if(!s->with_type) { log(W, "Peeking type on a stack without type, returned type is ALWAYS 0."); return 0; }
     if(s == NULL)
     {
-      log(F, "Stack is not initialized");
+      log(F, "Stack is not initialized.");
       exit(1);
     }
 
     if(s->count == 0)
     {
-      log(F, "Stack is empty");
+      log(F, "Stack is empty.");
       exit(1);
     }
     return ((struct list_bucket*)s->array[s->count-1])->type;
@@ -424,7 +424,7 @@ int16_t peek_queue_type(queue *s)
   if(!s->with_type) { log(W, "Peeking type on a queue without type, returned type is ALWAYS 0."); return 0; }
   if(s == NULL)
     {
-      log(F, "Queue is not initialized");
+      log(F, "Queue is not initialized.");
       exit(1);
     }
 

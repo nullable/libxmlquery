@@ -48,29 +48,31 @@
      CDATA_TOK = 264,
      REGEX = 265,
      CUSTOM_FILTER = 266,
-     ALL = 267,
-     SPACE = 268,
-     END_REGEXI = 269,
-     NO_OP = 270,
-     EQUAL_OP = 271,
-     WSSV_OP = 272,
-     STARTSW_OP = 273,
-     ENDSW_OP = 274,
-     CONTAINS_OP = 275,
-     REGEX_OP = 276,
-     REGEXI_OP = 277,
-     DSV_OP = 278,
-     NOTEQUAL_OP = 279,
-     EVEN = 280,
-     ODD = 281,
-     NTH_CHILD_FILTER = 282,
-     NTH_LAST_CHILD_FILTER = 283,
-     FIRST_CHILD_FILTER = 284,
-     LAST_CHILD_FILTER = 285,
-     ONLY_CHILD_FILTER = 286,
-     EMPTY_FILTER = 287,
-     NOT_FILTER = 288,
-     DIGITS = 289
+     CUSTOM_OPERATOR = 267,
+     CUSTOM_RELATION_OPERATOR = 268,
+     ALL = 269,
+     SPACE = 270,
+     END_REGEXI = 271,
+     NO_OP = 272,
+     EQUAL_OP = 273,
+     WSSV_OP = 274,
+     STARTSW_OP = 275,
+     ENDSW_OP = 276,
+     CONTAINS_OP = 277,
+     REGEX_OP = 278,
+     REGEXI_OP = 279,
+     DSV_OP = 280,
+     NOTEQUAL_OP = 281,
+     EVEN = 282,
+     ODD = 283,
+     NTH_CHILD_FILTER = 284,
+     NTH_LAST_CHILD_FILTER = 285,
+     FIRST_CHILD_FILTER = 286,
+     LAST_CHILD_FILTER = 287,
+     ONLY_CHILD_FILTER = 288,
+     EMPTY_FILTER = 289,
+     NOT_FILTER = 290,
+     DIGITS = 291
    };
 #endif
 /* Tokens.  */
@@ -83,29 +85,31 @@
 #define CDATA_TOK 264
 #define REGEX 265
 #define CUSTOM_FILTER 266
-#define ALL 267
-#define SPACE 268
-#define END_REGEXI 269
-#define NO_OP 270
-#define EQUAL_OP 271
-#define WSSV_OP 272
-#define STARTSW_OP 273
-#define ENDSW_OP 274
-#define CONTAINS_OP 275
-#define REGEX_OP 276
-#define REGEXI_OP 277
-#define DSV_OP 278
-#define NOTEQUAL_OP 279
-#define EVEN 280
-#define ODD 281
-#define NTH_CHILD_FILTER 282
-#define NTH_LAST_CHILD_FILTER 283
-#define FIRST_CHILD_FILTER 284
-#define LAST_CHILD_FILTER 285
-#define ONLY_CHILD_FILTER 286
-#define EMPTY_FILTER 287
-#define NOT_FILTER 288
-#define DIGITS 289
+#define CUSTOM_OPERATOR 267
+#define CUSTOM_RELATION_OPERATOR 268
+#define ALL 269
+#define SPACE 270
+#define END_REGEXI 271
+#define NO_OP 272
+#define EQUAL_OP 273
+#define WSSV_OP 274
+#define STARTSW_OP 275
+#define ENDSW_OP 276
+#define CONTAINS_OP 277
+#define REGEX_OP 278
+#define REGEXI_OP 279
+#define DSV_OP 280
+#define NOTEQUAL_OP 281
+#define EVEN 282
+#define ODD 283
+#define NTH_CHILD_FILTER 284
+#define NTH_LAST_CHILD_FILTER 285
+#define FIRST_CHILD_FILTER 286
+#define LAST_CHILD_FILTER 287
+#define ONLY_CHILD_FILTER 288
+#define EMPTY_FILTER 289
+#define NOT_FILTER 290
+#define DIGITS 291
 
 
 
@@ -115,7 +119,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 96 "parser.y"
+#line 104 "parser.y"
 
   char * string;
   struct snode* dn;
@@ -131,7 +135,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 135 "y.tab.h"
+#line 139 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

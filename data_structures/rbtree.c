@@ -21,11 +21,14 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
- 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
+#include <string.h>
 #include "../include/rbtree.h"
+
+
 
 tree_node RBNIL = {
   .node = NULL,
@@ -34,6 +37,14 @@ tree_node RBNIL = {
   .left = &RBNIL,
   .right = &RBNIL
 };
+
+const void* ident(const struct stree_node* o){
+    return o->node;
+}
+
+int64_t compare_string(const void* keyA, const void* keyB){
+  return strcmp((char*) keyA, (char*) keyB);
+}
 
 static tree_node* new_rbtree_node(void* node){
   tree_node *z = alloc(tree_node, 1);
@@ -46,11 +57,11 @@ static tree_node* new_rbtree_node(void* node){
   return z;
 }
 
-static void* __pointer(tree_node* node){
+static const void* __pointer(const tree_node* node){
   return node->node;
 }
 
-static int64_t __compare_by_pointer(void* keyA, void* keyB){
+static int64_t __compare_by_pointer(const void* keyA, const void* keyB){
   return keyA - keyB;
 }
 
@@ -58,8 +69,8 @@ tree_root* new_simple_rbtree(){
   return new_rbtree(NULL, NULL);
 }
 
-tree_root* new_rbtree(void* (*key_function_pointer)(struct stree_node* node),
-		    int64_t (*compare_function_pointer)(void* keyA, void* keyB)){
+tree_root* new_rbtree(const void* (*key_function_pointer)(const struct stree_node* node),
+		    int64_t (*compare_function_pointer)(const void* keyA, const void* keyB)){
   tree_root* r = alloc(tree_root, 1);
   r->root = &RBNIL;
   if(key_function_pointer == NULL && compare_function_pointer == NULL){
@@ -200,14 +211,14 @@ void* rb_tree_insert(tree_root* root, void* node){
   return NULL;
 }
 
-static tree_node* __search_rbtree_node(tree_root root, void* key){
-  tree_node *z = root.root;
+static tree_node* __search_rbtree_node(const tree_root* root, const void* key){
+  tree_node *z = root->root;
 
   while(z != &RBNIL){
-    if(root.compare(root.key(z), key) == 0)
+    if(root->compare(root->key(z), key) == 0)
       return z;
 
-    if(root.compare(root.key(z), key) < 0)
+    if(root->compare(root->key(z), key) < 0)
       z = z->right;
     else
       z = z->left;
@@ -216,7 +227,7 @@ static tree_node* __search_rbtree_node(tree_root root, void* key){
   return NULL;
 }
 
-void* search_rbtree(tree_root root, void* key){
+void* search_rbtree(const tree_root* root, const void* key){
   tree_node *z = __search_rbtree_node(root, key);
   if(z)
     return z->node;
@@ -324,7 +335,7 @@ void* rb_tree_delete(tree_root* root, void* key){
   uint8_t y_original_color;
   void* node_to_return;
 
-  hold_node_to_delete = y = z = __search_rbtree_node(*root, key);
+  hold_node_to_delete = y = z = __search_rbtree_node(root, key);
 
   if(y == NULL){
     log(W, "Trying to remove a node from tree that does not exist.");

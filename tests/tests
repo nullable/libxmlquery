@@ -17,7 +17,7 @@ do
 	QUERY=${QUERIES[j]}
 	echo "======================================================================"
 	echo "== Running test $i.$j"
-	bash test.sh "$FILE" "$QUERY" "$OUTPUTS_DIR/test$i.$j.out"
+	bash test.sh "$FILE" "$QUERY" "$OUTPUTS_DIR/test$i.$j.out.res"
 	echo "======================================================================"
     done
 done

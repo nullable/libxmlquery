@@ -101,5 +101,33 @@ The first function registers a simple filter, while the second registers a compl
 
 When you're done with this you can call your filters just like a CSS3 *filter*.
 
+When your program finishes, we should call::
+
+    void destroy_custom_filters()
+
 Custom operators
 ^^^^^^^^^^^^^^^^
+
+Another feature we've added is the possibility to create your own operators. 
+
+Like custom filters, custom operators need to be registered in order to be used::
+
+    void register_simple_custom_operator(const char* name, list* (*operator)(list* nodes));
+
+The first argument is the name of the operator. This name will be used to call the operator. You can call your operator with an exclamation point. For example, if we register the operator *second* we can call it with "!second".
+
+The second argument is a pointer to a function that applies the operator. This function must be defined and provided by the user.
+
+We already provide two custom operators that we call extended operators. They have the following mean:
+
+- first - Returns the first occurrence of an element. If you write "device!first" it will return the first device element.
+
+- text-children - Returns the text below an element. If you write "device!text-children" it will return all the text nodes directly below elements with tag device.
+
+However, in order to use them you need to call::
+
+    register_extended_operators()
+
+and when you're done you should call::
+
+    destroy_custom_operators()

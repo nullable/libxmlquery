@@ -6,13 +6,16 @@ STRUCTS = ./data_structures
 SELECTORS = ./selectors
 OUT = xmlquery
 
-all: exec so
+all: exec so tests
 
 object_code:
 	make -C $(DOM_SRC) all
 	make -C $(PARSER_SRC) all
 	make -C $(STRUCTS) all
 	make -C $(SELECTORS) all
+
+tests: so
+	make -C tests
 
 exec: object_code
 	$(CC) $(CFLAGS) -o $(OUT) $(PARSER_SRC)/*.o $(DOM_SRC)/*.o $(STRUCTS)/*.o $(SELECTORS)/*.o main.c

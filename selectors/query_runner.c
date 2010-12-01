@@ -95,7 +95,7 @@ list* apply_custom_relation_operator(const list* nodes, char* op){
     }
 
 
-    list* r = operator(nodes);
+    list* r = operator((list*) nodes);
     return r;
 }
 

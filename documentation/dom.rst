@@ -32,17 +32,17 @@ The structure definition for a dom node is in the file node.h.
 ::
 
   typedef struct snode{
-    enum node_type type;
+   enum node_type type;
+   struct snode* parent;
+   union{
+      struct sroot* attributes;
+      char* value;
+   };
 
-    char* namespace;
-    char* name;
-    char* value;
+   char* name;
+   char* namespace;
 
-    struct sroot* attributes;
-
-    struct snode* parent;
-
-    struct generic_list_s* children;
+   struct generic_list_s* children;
   }dom_node;
 
 This structure is used to store any kind of entity in an xml file. It can be an element, attribute, cdata or text node. In order to control these different kind of entities, the :c:type:`dom_node` has an enumerate field. This field is called :c:type:`node_type` .
@@ -63,13 +63,12 @@ Each enum represents a different kind of xml entity.
 .. c:type:: doc
 .. c:type:: struct sdoc
 
-Finally, a document is a structure that points to two dom nodes - The root of the dom tree and the root of the xml declaration tree. Lets look at its definition.
+Finally, a document is a structure that points to two dom nodes - The root of the dom tree and a list of xml declarations. Lets look at its definition.
 
 ::
-
   typedef struct sdoc{
-    struct snode* root;
-    struct snode* xml_declaration;
+   struct snode* root;
+   list* xml_declarations;
   }doc;
 
 Suppose we have the following xml file
@@ -81,7 +80,7 @@ Suppose we have the following xml file
      ...
    </x>
 
-When this xml is parsed, a :c:type:`doc` is created with the field ``xml_declaration`` pointing to a tree that parsed '<?xml version="1.0" ?>' and the ``root`` field pointing to a tree that parsed the rest of the document.
+When this xml is parsed, a :c:type:`doc` is created with the field ``xml_declaration`` pointing to a list that corresponds to '<?xml version="1.0" ?>' and the ``root`` field pointing to a tree that corresponds to the rest of the document.
 
 Function description
 ^^^^^^^^^^^^^^^^^^^^
@@ -117,13 +116,13 @@ Function description
 
    This function sets the root of the given document. If the document already contained a root, a pointer to it will be returned. Otherwise, NULL is returned.
 
-.. c:function:: dom_node* set_xml_declaration(doc* document, struct snode* vers)
+.. c:function:: dom_node* set_xml_declarations(doc* document, list declarations)
 
-   :c:member:`doc` The document whose xml declaration will be set.
+   :c:member:`doc` The document whose xml declarations will be set.
 
-   :c:member:`vers` The xml declaration to set.
+   :c:member:`declarations` The xml declarations to set.
 
-   This function sets the xml declaration of the given document. If the document already contained an xml declaration, a pointer to it will be returned. Otherwise, NULL is returned.
+   This function sets the xml declarations of the given document. If the document already contained xml declarations, a pointer to that list will be returned. Otherwise, NULL is returned.
 
 .. c:function:: void set_parent(dom_node* node, dom_node* parent)
 
@@ -151,11 +150,11 @@ Function description
 
    This functions returns the value of the given node, or NULL if the node doesn't contain any.
 
-.. c:function:: dom_node* get_xml_declaration(doc* document)
+.. c:function:: list* get_xml_declarations(doc* document)
 
-   :c:member:`document` The document from which the xml declaration tree will be returned.
+   :c:member:`document` The document from which the xml declarations list will be returned.
 
-   This functions returns the dom node at the root of the xml declaration tree, or NULL if there isn't any.
+   This functions returns the list of the xml declarations, or NULL if there isn't any.
 
 .. c:function:: dom_node* get_doc_root(doc* document)
 

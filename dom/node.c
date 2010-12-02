@@ -101,12 +101,12 @@ dom_node* set_doc_root(doc* document, struct snode* root){
   return old;
 }
 
-dom_node* set_xml_declaration(doc* document, dom_node* vers){
-  dom_node* old;
+list* set_xml_declaration(doc* document, list* declarations){
+  list* old;
   if(!document)
     return NULL;
-  old = document->xml_declaration;
-  document->xml_declaration = vers;
+  old = document->xml_declarations;
+  document->xml_declarations = declarations;
   return old;
 }
 
@@ -130,8 +130,8 @@ dom_node* get_doc_root(doc* document){
   return document->root;
 }
 
-dom_node* get_xml_declaration(doc* document){
-  return document->xml_declaration;
+list* get_xml_declarations(doc* document){
+  return document->xml_declarations;
 }
 
 void prepend_child(dom_node* parent, dom_node* child){
@@ -204,9 +204,9 @@ void append_children(dom_node* parent, struct generic_list_s* children){
   return;
 }
 
-doc* new_document(dom_node* xml_declaration){
+doc* new_document(list* xml_declarations){
   doc* document = alloc(doc, 1);
-  set_xml_declaration(document, xml_declaration);
+  set_xml_declaration(document, xml_declarations);
   return document;
 }
 
@@ -383,7 +383,14 @@ void destroy_dictionary(){
 
 void destroy_dom_tree(doc* root){
   destroy_dom_node(root->root);
-  destroy_dom_node(root->xml_declaration);
+  if(root->xml_declarations){
+      int i;
+      for(i = 0; i < root->xml_declarations->count; i++){
+          destroy_dom_node(get_element_at(root->xml_declarations, i));
+      }
+      destroy_generic_list(root->xml_declarations);
+  }
+
   free(root);
 }
 

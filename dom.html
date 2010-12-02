@@ -77,17 +77,17 @@ struct <tt class="descname">snode</tt><a class="headerlink" href="#snode" title=
 
 <p>The structure definition for a dom node is in the file node.h.</p>
 <div class="highlight-c"><div class="highlight"><pre><span class="k">typedef</span> <span class="k">struct</span> <span class="n">snode</span><span class="p">{</span>
-  <span class="k">enum</span> <span class="n">node_type</span> <span class="n">type</span><span class="p">;</span>
+ <span class="k">enum</span> <span class="n">node_type</span> <span class="n">type</span><span class="p">;</span>
+ <span class="k">struct</span> <span class="n">snode</span><span class="o">*</span> <span class="n">parent</span><span class="p">;</span>
+ <span class="k">union</span><span class="p">{</span>
+    <span class="k">struct</span> <span class="n">sroot</span><span class="o">*</span> <span class="n">attributes</span><span class="p">;</span>
+    <span class="kt">char</span><span class="o">*</span> <span class="n">value</span><span class="p">;</span>
+ <span class="p">};</span>
 
-  <span class="kt">char</span><span class="o">*</span> <span class="n">namespace</span><span class="p">;</span>
-  <span class="kt">char</span><span class="o">*</span> <span class="n">name</span><span class="p">;</span>
-  <span class="kt">char</span><span class="o">*</span> <span class="n">value</span><span class="p">;</span>
+ <span class="kt">char</span><span class="o">*</span> <span class="n">name</span><span class="p">;</span>
+ <span class="kt">char</span><span class="o">*</span> <span class="n">namespace</span><span class="p">;</span>
 
-  <span class="k">struct</span> <span class="n">sroot</span><span class="o">*</span> <span class="n">attributes</span><span class="p">;</span>
-
-  <span class="k">struct</span> <span class="n">snode</span><span class="o">*</span> <span class="n">parent</span><span class="p">;</span>
-
-  <span class="k">struct</span> <span class="n">generic_list_s</span><span class="o">*</span> <span class="n">children</span><span class="p">;</span>
+ <span class="k">struct</span> <span class="n">generic_list_s</span><span class="o">*</span> <span class="n">children</span><span class="p">;</span>
 <span class="p">}</span><span class="n">dom_node</span><span class="p">;</span>
 </pre></div>
 </div>
@@ -117,13 +117,17 @@ struct <tt class="descname">snode</tt><a class="headerlink" href="#snode" title=
 struct <tt class="descname">sdoc</tt><a class="headerlink" href="#sdoc" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<p>Finally, a document is a structure that points to two dom nodes - The root of the dom tree and the root of the xml declaration tree. Lets look at its definition.</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="k">typedef</span> <span class="k">struct</span> <span class="n">sdoc</span><span class="p">{</span>
-  <span class="k">struct</span> <span class="n">snode</span><span class="o">*</span> <span class="n">root</span><span class="p">;</span>
-  <span class="k">struct</span> <span class="n">snode</span><span class="o">*</span> <span class="n">xml_declaration</span><span class="p">;</span>
-<span class="p">}</span><span class="n">doc</span><span class="p">;</span>
-</pre></div>
-</div>
+<p>Finally, a document is a structure that points to two dom nodes - The root of the dom tree and a list of xml declarations. Lets look at its definition.</p>
+<dl class="docutils">
+<dt>::</dt>
+<dd><dl class="first docutils">
+<dt>typedef struct sdoc{</dt>
+<dd>struct snode* root;
+list* xml_declarations;</dd>
+</dl>
+<p class="last">}doc;</p>
+</dd>
+</dl>
 <p>Suppose we have the following xml file</p>
 <div class="highlight-xml"><div class="highlight"><pre><span class="cp">&lt;?xml version=&quot;1.0&quot; ?&gt;</span>
 <span class="nt">&lt;x&gt;</span>
@@ -131,7 +135,7 @@ struct <tt class="descname">sdoc</tt><a class="headerlink" href="#sdoc" title="P
 <span class="nt">&lt;/x&gt;</span>
 </pre></div>
 </div>
-<p>When this xml is parsed, a <a class="reference internal" href="#doc" title="doc"><tt class="xref c c-type docutils literal"><span class="pre">doc</span></tt></a> is created with the field <tt class="docutils literal"><span class="pre">xml_declaration</span></tt> pointing to a tree that parsed &#8216;&lt;?xml version=&#8221;1.0&#8221; ?&gt;&#8217; and the <tt class="docutils literal"><span class="pre">root</span></tt> field pointing to a tree that parsed the rest of the document.</p>
+<p>When this xml is parsed, a <a class="reference internal" href="#doc" title="doc"><tt class="xref c c-type docutils literal"><span class="pre">doc</span></tt></a> is created with the field <tt class="docutils literal"><span class="pre">xml_declaration</span></tt> pointing to a list that corresponds to &#8216;&lt;?xml version=&#8221;1.0&#8221; ?&gt;&#8217; and the <tt class="docutils literal"><span class="pre">root</span></tt> field pointing to a tree that corresponds to the rest of the document.</p>
 </div>
 <div class="section" id="function-description">
 <h3>Function description<a class="headerlink" href="#function-description" title="Permalink to this headline">¶</a></h3>
@@ -168,11 +172,11 @@ char* <tt class="descname">set_value</tt><big>(</big><a class="reference interna
 </dd></dl>
 
 <dl class="function">
-<dt id="set_xml_declaration">
-<a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>* <tt class="descname">set_xml_declaration</tt><big>(</big><a class="reference internal" href="#doc" title="doc">doc</a>*<em> document</em>, struct <a class="reference internal" href="#snode" title="snode">snode</a>*<em> vers</em><big>)</big><a class="headerlink" href="#set_xml_declaration" title="Permalink to this definition">¶</a></dt>
-<dd><p><a class="reference internal" href="#doc" title="doc"><tt class="xref c c-member docutils literal"><span class="pre">doc</span></tt></a> The document whose xml declaration will be set.</p>
-<p><tt class="xref c c-member docutils literal"><span class="pre">vers</span></tt> The xml declaration to set.</p>
-<p>This function sets the xml declaration of the given document. If the document already contained an xml declaration, a pointer to it will be returned. Otherwise, NULL is returned.</p>
+<dt id="set_xml_declarations">
+<a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>* <tt class="descname">set_xml_declarations</tt><big>(</big><a class="reference internal" href="#doc" title="doc">doc</a>*<em> document</em>, <a class="reference internal" href="data_structures/datastructures.html#list" title="list">list</a><em> declarations</em><big>)</big><a class="headerlink" href="#set_xml_declarations" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="#doc" title="doc"><tt class="xref c c-member docutils literal"><span class="pre">doc</span></tt></a> The document whose xml declarations will be set.</p>
+<p><tt class="xref c c-member docutils literal"><span class="pre">declarations</span></tt> The xml declarations to set.</p>
+<p>This function sets the xml declarations of the given document. If the document already contained xml declarations, a pointer to that list will be returned. Otherwise, NULL is returned.</p>
 </dd></dl>
 
 <dl class="function">
@@ -205,10 +209,10 @@ char* <tt class="descname">get_value</tt><big>(</big><a class="reference interna
 </dd></dl>
 
 <dl class="function">
-<dt id="get_xml_declaration">
-<a class="reference internal" href="#dom_node" title="dom_node">dom_node</a>* <tt class="descname">get_xml_declaration</tt><big>(</big><a class="reference internal" href="#doc" title="doc">doc</a>*<em> document</em><big>)</big><a class="headerlink" href="#get_xml_declaration" title="Permalink to this definition">¶</a></dt>
-<dd><p><tt class="xref c c-member docutils literal"><span class="pre">document</span></tt> The document from which the xml declaration tree will be returned.</p>
-<p>This functions returns the dom node at the root of the xml declaration tree, or NULL if there isn&#8217;t any.</p>
+<dt id="get_xml_declarations">
+<a class="reference internal" href="data_structures/datastructures.html#list" title="list">list</a>* <tt class="descname">get_xml_declarations</tt><big>(</big><a class="reference internal" href="#doc" title="doc">doc</a>*<em> document</em><big>)</big><a class="headerlink" href="#get_xml_declarations" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="xref c c-member docutils literal"><span class="pre">document</span></tt> The document from which the xml declarations list will be returned.</p>
+<p>This functions returns the list of the xml declarations, or NULL if there isn&#8217;t any.</p>
 </dd></dl>
 
 <dl class="function">

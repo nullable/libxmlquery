@@ -491,7 +491,7 @@ list* query(const char* query_string, dom_node* node){
     if(!all_nodes)
       all_nodes = new_generic_list(1);
 
-    add_element(all_nodes, node);
+    prepend_element_with_type(all_nodes, node, 0);
 
     list* r = run_query(query, all_nodes);
     destroy_generic_list(all_nodes);

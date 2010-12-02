@@ -26,8 +26,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <stdio.h>
 #include "../include/y.tab.h"
 #include "../include/stack.h"
+#include "../include/byte_buffer.h"
 
 stack* trash_bin = NULL;
+byte_buffer* lxq_cdata_buffer = NULL;
 int lxq_parser_last_state;
 
 char *trimwhitespace(char *str)
@@ -61,8 +63,8 @@ char *trimwhitespace(char *str)
 [^@<\n\r]*                                                  { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; BEGIN XML_INITIAL; return TEXT; }
 \<                                                          { BEGIN IN_STATE; return START_EL; }
 
-<XML_INITIAL>"<!--"                                         { BEGIN COMMENT; lxq_parser_last_state = XML_INITIAL;}
-<XML_INITIAL>"<![CDATA["                                    { BEGIN CDATA; }
+<XML_INITIAL>"<!--"                                         { BEGIN COMMENT; lxq_parser_last_state = XML_INITIAL; }
+<XML_INITIAL>"<![CDATA["                                    { BEGIN CDATA; lxq_cdata_buffer = new_byte_buffer(16); }
 <XML_INITIAL>\r?\n                                          ;
 <XML_INITIAL>[ \t]*                                         ;
 <XML_INITIAL>[^<\r\n\t ]                                    { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return TEXT; }
@@ -86,8 +88,16 @@ char *trimwhitespace(char *str)
 <TEXT_BLOCK_DQ_XML>[^"]*                                    { yylval.string = strdup(yytext); return TEXT; }
 <TEXT_BLOCK_DQ_XML>\"                                       { BEGIN IN_STATE; return '"'; }
 
-<CDATA>("\n"|.|"\r")+/"]]>"                                 { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return CDATA_TOK; }
-<CDATA>"]]>"                                                { BEGIN XML_INITIAL; }
+<CDATA>("\n"|.|"\r")                                        { append_string_to_buffer(yytext, lxq_cdata_buffer); }
+<CDATA>"]]>"                                                { append_bytes_to_buffer("\0", lxq_cdata_buffer, 1);
+                                                              yylval.string = lxq_cdata_buffer->buffer;
+                                                              lxq_cdata_buffer->buffer = NULL;
+                                                              destroy_byte_buffer(lxq_cdata_buffer);
+                                                              lxq_cdata_buffer = NULL;
+                                                              BEGIN XML_INITIAL;
+                                                              return CDATA_TOK;
+
+                                                            }
 
 <COMMENT>("\n"|.|"\r")                                           {;}
 <COMMENT>"-->"                                              { BEGIN lxq_parser_last_state; }
@@ -95,7 +105,7 @@ char *trimwhitespace(char *str)
 <QUERY_INITIAL>\*                                           { return ALL; }
 <QUERY_INITIAL>[\n\r]+                                      ;
 <QUERY_INITIAL>[_a-zA-Z][-_a-zA-Z0-9]*                      { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return WORD; }
-<QUERY_INITIAL>[ ]*![_a-zA-Z][-_a-zA-Z0-9]*[ ]*             { yylval.string = strdup(yytext); char* aux = strdup(trimwhitespace(yylval.string)); 
+<QUERY_INITIAL>[ ]*![_a-zA-Z][-_a-zA-Z0-9]*[ ]*             { yylval.string = strdup(yytext); char* aux = strdup(trimwhitespace(yylval.string));
                                                               free(yylval.string); yylval.string = aux; return CUSTOM_RELATION_OPERATOR; }
 <QUERY_INITIAL>\[                                           { return '['; }
 <QUERY_INITIAL>\]                                           { return ']'; }

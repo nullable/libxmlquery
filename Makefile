@@ -6,7 +6,7 @@ STRUCTS = ./data_structures
 SELECTORS = ./selectors
 OUT = xmlquery
 
-all: exec so tests
+all: exec so
 
 object_code:
 	make -C $(DOM_SRC) all
@@ -35,3 +35,4 @@ install:
 
 uninstall:
 	./install.sh -u
+

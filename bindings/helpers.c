@@ -21,14 +21,14 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
- 
+
 #include "../include/node.h"
 #include "../include/lxq_parser.h"
 #include "../include/query_runner.h"
 #include "../include/serialize.h"
 
-dom_node* internal_parse_xml_file(char* filename){
-    return parse_dom(filename)->root;
+dom_node* internal_parse_xml_file(char* xmlstring){
+    return parse_xml_from_string(xmlstring)->root;
 }
 
 char* node_to_xml_string(dom_node* root){

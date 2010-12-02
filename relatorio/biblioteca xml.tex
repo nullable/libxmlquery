@@ -256,6 +256,12 @@ list* query_result = query("@room", get_doc_root(document));
 
 		Custom \emph{filters} are very easy to implement. The user defines a function which represents a filter, which means it will receive all XML nodes and should return true for nodes that match the filter.
 		Then, registers that function as a custom \emph{pseudo-filter} and that's it. Custom \emph{filters} can receive 0 or more arguments. Check appendix \ref{chap:doc} for more information on these filters.
+		
+		We've also provide a way to create custom operators. Custom operators are extensions to the CSS3 operators. In order to use custom operators the user should define them and register them. The user should use 
+		then when CSS3 operators aren't enough his needs. A custom operator receives a list of nodes that it should operator on.
+		
+		We already provide two extended operators. The \emph{first} operator, which receives a list of nodes and returns the first node of that list and the \emph{text-children} operator, which returns all the text nodes that are 
+		children of each node in the received list.
 
 \section{Data structures and macros}\label{sec:helpers}
 

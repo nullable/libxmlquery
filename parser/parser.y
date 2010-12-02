@@ -118,7 +118,7 @@ void parse_string(const char* str){
 %token <string> WORD TEXT CDATA_TOK REGEX CUSTOM_FILTER CUSTOM_OPERATOR CUSTOM_RELATION_OPERATOR
 %token ALL SPACE  END_REGEXI NO_OP EQUAL_OP WSSV_OP STARTSW_OP ENDSW_OP CONTAINS_OP REGEX_OP REGEXI_OP DSV_OP NOTEQUAL_OP EVEN ODD
 %token NTH_CHILD_FILTER NTH_LAST_CHILD_FILTER FIRST_CHILD_FILTER LAST_CHILD_FILTER ONLY_CHILD_FILTER EMPTY_FILTER NOT_FILTER
-%type <dn> attr node prop inner attrs declaration start_tag end_tag namespace
+%type <dn> attr node prop inner attrs declaration start_tag end_tag namespace doctype words_and_values
 %token <digits> DIGITS
 
 %type <attrselector> attr_filter attrsel;
@@ -127,7 +127,7 @@ void parse_string(const char* str){
 %type <token> operator pseudo_op nth_pseudo_op relation_operator end_regex;
 %type <fa> pseudo_filter;
 %type <string> value
-%type <q> selector_group pseudo_filters attrsels regex_stack words
+%type <q> selector_group pseudo_filters attrsels regex_stack words declarations
 %type <mv> regex id
 %type <sel> selector
 
@@ -149,7 +149,7 @@ document: prop inner                                        { lxq_document = new
                                                                   set_doc_root(lxq_document, $2);
                                                               }
                                                             }
-        | declaration node                                  { lxq_document = new_document($1); set_doc_root(lxq_document, $2);}
+        | declarations node                                 { lxq_document = new_document($1); set_doc_root(lxq_document, $2);}
         ;
 
 namespace: WORD                                             { $$ = new_element_node($1); free($1);}
@@ -157,16 +157,24 @@ namespace: WORD                                             { $$ = new_element_n
                                                               free($3);
                                                               char* old = $$->namespace;
                                                               $$->namespace = $1;
+                                                              free($1);
                                                               if(old)
                                                                 free(old);
                                                             }
          ;
 
+
+declarations: declaration                                   { $$ = new_generic_list(1); add_element($$, $1); }
+            | doctype                                       { $$ = new_generic_list(1); add_element($$, $1); }
+            | declarations declaration                      { $$ = $1; add_element($$, $2); }
+
+doctype: START_EL '!' WORD words_and_values END_EL          { $$ = $4; set_name($$, $3); free($3); }
+
 declaration: START_EL '?' namespace attrs '?' END_EL        {
-                                                              if(strcmp(get_name($3), "xml") != 0){
-                                                                yyerror("Declaration does not begin with xml");
-                                                                exit(-1);
-                                                              }
+                                                              //if(strcmp(get_name($3), "xml") != 0){
+                                                              //  yyerror("Declaration does not begin with xml");
+                                                              //  exit(-1);
+                                                              //}
                                                               $$ = $4;
                                                               char* old = set_name($$, get_name($3));
                                                               if(old)
@@ -251,7 +259,17 @@ attr:  namespace '=' value                                  {$$ = new_attribute(
                                                                if(old)
                                                                  free(old);
                                                                  destroy_dom_node($1); }
+    | namespace                                             { $$ = new_attribute(get_name($1), NULL);
+                                                              char* old = set_namespace($$, get_namespace($1));
+                                                              if(old)
+                                                                free(old);
+                                                                destroy_dom_node($1);
+                                                            }
     ;
+
+words_and_values:                                           { $$ = new_element_node(NULL); }
+                | words_and_values WORD                     { $$ = $1; add_attribute($$, new_attribute($2, NULL)); free($2);}
+                | words_and_values value                    { $$ = $1; append_child($$, new_text_node($2)); free($2);}
 
 
 value: '"' TEXT '"'                                         {$$ = $2;}

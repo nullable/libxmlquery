@@ -74,6 +74,7 @@ char *trimwhitespace(char *str)
 <IN_STATE>"<!--"                                            { BEGIN COMMENT; lxq_parser_last_state = IN_STATE;}
 <IN_STATE>\>                                                { BEGIN XML_INITIAL; return END_EL; }
 <IN_STATE>\?                                                { return '?'; }
+<IN_STATE>\!                                                { return '!'; }
 <IN_STATE>\/                                                { return SLASH; }
 <IN_STATE>\=                                                { return '='; }
 <IN_STATE>[-_a-zA-Z][-_a-zA-Z0-9]*                          { yylval.string = strdup(yytext); /*push_stack(trash_bin, yylval.string)*/; return WORD; }

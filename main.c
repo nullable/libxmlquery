@@ -72,6 +72,7 @@ int main(int argc, char** argv){
 
     destroy_dictionary();
     destroy_custom_filters();
+    destroy_custom_operators();
     return 0;
 }
 

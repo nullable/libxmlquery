@@ -26,15 +26,21 @@ class NodeList:
             return lxq.slice_list(self._list, start, stop, step)
         else: raise TypeError
 
+    def __delitem__(self, key):
+        if not isinstance(key, int):
+            raise TypeError
+        lxq.remove_element(self._list, self[key]._node)
+
     def __contains__(self, item):
         if not isinstance(item, Node): return False
         return not lxq.get_element_pos(self._list, item._node) == -1
 
-
 class Node:
     def __init__(self, name, namespace=None):
-        self._node = lxq.new_element_node(name, namespace)
+        self._node = lxq.new_element_node(name)
         self._python_owner = True
+        if isinstance(namespace, str):
+            lxq.set_namespace(self._node, namespace)
 
     def query(self, q):
         if not isinstance(q, str): raise TypeError
@@ -64,16 +70,21 @@ class Node:
         if self.namespace: name = self.namespace + self.name
         return "<" + name + " .../>"
 
-#    def __del__(self):
-#        if self._python_owner:
-#            lxq.destroy_dom_node(self._node)
-#            self._node = None
+    def __del__(self):
+        if self._python_owner:
+            lxq.destroy_dom_node(self._node)
+            self._node = None
+
+    def append_child(self, child):
+        if isinstance(child, Node):
+            lxq.append_child(self._node, child._node)
+        else: raise TypeError
 
 
 class NodeWrapper(Node):
     def __init__(self, node_ptr):
         self._node = node_ptr
-        self.python_owner = False
+        self._python_owner = False
 
 
 class AttributeMap:
@@ -82,19 +93,24 @@ class AttributeMap:
 
     def __contains__(self, item):
         if not isinstance(item, str): return False
-        return not lxq.get_attribute_by_name(nodeptr, item) == None
+        return not lxq.get_attribute_by_name(self._node, item) == None
 
-    def __get_item__(self, name):
+    def __getitem__(self, name):
         if not isinstance(name, str): raise TypeError
-        r = lxq.get_attribute_by_name(nodeptr, name)
-        if r: return r
+        r = lxq.get_attribute_by_name(self._node, name)
+        if r: return lxq.get_value(r)
         else: raise KeyError
 
-    def __set_item__(self, name, value):
+    def __setitem__(self, name, value):
         if not (isinstance(name, str) and isinstance(value, str)):
             raise TypeError
         attr = lxq.new_attribute(name, value)
         lxq.add_attribute(self._node, attr)
+
+    def __delitem__(self, name):
+        if not isinstance(name, str):
+            raise TypeError
+        lxq.delete_attribute(self._node, name)
 
 #class Attribute:
 #    def __init__(self, name, value):

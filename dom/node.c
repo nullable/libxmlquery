@@ -161,6 +161,10 @@ void append_child(dom_node* parent, dom_node* child){
     log(W, "Trying to append attribute %s as child of node %s.", child->name, parent->name);
     return;
   }
+  if(child->parent != NULL){
+    remove_element(child->parent->children, child);
+  }
+
   if(parent->children == NULL)
     parent->children = new_generic_list(1);
   add_element(parent->children, child);

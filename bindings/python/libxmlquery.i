@@ -3,6 +3,7 @@
 %{
 /* Put headers and other declarations here */
 #include "../../include/node.h"
+#include "../../include/stack.h"
 %}
 
 extern void set_namespace(dom_node* node, char* namespace);
@@ -39,3 +40,5 @@ extern char* node_to_xml_string(dom_node* root);
 extern int list_size(struct generic_list_s* l);
 extern dom_node* get_dom_node_at(struct generic_list_s* l, int p);
 
+//stack.h
+extern void remove_element(struct generic_list_s* l, void* obj);

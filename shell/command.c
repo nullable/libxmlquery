@@ -90,7 +90,7 @@ void init_command_table(){
 }
 
 int exec_command(char* name, int n_args, char** args){
-  command* c = (command*) search_rbtree(*command_table, name);
+  command* c = (command*) search_rbtree(command_table, name);
   if(!c){
     COMMAND_ERROR("", "Command %s not found\n", name);
     return -1;

@@ -39,7 +39,7 @@ int64_t symbol_compare(void* keyA, void* keyB){
 tree_root* symbol_table = NULL;
 
 void* get_symbol(char* id){
-  symbol* n = (symbol*) search_rbtree(*symbol_table, id);
+  symbol* n = (symbol*) search_rbtree(symbol_table, id);
 
   if(!n)
     return n;

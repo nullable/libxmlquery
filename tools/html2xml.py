@@ -2,12 +2,20 @@
 
 import sys
 from BeautifulSoup import BeautifulSoup
+import re
 
-if not len(sys.argv) == 2:
-    print "Usage: html2python 'file.html'"
 
-f = open(sys.argv[1], 'r')
+def translate(html):
+    html = re.sub(re.compile("<script(.*?)>.(.*?)</script>", re.I|re.S), r"<script\1><![CDATA[\2]]></script>", html)
 
-soup = BeautifulSoup(f.read())
-print soup.prettify()
+    soup = BeautifulSoup(html)
+
+    return soup.prettify()
+
+if __name__ == "__main__":
+    if not len(sys.argv) == 2:
+        print "Usage: html2python 'file.html'"
+    f = open(fname, 'r')
+    print translate(f.read())
+    f.close()
 

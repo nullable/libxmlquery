@@ -47,6 +47,7 @@ class Node:
         elif name == 'namespace': return lxq.get_namespace(self._node)
         elif name == 'children': return NodeList(lxq.get_children(self._node))
         elif name == 'attributes': return AttributeMap(self._node)
+        elif name == 'text': return str(reduce(lambda x, y: str(x)+ '\n' +str(y), self.__getattr__("children")))
         else: raise AttributeError
 
     def __setattr__(self, name, value):

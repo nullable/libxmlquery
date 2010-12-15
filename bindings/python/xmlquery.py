@@ -2,7 +2,8 @@ import libxmlquery as lxq
 import collections
 
 def parse_xml(filename):
-    if not isinstance(filename, str): raise TypeError
+    print type(filename)
+    if not isinstance(filename, str) and not isinstance(filename, unicode): raise TypeError
     return NodeWrapper(lxq.internal_parse_xml_file(filename))
 
 

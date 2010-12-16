@@ -5,8 +5,13 @@ from BeautifulSoup import BeautifulSoup
 import re
 
 
-def translate(html):
-    html = re.sub(re.compile("<script(.*?)>.(.*?)</script>", re.I|re.S), r"<script\1><![CDATA[\2]]></script>", html)
+def translate(html, force=False):
+
+    if force:
+        html = re.sub(re.compile("<script(.*?)>(.*?)</script>", re.I|re.S), r"<script\1></script>", html)
+    else:
+        html = re.sub(re.compile("<script(.*?)>(.*?)</script>", re.I|re.S), r"<script\1><![CDATA[\2]]></script>", html)
+
 
     soup = BeautifulSoup(html)
 

@@ -14,6 +14,9 @@ class NodeList:
     def __len__(self):
         return lxq.list_size(self._list)
 
+    def get_attribute(attr):
+        return map(lambda x: x.attributes[key], self)
+
     def __getitem__(self, key):
         if isinstance(key, int):
             if 0 <= key < len(self): return NodeWrapper(lxq.get_dom_node_at(self._list, key))

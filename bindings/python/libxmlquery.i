@@ -2,8 +2,14 @@
 %module libxmlquery
 %{
 /* Put headers and other declarations here */
-#include "../../include/node.h"
-#include "../../include/stack.h"
+#include <xmlquery/node.h>
+#include <xmlquery/stack.h>
+
+extern dom_node* internal_parse_xml_file(char* filename);
+extern char* node_to_xml_string(dom_node* root);
+extern int list_size(struct generic_list_s* l);
+extern struct generic_list_s* query(char* q, dom_node*);
+extern dom_node* get_dom_node_at(struct generic_list_s* l, int p);
 %}
 
 extern void set_namespace(dom_node* node, char* namespace);
@@ -42,3 +48,4 @@ extern dom_node* get_dom_node_at(struct generic_list_s* l, int p);
 
 //stack.h
 extern void remove_element(struct generic_list_s* l, void* obj);
+

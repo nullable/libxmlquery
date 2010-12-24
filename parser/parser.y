@@ -167,6 +167,7 @@ namespace: WORD                                             { $$ = new_element_n
 declarations: declaration                                   { $$ = new_generic_list(1); add_element($$, $1); }
             | doctype                                       { $$ = new_generic_list(1); add_element($$, $1); }
             | declarations declaration                      { $$ = $1; add_element($$, $2); }
+            | declarations doctype                          { $$ = $1; add_element($$, $2); }
 
 doctype: START_EL '!' WORD words_and_values END_EL          { $$ = $4; set_name($$, $3); free($3); }
 

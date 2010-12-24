@@ -20,7 +20,7 @@ def translate(html, force=False):
 if __name__ == "__main__":
     if not len(sys.argv) == 2:
         print "Usage: html2python 'file.html'"
-    f = open(fname, 'r')
+    f = open(sys.argv[1], 'r')
     print translate(f.read())
     f.close()
 

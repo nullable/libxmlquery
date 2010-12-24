@@ -22,10 +22,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
 
-#include "../include/node.h"
-#include "../include/lxq_parser.h"
-#include "../include/query_runner.h"
-#include "../include/serialize.h"
+#include <xmlquery/node.h>
+#include <xmlquery/lxq_parser.h>
+#include <xmlquery/query_runner.h>
+#include <xmlquery/serialize.h>
 
 dom_node* internal_parse_xml_file(char* xmlstring){
     return parse_xml_from_string(xmlstring)->root;

@@ -15,8 +15,13 @@ function install {
 	fi
 
 	cp libxmlquery.so /usr/lib/
+    cp xmlquery /usr/bin/
 	chmod -x /usr/lib/libxmlquery.so
-	mkdir /usr/include/xmlquery
+
+	if [ ! -e /usr/include/xmlquery ]
+	then
+	    mkdir /usr/include/xmlquery
+	fi
 	cp -r include/* /usr/include/xmlquery
     else
 	echo "Unable to find libxmlquery header files or libxmlquery.so. Header files should be in ./include dir and libxmlquery.so in ./ ."
@@ -44,3 +49,4 @@ else
 	echo "Unrecognized options: $*"
     fi
 fi
+

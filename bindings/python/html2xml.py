@@ -18,9 +18,12 @@ def translate(html, force=False):
     return soup.prettify()
 
 if __name__ == "__main__":
-    if not len(sys.argv) == 2:
+    if len(sys.argv) == 1:
+        f = sys.stdin
+    elif len(sys.argv) == 2:
+        f = open(sys.argv[1], 'r')
         print "Usage: html2python 'file.html'"
-    f = open(sys.argv[1], 'r')
+
     print translate(f.read())
     f.close()
 

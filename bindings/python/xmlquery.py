@@ -1,10 +1,9 @@
 import libxmlquery as lxq
 import collections
 
-def parse_xml(filename):
-    print type(filename)
-    if not isinstance(filename, str) and not isinstance(filename, unicode): raise TypeError
-    return NodeWrapper(lxq.internal_parse_xml_file(filename))
+def parse_xml(string):
+    if not isinstance(string, str) and not isinstance(string, unicode): raise TypeError
+    return NodeWrapper(lxq.internal_parse_xml_file(string))
 
 
 class NodeList:
@@ -50,6 +49,13 @@ class Node:
         if not isinstance(q, str): raise TypeError
         if not q or q[0] != "@": q = "@" + q
         return NodeList(lxq.query(q, self._node))
+
+    def queryone(self, q):
+        r = self.query(q)
+        if(len(r) > 0):
+            return r[0]
+        else:
+            return None
 
     def __getattr__(self, name):
         if name in self.__dict__: return self.__dict__[name]

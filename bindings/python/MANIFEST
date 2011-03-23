@@ -1,0 +1,5 @@
+helpers.c
+libxmlquery.py
+libxmlquery_wrap.c
+setup.py
+xmlquery.py

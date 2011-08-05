@@ -39,10 +39,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define log(level, str, ...)
 #endif
 
-#define I "INFO"
-#define W "WARNNING"
-#define E "ERROR"
-#define F "FATAL ERROR"
+#define I "\x1B[1;34;34m[INFO]\x1B[0;0;0m"
+#define W "\x1B[1;33;33m[WARNNING]\x1B[0;0;0m"
+#define E "\x1B[1;31;31m[ERROR]\x1B[0;0;0m"
+#define F "\x1B[1;31;31m[FATAL ERROR]\x1B[0;0;0m"
 
 #define alloc(type, how_many)				\
   (type *) __alloc(malloc(how_many * sizeof(type)));	

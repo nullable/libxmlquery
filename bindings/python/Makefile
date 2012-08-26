@@ -1,4 +1,3 @@
-
 SO = pyxmlquery.so
 
 all: _libxmlquery.so
@@ -8,7 +7,7 @@ libxmlquery.py libxmlquery_wrap.c: libxmlquery.i
 	swig -python libxmlquery.i
 
 libxmlquery_wrap.o: libxmlquery_wrap.c
-	gcc -c -fpic libxmlquery_wrap.c -I/usr/include/python2.6
+	gcc -c -fpic libxmlquery_wrap.c -I/usr/include/python2.7
 
 libxmlquery.so:
 	make -C ../.. so

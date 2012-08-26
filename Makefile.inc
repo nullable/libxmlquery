@@ -1,6 +1,6 @@
 # common definitions
 
 CC = gcc
-CFLAGS = -Wall -Os -g -DDEBUG
-LEXFLAGS = -DDEBUG -c -g -Os
+CFLAGS = -Wall -Os -g -DDEBUG -fPIC
+LEXFLAGS = -DDEBUG -c -g -Os -fPIC
 
